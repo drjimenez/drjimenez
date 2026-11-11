@@ -35,3 +35,14 @@ La HTF debe ser mayor que la temporalidad del gráfico (si no, la tabla muestra 
 - Orden por vela LTF: invalidación → expiración (`maxEntryBars`) → objetivo alcanzado (opcional) → CISD.
 - Si R:R < `minRR` la señal se omite y el setup sigue buscando otro CISD. Una sola señal por setup HTF.
 - Por defecto el CISD solo se confirma con la vela LTF cerrada.
+
+## Versión visual sin alertas (`ttfm_indicator_visual.pine`)
+
+Variante del mismo indicador analizado en el backtest, con idéntica lógica de detección
+(velas HTF C1/C2/C3, sweep, sesgo, CISD, invalidación y expiración), pero:
+
+- **Sin `alertcondition`**: no crea alertas de sweep ni de entrada/salida.
+- **Sin proyección de Entrada / SL / TP** ni fila de R:R en la tabla.
+
+Úsala como herramienta de lectura del modelo fractal. Se añade igual: Pine Editor →
+pegar el código → *Add to chart* (recomendado: gráfico 15m con HTF 240, o 1H con HTF D).

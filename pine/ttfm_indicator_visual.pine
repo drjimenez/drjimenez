@@ -1,0 +1,529 @@
+//@version=6
+// =====================================================================================
+//  TTFM — Modelo Fractal estilo TTrades (versión visual, SIN alertas de entrada/salida)
+//  Especificación de referencia: docs/SPEC.md
+//
+//  Qué hace:
+//   - Construye manualmente las velas HTF (sin request.security) acumulando O/H/L/C
+//     de las velas del gráfico (LTF) entre cada `timeframe.change(htf)`.
+//   - Dibuja las últimas N velas HTF a la derecha del precio (C1 / C2 / C3).
+//   - Proyecta high/low de C1 (rango barrido) y de C2 (vela del barrido) en el LTF.
+//   - Detecta el barrido (sweep) de C2 sobre C1 y fija el sesgo para C3.
+//   - Busca CISD en LTF durante C3 (con invalidación, ventana maxEntryBars y minRR).
+//   - Tabla de estado.
+//   - Esta versión NO crea alertas ni proyecta niveles de Entrada / SL / TP:
+//     es solo la lectura del modelo fractal (velas HTF, sweep, sesgo y CISD).
+//
+//  No repinta: las velas HTF se cierran cuando empieza la siguiente (valores ya
+//  definitivos) y el CISD se evalúa, por defecto, solo con la vela LTF cerrada.
+// =====================================================================================
+indicator("TTFM — Fractal Model (visual, sin alertas)", shorttitle = "TTFM Visual", overlay = true,
+     max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
+
+// =====================================================================================
+// CONSTANTES DE ESTADO DEL SETUP
+// =====================================================================================
+const int ST_WAIT    = 0   // esperando: no hay sesgo (C2 no barrió C1)
+const int ST_SWEEP   = 1   // sweep detectado: buscando CISD en LTF durante C3
+const int ST_SIGNAL  = 2   // CISD confirmado (1 por setup)
+const int ST_INVALID = 3   // invalidado: el precio rompió el extremo de C2 antes del CISD
+const int ST_EXPIRED = 4   // expirado: se superó maxEntryBars sin CISD
+const int ST_TARGET  = 5   // cancelado: el precio alcanzó el objetivo antes del CISD
+
+// =====================================================================================
+// INPUTS
+// =====================================================================================
+const string G_TF   = "Temporalidad"
+const string G_RULE = "Reglas del modelo"
+const string G_VIS  = "Visualización"
+const string G_COL  = "Colores"
+
+i_htfSel        = input.string("240", "Temporalidad HTF", options = ["Auto", "15", "30", "60", "120", "240", "D", "W"], group = G_TF,
+     tooltip = "Auto: 1m→15m, 5m→1H, 15m(≤30m)→4H, 1H→D, 4H→W, superior→M")
+
+i_minRR         = input.float(1.0, "R:R mínimo (minRR)", minval = 0.0, step = 0.1, group = G_RULE)
+i_slBufATR      = input.float(0.1, "Buffer SL (× ATR14 LTF)", minval = 0.0, step = 0.05, group = G_RULE)
+i_maxEntryBars  = input.int(12, "Máx. velas LTF en C3 para entrar (0 = sin límite)", minval = 0, group = G_RULE)
+i_cancelTarget  = input.bool(true, "Cancelar si el precio alcanza el objetivo antes del CISD", group = G_RULE)
+i_onlyConfirmed = input.bool(true, "Confirmar CISD solo con vela LTF cerrada (no repinta)", group = G_RULE)
+
+i_nCandles      = input.int(4, "Nº de velas HTF a dibujar", minval = 2, maxval = 10, group = G_VIS)
+i_rightOffset   = input.int(8, "Desplazamiento a la derecha (barras)", minval = 2, maxval = 100, group = G_VIS)
+i_cWidth        = input.int(5, "Ancho de cada vela HTF (barras)", minval = 1, maxval = 20, group = G_VIS)
+i_cGap          = input.int(2, "Separación entre velas HTF (barras)", minval = 0, maxval = 10, group = G_VIS)
+i_showCandles   = input.bool(true, "Mostrar velas HTF a la derecha", group = G_VIS)
+i_showC1Lines   = input.bool(true, "Mostrar high/low de C1", group = G_VIS)
+i_showC2Lines   = input.bool(true, "Mostrar high/low de C2", group = G_VIS)
+i_showSweep     = input.bool(true, "Mostrar etiquetas de sweep", group = G_VIS)
+i_showBg        = input.bool(true, "Sombrear fondo con el sesgo durante C3", group = G_VIS)
+i_showCISD      = input.bool(true, "Mostrar CISD (nivel pendiente y confirmación)", group = G_VIS)
+i_showTable     = input.bool(true, "Mostrar tabla de estado", group = G_VIS)
+i_tablePos      = input.string("Arriba derecha", "Posición tabla", options = ["Arriba derecha", "Arriba izquierda", "Abajo derecha", "Abajo izquierda"], group = G_VIS)
+
+i_colBull       = input.color(#26a69a, "Vela HTF alcista", group = G_COL)
+i_colBear       = input.color(#ef5350, "Vela HTF bajista", group = G_COL)
+i_colWick       = input.color(#787b86, "Mechas HTF", group = G_COL)
+i_colText       = input.color(#b2b5be, "Texto velas HTF", group = G_COL)
+i_colC1         = input.color(#2962ff, "Líneas C1", group = G_COL)
+i_colC2         = input.color(#ff9800, "Líneas C2", group = G_COL)
+i_colBullBias   = input.color(#26a69a, "Sesgo alcista", group = G_COL)
+i_colBearBias   = input.color(#ef5350, "Sesgo bajista", group = G_COL)
+i_colCISD       = input.color(#e040fb, "CISD", group = G_COL)
+i_bgTransp      = input.int(92, "Transparencia del fondo de sesgo", minval = 0, maxval = 100, group = G_COL)
+
+// =====================================================================================
+// FUNCIONES DE LÓGICA (reutilizables tal cual en ttfm_strategy.pine)
+// =====================================================================================
+
+// Resuelve la temporalidad HTF. "Auto" mapea LTF→HTF según SPEC/encargo.
+// Devuelve un `simple string` (válido para timeframe.change()).
+f_autoHTF(simple string sel) =>
+    int s = timeframe.in_seconds()
+    sel != "Auto" ? sel :
+         s <= 60    ? "15"  :
+         s <= 300   ? "60"  :
+         s <= 1800  ? "240" :
+         s <= 3600  ? "D"   :
+         s <= 14400 ? "W"   : "M"
+
+// Constructor manual de velas HTF (sin request.security).
+// Debe llamarse en TODAS las barras (ámbito global).
+// Devuelve:
+//   closed           -> true en la 1ª vela LTF de una nueva vela HTF, cuando hay una vela HTF
+//                       completa recién cerrada (la primera vela HTF parcial del histórico se descarta)
+//   o,h,l,c,t,b      -> vela HTF en formación (apertura, máx, mín, cierre actual, hora apertura HTF, bar_index de apertura)
+//   pO,pH,pL,pC,pT,pB-> vela HTF recién cerrada (válida solo cuando closed == true)
+f_htfCandle(simple string tf) =>
+    bool isNew  = timeframe.change(tf)
+    int  tfOpen = time(tf)          // hora de apertura de la vela HTF (calculada en todas las barras)
+    var bool  started = false
+    var float o = na
+    var float h = na
+    var float l = na
+    var float c = na
+    var int   t = na
+    var int   b = na
+    // valores de la vela HTF anterior a esta barra (completa si isNew)
+    float pO = o
+    float pH = h
+    float pL = l
+    float pC = c
+    int   pT = t
+    int   pB = b
+    bool closed = false
+    if isNew and bar_index > 0
+        closed  := started      // la primera vela HTF observada puede ser parcial: no se emite
+        started := true
+        o := open
+        h := high
+        l := low
+        c := close
+        t := tfOpen
+        b := bar_index
+    else if started
+        h := math.max(h, high)
+        l := math.min(l, low)
+        c := close
+    [closed, o, h, l, c, t, b, pO, pH, pL, pC, pT, pB]
+
+// Sweep alcista (SPEC): C2 barre el low de C1 y cierra por encima de él.
+f_isBullSweep(float c1H, float c1L, float c2H, float c2L, float c2C) =>
+    not na(c1L) and not na(c2L) and not na(c2C) and c2L < c1L and c2C > c1L
+
+// Sweep bajista (SPEC): C2 barre el high de C1 y cierra por debajo de él.
+f_isBearSweep(float c1H, float c1L, float c2H, float c2L, float c2C) =>
+    not na(c1H) and not na(c2H) and not na(c2C) and c2H > c1H and c2C < c1H
+
+// Sesgo para C3: +1 alcista, -1 bajista, 0 sin sesgo.
+// Decisión de diseño: si C2 barre AMBOS extremos de C1 y cierra dentro (vela envolvente),
+// el caso es ambiguo -> sin sesgo (0).
+f_sweepBias(float c1H, float c1L, float c2H, float c2L, float c2C) =>
+    bool bull = f_isBullSweep(c1H, c1L, c2H, c2L, c2C)
+    bool bear = f_isBearSweep(c1H, c1L, c2H, c2L, c2C)
+    bull and not bear ? 1 : bear and not bull ? -1 : 0
+
+// Seguimiento de niveles CISD en LTF. Debe llamarse en TODAS las barras (ámbito global).
+// - Serie bajista = velas consecutivas con close < open. Su nivel = open de la 1ª vela de la serie.
+//   Es el nivel del CISD ALCISTA (cierre por encima confirma).
+// - Serie alcista = velas consecutivas con close > open. Su nivel = open de la 1ª vela.
+//   Es el nivel del CISD BAJISTA (cierre por debajo confirma).
+// - Siempre se usa la serie MÁS RECIENTE (una nueva serie sustituye a la anterior).
+// - Un nivel se "consume" (pasa a na) cuando una vela cierra a través de él, haya sesgo o no:
+//   cada serie puede confirmar un CISD una sola vez.
+// - Una vela doji (close == open) no es alcista ni bajista: corta la serie pero no borra el nivel.
+// Devuelve los niveles VIGENTES ANTES de procesar la vela actual (para evaluar si la vela
+// actual confirma), y el bar_index de la 1ª vela de cada serie (para dibujar):
+//   [lvlBull, barBull, lvlBear, barBear]
+f_cisdLevels() =>
+    var float bearRunOpen = na   // nivel CISD alcista
+    var int   bearRunBar  = na
+    var float bullRunOpen = na   // nivel CISD bajista
+    var int   bullRunBar  = na
+    float lvlBull = bearRunOpen
+    int   barBull = bearRunBar
+    float lvlBear = bullRunOpen
+    int   barBear = bullRunBar
+    bool isBear   = close < open
+    bool isBull   = close > open
+    bool prevBear = close[1] < open[1]
+    bool prevBull = close[1] > open[1]
+    // consumo de niveles por cierre a través
+    if not na(bearRunOpen) and close > bearRunOpen
+        bearRunOpen := na
+        bearRunBar  := na
+    if not na(bullRunOpen) and close < bullRunOpen
+        bullRunOpen := na
+        bullRunBar  := na
+    // inicio de nueva serie
+    if isBear and not prevBear
+        bearRunOpen := open
+        bearRunBar  := bar_index
+    if isBull and not prevBull
+        bullRunOpen := open
+        bullRunBar  := bar_index
+    [lvlBull, barBull, lvlBear, barBear]
+
+// Confirmación CISD alcista: cierre de la vela LTF por encima del nivel vigente.
+f_isBullCISD(float lvlBull) =>
+    not na(lvlBull) and close > lvlBull
+
+// Confirmación CISD bajista: cierre de la vela LTF por debajo del nivel vigente.
+f_isBearCISD(float lvlBear) =>
+    not na(lvlBear) and close < lvlBear
+
+// R:R de una operación (dir: 1 long, -1 short). na si el riesgo es <= 0.
+f_rr(float entryPx, float slPx, float tpPx, int dir) =>
+    float risk   = dir == 1 ? entryPx - slPx : slPx - entryPx
+    float reward = dir == 1 ? tpPx - entryPx : entryPx - tpPx
+    risk > 0 ? reward / risk : na
+
+// Niveles de la operación según SPEC:
+//   long : SL = low(C2)  - buf×ATR, TP = high(C2)
+//   short: SL = high(C2) + buf×ATR, TP = low(C2)
+f_tradeLevels(int dir, float entryPx, float c2H, float c2L, float atrVal, float slBufATR) =>
+    float slPx = dir == 1 ? c2L - slBufATR * atrVal : c2H + slBufATR * atrVal
+    float tpPx = dir == 1 ? c2H : c2L
+    [slPx, tpPx, f_rr(entryPx, slPx, tpPx, dir)]
+
+// Motor del setup (máquina de estados). Debe llamarse en TODAS las barras (ámbito global).
+// newHTF  : true en la 1ª vela LTF de C3 (= `closed` de f_htfCandle)
+// c1*/c2* : high/low/close de C1 y C2 (velas HTF cerradas; constantes durante C3)
+// lvlBull/lvlBear : niveles CISD vigentes (de f_cisdLevels)
+// confirmOk : si false, no se confirma CISD en esta ejecución (vela en tiempo real sin cerrar)
+// Orden de evaluación en cada vela LTF de C3 (estado ST_SWEEP), conservador:
+//   1) invalidación (low < low(C2) en long / high > high(C2) en short)
+//   2) expiración (barsInC3 > maxEntryBars, si maxEntryBars > 0)
+//   3) objetivo alcanzado antes del CISD (si cancelTarget)
+//   4) CISD -> si R:R >= minRR: señal (ST_SIGNAL); si no, se omite la señal y el setup
+//      sigue activo esperando un CISD posterior (con otra serie).
+// Devuelve:
+//   [bias, state, barsInC3, sweepBull, sweepBear, cisdLong, cisdShort,
+//    entryPx, slPx, tpPx, rr, rrEst, invalidNow, rrSkipped]
+f_setupEngine(bool newHTF, float c1H, float c1L, float c2H, float c2L, float c2C,
+              float lvlBull, float lvlBear, float atrVal,
+              float minRR, float slBufATR, int maxEntryBars, bool cancelTarget, bool confirmOk) =>
+    var int   bias     = 0
+    var int   state    = ST_WAIT
+    var int   barsInC3 = 0
+    var float entryPx  = na
+    var float slPx     = na
+    var float tpPx     = na
+    var float rr       = na
+    bool sweepBull  = false
+    bool sweepBear  = false
+    bool cisdLong   = false
+    bool cisdShort  = false
+    bool invalidNow = false
+    bool rrSkipped  = false
+    if newHTF
+        bias      := f_sweepBias(c1H, c1L, c2H, c2L, c2C)
+        sweepBull := bias == 1
+        sweepBear := bias == -1
+        state     := bias != 0 ? ST_SWEEP : ST_WAIT
+        barsInC3  := 0
+        entryPx   := na
+        slPx      := na
+        tpPx      := na
+        rr        := na
+    barsInC3 += 1
+    if state == ST_SWEEP
+        if (bias == 1 and low < c2L) or (bias == -1 and high > c2H)
+            state      := ST_INVALID
+            invalidNow := true
+        else if maxEntryBars > 0 and barsInC3 > maxEntryBars
+            state := ST_EXPIRED
+        else if cancelTarget and ((bias == 1 and high >= c2H) or (bias == -1 and low <= c2L))
+            state := ST_TARGET
+        else if confirmOk
+            bool hit = bias == 1 ? f_isBullCISD(lvlBull) : f_isBearCISD(lvlBear)
+            if hit
+                [s, t, r] = f_tradeLevels(bias, close, c2H, c2L, atrVal, slBufATR)
+                if not na(r) and r >= minRR
+                    state     := ST_SIGNAL
+                    entryPx   := close
+                    slPx      := s
+                    tpPx      := t
+                    rr        := r
+                    cisdLong  := bias == 1
+                    cisdShort := bias == -1
+                else
+                    rrSkipped := true
+    // R:R estimado si se entrara ahora al cierre (solo informativo, para la tabla)
+    float rrEst = rr
+    if state == ST_SWEEP
+        [sE, tE, rE] = f_tradeLevels(bias, close, c2H, c2L, atrVal, slBufATR)
+        rrEst := rE
+    [bias, state, barsInC3, sweepBull, sweepBear, cisdLong, cisdShort,
+     entryPx, slPx, tpPx, rr, rrEst, invalidNow, rrSkipped]
+
+// Texto del estado para la tabla
+f_stateText(int st) =>
+    switch st
+        ST_WAIT    => "Esperando"
+        ST_SWEEP   => "Sweep: buscando CISD"
+        ST_SIGNAL  => "CISD: señal"
+        ST_INVALID => "Invalidado"
+        ST_EXPIRED => "Expirado (maxEntryBars)"
+        ST_TARGET  => "Objetivo alcanzado sin entrada"
+        => "-"
+
+// =====================================================================================
+// CÁLCULO PRINCIPAL
+// =====================================================================================
+string htfTF      = f_autoHTF(i_htfSel)
+bool   htfInvalid = timeframe.in_seconds(htfTF) <= timeframe.in_seconds()
+float  atr14      = ta.atr(14)
+bool   confirmOk  = barstate.isconfirmed or not i_onlyConfirmed
+
+// --- velas HTF ---
+[htfClosed, curO, curH, curL, curC, curT, curB, pO, pH, pL, pC, pT, pB] = f_htfCandle(htfTF)
+
+// Historial de velas HTF cerradas (la última = C2, la penúltima = C1)
+var array<float> hO = array.new<float>()
+var array<float> hH = array.new<float>()
+var array<float> hL = array.new<float>()
+var array<float> hC = array.new<float>()
+var array<int>   hT = array.new<int>()
+var array<int>   hB = array.new<int>()
+int keepN = math.max(i_nCandles, 3) + 2
+if htfClosed
+    array.push(hO, pO)
+    array.push(hH, pH)
+    array.push(hL, pL)
+    array.push(hC, pC)
+    array.push(hT, pT)
+    array.push(hB, pB)
+    if array.size(hO) > keepN
+        array.shift(hO)
+        array.shift(hH)
+        array.shift(hL)
+        array.shift(hC)
+        array.shift(hT)
+        array.shift(hB)
+
+int nClosed = array.size(hO)
+float c1H = na
+float c1L = na
+int   c1B = na
+float c2H = na
+float c2L = na
+float c2C = na
+int   c2B = na
+if nClosed >= 2
+    c1H := array.get(hH, nClosed - 2)
+    c1L := array.get(hL, nClosed - 2)
+    c1B := array.get(hB, nClosed - 2)
+if nClosed >= 1
+    c2H := array.get(hH, nClosed - 1)
+    c2L := array.get(hL, nClosed - 1)
+    c2C := array.get(hC, nClosed - 1)
+    c2B := array.get(hB, nClosed - 1)
+
+// --- niveles CISD (se actualizan en todas las barras) ---
+[lvlBull, barBull, lvlBear, barBear] = f_cisdLevels()
+
+// --- motor del setup ---
+bool newHTF = htfClosed and not htfInvalid
+[bias, setupState, barsInC3, sweepBull, sweepBear, cisdLong, cisdShort, tEntry, tSL, tTP, tRR, rrEst, invalidNow, rrSkipped] =
+     f_setupEngine(newHTF, c1H, c1L, c2H, c2L, c2C, lvlBull, lvlBear, atr14,
+                   i_minRR, i_slBufATR, i_maxEntryBars, i_cancelTarget, confirmOk)
+
+bool biasActive = setupState == ST_SWEEP or setupState == ST_SIGNAL
+
+// =====================================================================================
+// DIBUJO: líneas de C1 / C2 proyectadas durante C3
+// =====================================================================================
+var line lnC1H = na
+var line lnC1L = na
+var line lnC2H = na
+var line lnC2L = na
+if newHTF
+    // las líneas del C3 anterior quedan fijas en el histórico
+    lnC1H := na
+    lnC1L := na
+    lnC2H := na
+    lnC2L := na
+if newHTF and nClosed >= 2
+    if i_showC1Lines
+        lnC1H := line.new(c1B, c1H, bar_index, c1H, xloc = xloc.bar_index, color = i_colC1, width = 1)
+        lnC1L := line.new(c1B, c1L, bar_index, c1L, xloc = xloc.bar_index, color = i_colC1, width = 1)
+    if i_showC2Lines
+        lnC2H := line.new(c2B, c2H, bar_index, c2H, xloc = xloc.bar_index, color = i_colC2, style = line.style_dashed, width = 1)
+        lnC2L := line.new(c2B, c2L, bar_index, c2L, xloc = xloc.bar_index, color = i_colC2, style = line.style_dashed, width = 1)
+else if not newHTF
+    if not na(lnC1H)
+        line.set_x2(lnC1H, bar_index)
+        line.set_x2(lnC1L, bar_index)
+    if not na(lnC2H)
+        line.set_x2(lnC2H, bar_index)
+        line.set_x2(lnC2L, bar_index)
+
+// =====================================================================================
+// DIBUJO: sweep, invalidación y CISD
+// =====================================================================================
+if i_showSweep and sweepBull
+    label.new(bar_index, c2L, "Sweep ▲\nC2 barrió low C1", xloc = xloc.bar_index, yloc = yloc.price,
+         style = label.style_label_up, color = color.new(i_colBullBias, 20), textcolor = color.white, size = size.small)
+if i_showSweep and sweepBear
+    label.new(bar_index, c2H, "Sweep ▼\nC2 barrió high C1", xloc = xloc.bar_index, yloc = yloc.price,
+         style = label.style_label_down, color = color.new(i_colBearBias, 20), textcolor = color.white, size = size.small)
+if i_showSweep and invalidNow
+    label.new(bar_index, bias == 1 ? low : high, "✕ Invalidado", xloc = xloc.bar_index, yloc = yloc.price,
+         style = bias == 1 ? label.style_label_up : label.style_label_down,
+         color = color.new(color.gray, 30), textcolor = color.white, size = size.tiny)
+
+if i_showCISD and cisdLong
+    line.new(na(barBull) ? bar_index - 1 : barBull, lvlBull, bar_index, lvlBull, xloc = xloc.bar_index, color = i_colCISD, width = 2)
+    label.new(bar_index, low, "CISD ▲", xloc = xloc.bar_index, yloc = yloc.belowbar,
+         style = label.style_label_up, color = i_colCISD, textcolor = color.white, size = size.small)
+if i_showCISD and cisdShort
+    line.new(na(barBear) ? bar_index - 1 : barBear, lvlBear, bar_index, lvlBear, xloc = xloc.bar_index, color = i_colCISD, width = 2)
+    label.new(bar_index, high, "CISD ▼", xloc = xloc.bar_index, yloc = yloc.abovebar,
+         style = label.style_label_down, color = i_colCISD, textcolor = color.white, size = size.small)
+
+// Fondo con el sesgo durante C3 (mientras el setup no esté invalidado/expirado/cancelado)
+bgcolor(i_showBg and biasActive ? (bias == 1 ? color.new(i_colBullBias, i_bgTransp) : color.new(i_colBearBias, i_bgTransp)) : na,
+     title = "Fondo de sesgo")
+
+// =====================================================================================
+// DIBUJO EN LA ÚLTIMA BARRA: velas HTF a la derecha + nivel CISD pendiente
+// (se borran y redibujan en cada actualización)
+// =====================================================================================
+var array<box>   drawBoxes  = array.new<box>()
+var array<line>  drawLines  = array.new<line>()
+var array<label> drawLabels = array.new<label>()
+
+if barstate.islast
+    for bx in drawBoxes
+        box.delete(bx)
+    for ln in drawLines
+        line.delete(ln)
+    for lb in drawLabels
+        label.delete(lb)
+    array.clear(drawBoxes)
+    array.clear(drawLines)
+    array.clear(drawLabels)
+
+    if i_showCandles and not htfInvalid and not na(curO)
+        int    nPrev   = math.min(i_nCandles - 1, nClosed)
+        int    total   = nPrev + 1
+        int    half    = int(i_cWidth / 2)
+        string timeFmt = timeframe.in_seconds(htfTF) >= 86400 ? "dd/MM" : "HH:mm"
+        for i = 0 to total - 1
+            bool  forming = i == total - 1
+            int   idx     = nClosed - nPrev + i
+            float o = curO
+            float h = curH
+            float l = curL
+            float c = curC
+            int   t = curT
+            if not forming
+                o := array.get(hO, idx)
+                h := array.get(hH, idx)
+                l := array.get(hL, idx)
+                c := array.get(hC, idx)
+                t := array.get(hT, idx)
+            int   x = bar_index + i_rightOffset + i * (i_cWidth + i_cGap)
+            int   xm = x + half
+            color col = c >= o ? i_colBull : i_colBear
+            int   tr  = forming ? 50 : 20
+            array.push(drawLines, line.new(xm, h, xm, math.max(o, c), xloc = xloc.bar_index, color = i_colWick, width = 1))
+            array.push(drawLines, line.new(xm, math.min(o, c), xm, l, xloc = xloc.bar_index, color = i_colWick, width = 1))
+            array.push(drawBoxes, box.new(x, math.max(o, c), x + i_cWidth - 1, math.min(o, c), border_color = col,
+                 border_width = 1, xloc = xloc.bar_index, bgcolor = color.new(col, tr)))
+            int    k    = total - 1 - i     // 0 = vela en formación
+            string name = k == 0 ? "C3" : k == 1 ? "C2" : k == 2 ? "C1" : ""
+            if name != ""
+                array.push(drawLabels, label.new(xm, h, name, xloc = xloc.bar_index, yloc = yloc.price,
+                     style = label.style_label_down, color = color.new(color.black, 100), textcolor = i_colText, size = size.small))
+            array.push(drawLabels, label.new(xm, l, str.format_time(t, timeFmt, syminfo.timezone), xloc = xloc.bar_index,
+                 yloc = yloc.price, style = label.style_label_up, color = color.new(color.black, 100), textcolor = i_colText, size = size.tiny))
+
+    // Etiquetas de las líneas C1/C2 en su extremo derecho
+    if i_showC1Lines and not na(c1H)
+        array.push(drawLabels, label.new(bar_index, c1H, "C1 H", xloc = xloc.bar_index, style = label.style_label_left,
+             color = color.new(color.black, 100), textcolor = i_colC1, size = size.tiny))
+        array.push(drawLabels, label.new(bar_index, c1L, "C1 L", xloc = xloc.bar_index, style = label.style_label_left,
+             color = color.new(color.black, 100), textcolor = i_colC1, size = size.tiny))
+    if i_showC2Lines and not na(c2H)
+        array.push(drawLabels, label.new(bar_index, c2H, "C2 H", xloc = xloc.bar_index, style = label.style_label_left,
+             color = color.new(color.black, 100), textcolor = i_colC2, size = size.tiny))
+        array.push(drawLabels, label.new(bar_index, c2L, "C2 L", xloc = xloc.bar_index, style = label.style_label_left,
+             color = color.new(color.black, 100), textcolor = i_colC2, size = size.tiny))
+
+    // Nivel CISD pendiente mientras se busca la entrada (punteado).
+    // Se usa el nivel que evaluaría la PRÓXIMA vela: si la vela actual consumió o creó una
+    // serie, f_cisdLevels lo reflejará en la siguiente barra; aquí se muestra el nivel vigente.
+    if i_showCISD and setupState == ST_SWEEP
+        float pend    = bias == 1 ? lvlBull : lvlBear
+        int   pendBar = bias == 1 ? barBull : barBear
+        if not na(pend) and not na(pendBar)
+            array.push(drawLines, line.new(pendBar, pend, bar_index + 3, pend, xloc = xloc.bar_index,
+                 color = i_colCISD, style = line.style_dotted, width = 1))
+            array.push(drawLabels, label.new(bar_index + 3, pend, "CISD pendiente", xloc = xloc.bar_index,
+                 style = label.style_label_left, color = color.new(color.black, 100), textcolor = i_colCISD, size = size.tiny))
+
+// =====================================================================================
+// TABLA DE ESTADO
+// =====================================================================================
+f_tablePos(string s) =>
+    switch s
+        "Arriba izquierda" => position.top_left
+        "Abajo derecha"    => position.bottom_right
+        "Abajo izquierda"  => position.bottom_left
+        => position.top_right
+
+var table tbl = table.new(f_tablePos(i_tablePos), 2, 5, bgcolor = color.new(#131722, 15),
+     frame_color = color.new(#787b86, 50), frame_width = 1, border_color = color.new(#787b86, 80), border_width = 1)
+
+if barstate.islast and i_showTable
+    string biasTxt = bias == 1 ? "Alcista ▲" : bias == -1 ? "Bajista ▼" : "Neutral"
+    color  biasCol = bias == 1 ? i_colBullBias : bias == -1 ? i_colBearBias : color.gray
+    string barsTxt = str.tostring(barsInC3) + (i_maxEntryBars > 0 ? " / " + str.tostring(i_maxEntryBars) : "")
+    string tfTxt   = htfTF + (i_htfSel == "Auto" ? " (Auto)" : "") + (htfInvalid ? "  ⚠ HTF ≤ gráfico" : "")
+    table.cell(tbl, 0, 0, "TTFM", text_color = color.white, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 1, 0, "Fractal Model", text_color = color.white, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 0, 1, "HTF", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 1, 1, tfTxt, text_color = htfInvalid ? color.orange : color.white, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 0, 2, "Sesgo", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 1, 2, biasTxt, text_color = biasCol, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 0, 3, "Estado", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 1, 3, f_stateText(setupState), text_color = color.white, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 0, 4, "Velas C3", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
+    table.cell(tbl, 1, 4, barsTxt, text_color = color.white, text_size = size.small, text_halign = text.align_left)
+
+// Valores en la ventana de datos (útil para depurar / comparar con Python)
+plot(bias,       "TTFM sesgo",      display = display.data_window)
+plot(setupState, "TTFM estado",     display = display.data_window)
+plot(lvlBull,    "TTFM nivel CISD alcista", display = display.data_window)
+plot(lvlBear,    "TTFM nivel CISD bajista", display = display.data_window)
+plot(c1H,        "TTFM C1 high",    display = display.data_window)
+plot(c1L,        "TTFM C1 low",     display = display.data_window)
+plot(c2H,        "TTFM C2 high",    display = display.data_window)
+plot(c2L,        "TTFM C2 low",     display = display.data_window)
+
+// =====================================================================================
+// NOTA: versión visual derivada de pine/ttfm_indicator.pine. La lógica de detección
+// (velas HTF, sweep, CISD, invalidación, expiración) es idéntica a la analizada en el
+// backtest; solo se eliminaron las alertas y la proyección de Entrada / SL / TP.
+// =====================================================================================
