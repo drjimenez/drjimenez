@@ -1,0 +1,4 @@
+# Datos descargados de data.binance.vision (caché local)
+data/
+__pycache__/
+*.pyc
