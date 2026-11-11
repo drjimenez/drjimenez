@@ -281,10 +281,10 @@ f_stateText(int st) =>
     switch st
         ST_WAIT    => "Esperando"
         ST_SWEEP   => "Sweep: buscando CISD"
-        ST_SIGNAL  => "CISD: señal"
+        ST_SIGNAL  => "CISD confirmado"
         ST_INVALID => "Invalidado"
         ST_EXPIRED => "Expirado (maxEntryBars)"
-        ST_TARGET  => "Objetivo alcanzado sin entrada"
+        ST_TARGET  => "Objetivo alcanzado sin CISD"
         => "-"
 
 // =====================================================================================
