@@ -14,7 +14,7 @@ final class OrdenServicio {
     var kilometraje: Int = 0
     /// Nivel de combustible al recibir el vehículo (0 = vacío, 1 = lleno).
     var nivelCombustible: Double = 0.5
-    var tasaIVA: Double = 0.16
+    var tasaIVA: Double = 0.13
     var anticipo: Double = 0
     var vehiculo: Vehiculo?
 
@@ -25,7 +25,7 @@ final class OrdenServicio {
     var factura: Factura?
 
     init(folio: Int, problemaReportado: String, kilometraje: Int,
-         nivelCombustible: Double = 0.5, tasaIVA: Double = 0.16, anticipo: Double = 0) {
+         nivelCombustible: Double = 0.5, tasaIVA: Double = 0.13, anticipo: Double = 0) {
         self.folio = folio
         self.fechaIngreso = .now
         self.problemaReportado = problemaReportado
@@ -67,6 +67,8 @@ final class OrdenServicio {
         return max(0, cal.dateComponents([.day], from: cal.startOfDay(for: fechaIngreso),
                                          to: cal.startOfDay(for: fin)).day ?? 0)
     }
+
+    var tieneLineasEnDolares: Bool { lineas.contains { $0.esEnDolares } }
 
     var subtotal: Double { totalManoDeObra + totalRefacciones }
     var iva: Double { (subtotal * tasaIVA * 100).rounded() / 100 }

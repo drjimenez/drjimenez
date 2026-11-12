@@ -6,6 +6,7 @@ struct RefaccionFormView: View {
     @Environment(\.modelContext) private var context
 
     private let refaccion: Refaccion?
+    private let tipoCambio = TipoCambio.compartido
 
     @State private var nombre: String
     @State private var codigo: String
@@ -13,6 +14,7 @@ struct RefaccionFormView: View {
     @State private var ubicacion: String
     @State private var existencia: Int
     @State private var existenciaMinima: Int
+    @State private var moneda: Moneda
     @State private var costo: Double
     @State private var precioVenta: Double
 
@@ -24,6 +26,7 @@ struct RefaccionFormView: View {
         _ubicacion = State(initialValue: refaccion?.ubicacion ?? "")
         _existencia = State(initialValue: refaccion?.existencia ?? 0)
         _existenciaMinima = State(initialValue: refaccion?.existenciaMinima ?? 1)
+        _moneda = State(initialValue: refaccion?.moneda ?? .colon)
         _costo = State(initialValue: refaccion?.costo ?? 0)
         _precioVenta = State(initialValue: refaccion?.precioVenta ?? 0)
     }
@@ -48,20 +51,31 @@ struct RefaccionFormView: View {
                     Stepper("Mínimo: \(existenciaMinima)", value: $existenciaMinima, in: 0...9_999)
                 }
                 Section {
+                    Picker("Moneda de compra", selection: $moneda) {
+                        ForEach(Moneda.allCases) { Text($0.nombre).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
                     LabeledContent("Costo") {
-                        TextField("Costo", value: $costo, format: .currency(code: Preferencias.moneda))
+                        TextField("Costo", value: $costo, format: .currency(code: moneda.rawValue))
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                     }
                     LabeledContent("Precio de venta") {
-                        TextField("Precio", value: $precioVenta, format: .currency(code: Preferencias.moneda))
+                        TextField("Precio", value: $precioVenta, format: .currency(code: moneda.rawValue))
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                     }
                     LabeledContent("Margen", value: margen.formatted(.percent.precision(.fractionLength(0))))
                         .foregroundStyle(margen < 0 ? .red : .secondary)
+                    if moneda == .dolar {
+                        LabeledContent("Precio hoy en colones", value: (precioVenta * tipoCambio.valor).redondeado.comoMoneda)
+                    }
                 } header: {
                     Text("Precios")
+                } footer: {
+                    if moneda == .dolar {
+                        Text("Se convierte a colones con el tipo de cambio del día (\(tipoCambio.descripcion)) al agregarlo a una orden.")
+                    }
                 }
             }
             .navigationTitle(refaccion == nil ? "Nueva refacción" : "Editar refacción")
@@ -92,6 +106,7 @@ struct RefaccionFormView: View {
         destino.ubicacion = ubicacion.limpio
         destino.existencia = existencia
         destino.existenciaMinima = existenciaMinima
+        destino.moneda = moneda
         destino.costo = costo
         destino.precioVenta = precioVenta
         dismiss()

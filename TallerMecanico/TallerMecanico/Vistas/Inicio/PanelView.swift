@@ -9,6 +9,7 @@ struct PanelView: View {
     @Query(sort: \Cita.fecha) private var citas: [Cita]
     @AppStorage(Preferencias.nombreTallerKey) private var nombreTaller = "Mi Taller"
 
+    private let tipoCambio = TipoCambio.compartido
     @State private var mostrarAjustes = false
     @State private var mostrarNuevaOrden = false
 
@@ -38,6 +39,7 @@ struct PanelView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     metricas
+                    dolarHoy
                     porEstado
                     citasDeHoy
                     if !stockBajo.isEmpty { alertasInventario }
@@ -89,6 +91,26 @@ struct PanelView: View {
                                tinte: stockBajo.isEmpty ? .gray : .orange)
             }
         }
+    }
+
+    private var dolarHoy: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "dollarsign.arrow.circlepath")
+                .font(.title2)
+                .foregroundStyle(.green)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Dólar hoy: \(tipoCambio.descripcion)")
+                    .font(.subheadline.bold())
+                    .contentTransition(.numericText())
+                Text(tipoCambio.detalleFuente)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if tipoCambio.actualizando { ProgressView() }
+        }
+        .padding()
+        .glassEffect(.regular.tint(Color.green.opacity(0.10)), in: .rect(cornerRadius: 24))
     }
 
     private var porEstado: some View {

@@ -68,6 +68,9 @@ struct FacturaDocumentoView: View {
                 Text("Fecha: \(factura.fechaEmision.formatted(date: .long, time: .omitted))")
                 if let orden { Text("Orden de servicio: \(orden.folioTexto)") }
                 Text("Forma de pago: \(factura.metodoPago.titulo)")
+                if orden?.tieneLineasEnDolares == true, factura.tipoCambio > 0 {
+                    Text("Tipo de cambio: \(factura.tipoCambio.comoMoneda) por US$1")
+                }
             }
             .font(.system(size: 9))
         }
@@ -151,7 +154,14 @@ struct FacturaDocumentoView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         Text(linea.cantidad.formatted())
-                        Text(linea.precioUnitario.comoMoneda)
+                        VStack(alignment: .trailing, spacing: 0) {
+                            if let usd = linea.precioUSD {
+                                Text(usd.comoDolares)
+                                Text("= \(linea.precioUnitario.comoMoneda)").font(.system(size: 7)).foregroundStyle(gris)
+                            } else {
+                                Text(linea.precioUnitario.comoMoneda)
+                            }
+                        }
                         Text(linea.importe.comoMoneda)
                     }
                 }
@@ -195,6 +205,10 @@ struct FacturaDocumentoView: View {
             }
             if orden.anticipo > 0 {
                 fila("Anticipo recibido", "− \(orden.anticipo.comoMoneda)")
+            }
+            if orden.tieneLineasEnDolares, factura.tipoCambio > 0 {
+                fila("Equivalente en dólares", (orden.total / factura.tipoCambio).comoDolares)
+                    .foregroundStyle(gris)
             }
             HStack {
                 Text(orden.saldo > 0 ? "SALDO A PAGAR" : "PAGADO")
@@ -244,7 +258,10 @@ struct FacturaDocumentoView: View {
             if !taller.terminos.isEmpty {
                 Text(taller.terminos)
             }
-            Text("Comprobante de servicio. Este documento no sustituye un comprobante fiscal digital.")
+            if orden?.tieneLineasEnDolares == true, factura.tipoCambio > 0 {
+                Text("Repuestos cotizados en dólares convertidos a colones con el tipo de cambio de \(factura.tipoCambio.comoMoneda) por US$1 (\(factura.fuenteTipoCambio)).")
+            }
+            Text("Montos en colones costarricenses (₡). Comprobante de servicio; no sustituye la factura electrónica de Hacienda.")
         }
         .font(.system(size: 7))
         .foregroundStyle(gris)

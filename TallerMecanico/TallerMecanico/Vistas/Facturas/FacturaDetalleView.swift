@@ -27,6 +27,9 @@ struct GarantiaBadge: View {
 struct FacturaDetalleView: View {
     @Bindable var factura: Factura
     @State private var documento: DocumentoPDF?
+    @State private var correo: CorreoDocumento?
+    @State private var sinCuentaDeCorreo = false
+    @State private var mensajeCorreo: String?
 
     var body: some View {
         List {
@@ -44,20 +47,27 @@ struct FacturaDetalleView: View {
                             .font(.subheadline)
                     }
                 }
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     Button("Ver PDF", systemImage: "doc.richtext", action: abrirPDF)
+                        .buttonStyle(.glass)
+                    Button("Correo", systemImage: "envelope", action: enviarPorCorreo)
                         .buttonStyle(.glass)
                     Button("Imprimir", systemImage: "printer", action: imprimir)
                         .buttonStyle(.glassProminent)
                 }
                 .frame(maxWidth: .infinity)
                 .listRowBackground(Color.clear)
+                if let mensajeCorreo {
+                    Label(mensajeCorreo, systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.subheadline)
+                }
             }
 
             if let orden = factura.orden {
                 Section("Mano de obra · \(orden.horasManoDeObra.formatted()) h") {
                     ForEach(orden.lineas(de: .manoDeObra)) { linea in
-                        filaLinea(linea, detalle: "\(linea.cantidad.formatted()) h × \(linea.precioUnitario.comoMoneda)")
+                        filaLinea(linea, detalle: linea.detallePrecio)
                     }
                 }
                 Section("Repuestos y refacciones") {
@@ -65,7 +75,7 @@ struct FacturaDetalleView: View {
                         Text("Sin refacciones").foregroundStyle(.secondary)
                     }
                     ForEach(orden.lineas(de: .refaccion)) { linea in
-                        filaLinea(linea, detalle: "\(linea.cantidad.formatted()) × \(linea.precioUnitario.comoMoneda)")
+                        filaLinea(linea, detalle: linea.detallePrecio)
                     }
                 }
                 Section("Totales") {
@@ -75,6 +85,9 @@ struct FacturaDetalleView: View {
                         Text(orden.total.comoMoneda).bold()
                     } label: {
                         Text("Total de la reparación").bold()
+                    }
+                    if orden.tieneLineasEnDolares, factura.tipoCambio > 0 {
+                        LabeledContent("Tipo de cambio", value: "\(factura.tipoCambio.comoMoneda) por US$1")
                     }
                     if orden.anticipo > 0 {
                         LabeledContent("Anticipo recibido", value: "− \(orden.anticipo.comoMoneda)")
@@ -124,6 +137,23 @@ struct FacturaDetalleView: View {
             Button("Ver PDF", systemImage: "doc.richtext", action: abrirPDF)
         }
         .sheet(item: $documento) { VistaPreviaPDF(documento: $0) }
+        .sheet(item: $correo) { datos in
+            RedactorCorreo(correo: datos) { resultado in
+                correo = nil
+                switch resultado {
+                case .sent: mensajeCorreo = "Factura enviada por correo"
+                case .saved: mensajeCorreo = "Correo guardado en borradores"
+                default: break
+                }
+            }
+            .ignoresSafeArea()
+        }
+        .alert("No hay cuenta de correo", isPresented: $sinCuentaDeCorreo) {
+            Button("Compartir PDF") { abrirPDF() }
+            Button("Cancelar", role: .cancel) {}
+        } message: {
+            Text("Configura una cuenta en la app Mail para enviar la factura desde aquí, o comparte el PDF por otra app (Gmail, Outlook, WhatsApp…).")
+        }
         .task {
             if ArranqueDemo.abrir == "facturaPDF" {
                 try? await Task.sleep(for: .milliseconds(600))
@@ -147,6 +177,49 @@ struct FacturaDetalleView: View {
         if let url = GeneradorPDF.crear(factura: factura) {
             documento = DocumentoPDF(url: url, titulo: factura.folioTexto)
         }
+    }
+
+    private func enviarPorCorreo() {
+        guard Correo.disponible else {
+            sinCuentaDeCorreo = true
+            return
+        }
+        guard let url = GeneradorPDF.crear(factura: factura) else { return }
+        correo = CorreoDocumento(destinatarios: destinatarios, asunto: asuntoCorreo,
+                                 cuerpo: cuerpoCorreo, adjunto: url)
+    }
+
+    private var destinatarios: [String] {
+        let correoCliente = factura.orden?.vehiculo?.cliente?.correo.limpio ?? ""
+        return correoCliente.isEmpty ? [] : [correoCliente]
+    }
+
+    private var asuntoCorreo: String {
+        "Factura \(factura.folioTexto) · \(DatosTaller.actual.nombre)"
+    }
+
+    private var cuerpoCorreo: String {
+        let taller = DatosTaller.actual
+        let orden = factura.orden
+        var lineas: [String] = []
+        lineas.append("Estimado(a) \(orden?.vehiculo?.cliente?.nombre ?? "cliente"):")
+        lineas.append("")
+        lineas.append("Le adjuntamos la factura \(factura.folioTexto) correspondiente a la reparación de su \(orden?.vehiculo?.descripcionCorta ?? "vehículo") (orden \(orden?.folioTexto ?? "")).")
+        lineas.append("")
+        if let orden {
+            lineas.append("Total de la reparación: \(orden.total.comoMoneda)")
+            if orden.anticipo > 0 {
+                lineas.append("Anticipo recibido: \(orden.anticipo.comoMoneda)")
+            }
+            lineas.append(orden.saldo > 0 ? "Saldo a pagar: \(orden.saldo.comoMoneda)" : "Estado: pagado")
+            lineas.append("")
+        }
+        lineas.append("El trabajo cuenta con \(factura.diasGarantia) días de garantía en mano de obra, vigente hasta el \(factura.finGarantia.formatted(date: .long, time: .omitted)).")
+        lineas.append("")
+        lineas.append("Gracias por su preferencia.")
+        lineas.append(taller.nombre)
+        if !taller.telefono.isEmpty { lineas.append("Tel. \(taller.telefono)") }
+        return lineas.joined(separator: "\n")
     }
 
     private func imprimir() {

@@ -17,6 +17,7 @@ enum ArranqueDemo {
 
 struct ContentView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var fase
     @State private var seleccion: SeccionApp = ArranqueDemo.pestana
 
     var body: some View {
@@ -39,6 +40,11 @@ struct ContentView: View {
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .onAppear(perform: cargarDemoSiHaceFalta)
+        .task(id: fase) {
+            guard fase == .active else { return }
+            await TipoCambio.compartido.actualizarSiHaceFalta()
+            RevalorizacionDolares.aplicar(en: context)
+        }
     }
 
     private func cargarDemoSiHaceFalta() {

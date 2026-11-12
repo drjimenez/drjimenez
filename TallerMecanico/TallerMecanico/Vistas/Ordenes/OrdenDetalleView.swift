@@ -131,7 +131,7 @@ struct OrdenDetalleView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(linea.descripcion)
-                        Text("\(linea.cantidad.formatted()) × \(linea.precioUnitario.comoMoneda)")
+                        Text(linea.detallePrecio)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -159,6 +159,11 @@ struct OrdenDetalleView: View {
                 Text(orden.total.comoMoneda).bold()
             } label: {
                 Text("Total").bold()
+            }
+            if orden.tieneLineasEnDolares {
+                LabeledContent("Tipo de cambio aplicado",
+                               value: orden.factura.map { "\($0.tipoCambio.comoMoneda) (factura)" }
+                                   ?? TipoCambio.compartido.descripcion)
             }
             LabeledContent("Anticipo") {
                 TextField("Anticipo", value: $orden.anticipo, format: .currency(code: Preferencias.moneda))

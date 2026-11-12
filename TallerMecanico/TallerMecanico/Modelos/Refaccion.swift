@@ -11,12 +11,16 @@ final class Refaccion {
     var existenciaMinima: Int = 1
     var costo: Double = 0
     var precioVenta: Double = 0
+    /// Moneda en que se compra y se cotiza el repuesto (colones o dólares).
+    var monedaRaw: String = Moneda.colon.rawValue
 
     @Relationship(deleteRule: .nullify, inverse: \LineaOrden.refaccion)
     var usos: [LineaOrden] = []
 
     init(nombre: String, codigo: String = "", marca: String = "", ubicacion: String = "",
-         existencia: Int = 0, existenciaMinima: Int = 1, costo: Double = 0, precioVenta: Double = 0) {
+         existencia: Int = 0, existenciaMinima: Int = 1, costo: Double = 0, precioVenta: Double = 0,
+         moneda: Moneda = .colon) {
+        self.monedaRaw = moneda.rawValue
         self.nombre = nombre
         self.codigo = codigo
         self.marca = marca
@@ -34,7 +38,19 @@ final class Refaccion {
         return (precioVenta - costo) / precioVenta
     }
 
-    var valorInventario: Double { Double(existencia) * costo }
+    var moneda: Moneda {
+        get { Moneda(rawValue: monedaRaw) ?? .colon }
+        set { monedaRaw = newValue.rawValue }
+    }
+
+    func enColones(_ monto: Double, tipoCambio: Double) -> Double {
+        moneda == .dolar ? (monto * tipoCambio).redondeado : monto
+    }
+
+    /// Valor del inventario en colones (a costo).
+    func valorInventario(tipoCambio: Double) -> Double {
+        Double(max(0, existencia)) * enColones(costo, tipoCambio: tipoCambio)
+    }
 
     var textoBusqueda: String { "\(nombre) \(codigo) \(marca) \(ubicacion)" }
 }

@@ -10,13 +10,12 @@ struct AjustesView: View {
     @AppStorage(Preferencias.telefonoKey) private var telefono = ""
     @AppStorage(Preferencias.rfcKey) private var rfc = ""
     @AppStorage(Preferencias.terminosKey) private var terminos = Preferencias.terminosPredeterminados
-    @AppStorage(Preferencias.ivaKey) private var tasaIVA = 0.16
-    @AppStorage(Preferencias.monedaKey) private var moneda = Preferencias.monedaPredeterminada
+    @AppStorage(Preferencias.ivaKey) private var tasaIVA = 0.13
     @AppStorage(Preferencias.diasGarantiaKey) private var diasGarantia = 30
 
     @State private var confirmarBorrado = false
 
-    private let monedas = ["MXN", "USD", "EUR", "COP", "ARS", "CLP", "PEN", "GTQ", "CRC", "DOP"]
+    @Bindable private var tipoCambio = TipoCambio.compartido
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -30,27 +29,61 @@ struct AjustesView: View {
                     TextField("Dirección", text: $direccion, axis: .vertical)
                     TextField("Teléfono", text: $telefono)
                         .keyboardType(.phonePad)
-                    TextField("RFC / Identificación fiscal", text: $rfc)
+                    TextField("Cédula jurídica", text: $rfc)
                         .textInputAutocapitalization(.characters)
                 } header: {
                     Text("Datos del taller")
                 } footer: {
-                    Text("Aparecen en el encabezado de las órdenes en PDF.")
+                    Text("Aparecen en el encabezado de las órdenes y facturas en PDF.")
                 }
 
                 Section {
                     Stepper(value: $tasaIVA, in: 0...0.30, step: 0.01) {
                         LabeledContent("IVA", value: tasaIVA.formatted(.percent))
                     }
-                    Picker("Moneda", selection: $moneda) {
-                        ForEach(monedas, id: \.self) { Text($0).tag($0) }
-                        if !monedas.contains(moneda) { Text(moneda).tag(moneda) }
-                    }
+                    LabeledContent("Moneda oficial", value: "Colón costarricense (₡)")
                 } header: {
                     Text("Impuestos y moneda")
                 } footer: {
                     Text("El IVA se aplica a las órdenes nuevas; las existentes conservan su tasa.")
                 }
+
+                Section {
+                    LabeledContent("Dólar hoy", value: tipoCambio.descripcion)
+                    LabeledContent("Fuente", value: tipoCambio.detalleFuente)
+                    Button {
+                        Task {
+                            await tipoCambio.actualizar()
+                            RevalorizacionDolares.aplicar(en: context)
+                        }
+                    } label: {
+                        HStack {
+                            Label("Actualizar ahora", systemImage: "arrow.clockwise")
+                            if tipoCambio.actualizando {
+                                Spacer()
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(tipoCambio.actualizando || tipoCambio.usarManual)
+                    if let error = tipoCambio.error {
+                        Text(error).font(.footnote).foregroundStyle(.orange)
+                    }
+                    Toggle("Usar tipo de cambio manual", isOn: $tipoCambio.usarManual)
+                    if tipoCambio.usarManual {
+                        LabeledContent("₡ por US$1") {
+                            TextField("Tipo de cambio", value: $tipoCambio.valorManual,
+                                      format: .number.precision(.fractionLength(2)))
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
+                } header: {
+                    Text("Tipo de cambio del dólar")
+                } footer: {
+                    Text("Se consulta automáticamente cada día el tipo de cambio de venta de referencia del BCCR. Los repuestos comprados en dólares se recalculan en colones en las órdenes abiertas; las facturas conservan el tipo de cambio con que se emitieron.")
+                }
+                .onChange(of: tipoCambio.valor) { RevalorizacionDolares.aplicar(en: context) }
 
                 Section {
                     Stepper("Garantía: \(diasGarantia) días", value: $diasGarantia, in: 0...365, step: 15)

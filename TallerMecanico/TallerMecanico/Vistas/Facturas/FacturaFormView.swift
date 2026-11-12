@@ -83,6 +83,9 @@ struct FacturaFormView: View {
         }
         let factura = Factura(folio: siguienteFolio, diasGarantia: diasGarantia,
                               metodoPago: metodoPago, notas: notas.limpio)
+        RevalorizacionDolares.aplicar(en: context)
+        factura.tipoCambio = TipoCambio.compartido.valor
+        factura.fuenteTipoCambio = TipoCambio.compartido.detalleFuente
         context.insert(factura)
         factura.orden = orden
         alGuardar?(factura)

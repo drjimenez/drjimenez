@@ -69,7 +69,8 @@ struct BotonesContacto: View {
         HStack(spacing: 12) {
             if !digitos.isEmpty {
                 boton("Llamar", icono: "phone.fill", url: "tel:\(digitos)")
-                boton("WhatsApp", icono: "message.fill", url: "https://wa.me/\(digitos)")
+                boton("WhatsApp", icono: "message.fill",
+                      url: "https://wa.me/\(digitos.count == 8 ? "506" + digitos : digitos)")
             }
             if !correo.isEmpty {
                 boton("Correo", icono: "envelope.fill", url: "mailto:\(correo)")

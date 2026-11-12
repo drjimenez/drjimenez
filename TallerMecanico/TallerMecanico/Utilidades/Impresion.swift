@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import PDFKit
+import MessageUI
 
 enum Impresion {
     /// Abre el diálogo de impresión de iOS (AirPrint) con el PDF indicado.
@@ -64,6 +65,58 @@ struct VisorPDF: UIViewRepresentable {
     func updateUIView(_ vista: PDFView, context: Context) {
         if vista.document?.documentURL != url {
             vista.document = PDFDocument(url: url)
+        }
+    }
+}
+
+// MARK: - Correo electrónico
+
+/// Datos para enviar un documento por correo.
+struct CorreoDocumento: Identifiable {
+    let id = UUID()
+    let destinatarios: [String]
+    let asunto: String
+    let cuerpo: String
+    let adjunto: URL
+}
+
+enum Correo {
+    /// `true` si el dispositivo tiene una cuenta configurada en la app Mail.
+    static var disponible: Bool { MFMailComposeViewController.canSendMail() }
+}
+
+/// Redactor de correo de iOS con el PDF adjunto.
+struct RedactorCorreo: UIViewControllerRepresentable {
+    let correo: CorreoDocumento
+    var alTerminar: (MFMailComposeResult) -> Void
+
+    func makeCoordinator() -> Coordinador { Coordinador(alTerminar: alTerminar) }
+
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let redactor = MFMailComposeViewController()
+        redactor.mailComposeDelegate = context.coordinator
+        redactor.setToRecipients(correo.destinatarios)
+        redactor.setSubject(correo.asunto)
+        redactor.setMessageBody(correo.cuerpo, isHTML: false)
+        if let datos = try? Data(contentsOf: correo.adjunto) {
+            redactor.addAttachmentData(datos, mimeType: "application/pdf",
+                                       fileName: correo.adjunto.lastPathComponent)
+        }
+        return redactor
+    }
+
+    func updateUIViewController(_ controlador: MFMailComposeViewController, context: Context) {}
+
+    final class Coordinador: NSObject, MFMailComposeViewControllerDelegate {
+        let alTerminar: (MFMailComposeResult) -> Void
+
+        init(alTerminar: @escaping (MFMailComposeResult) -> Void) {
+            self.alTerminar = alTerminar
+        }
+
+        func mailComposeController(_ controller: MFMailComposeViewController,
+                                   didFinishWith result: MFMailComposeResult, error: Error?) {
+            alTerminar(result)
         }
     }
 }

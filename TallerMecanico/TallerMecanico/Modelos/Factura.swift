@@ -25,6 +25,9 @@ final class Factura {
     var metodoPagoRaw: String = MetodoPago.efectivo.rawValue
     var notas: String = ""
     var orden: OrdenServicio?
+    /// Tipo de cambio (₡ por US$) congelado al emitir la factura.
+    var tipoCambio: Double = 0
+    var fuenteTipoCambio: String = ""
 
     init(folio: Int, diasGarantia: Int = 30, metodoPago: MetodoPago = .efectivo, notas: String = "") {
         self.folio = folio
