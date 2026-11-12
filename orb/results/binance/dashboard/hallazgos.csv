@@ -1,0 +1,4 @@
+id,session,or_min,evento_txt,condicion,valor,n,p_cond,p_base,lift_pp,lift_IS,lift_OOS,anios_mismo_signo,q_value
+1,London,20,Toca el extremo opuesto,tam_rango,pequeño,76,71.05,51.47,19.58,14.29,36.15,1/1,0.04
+2,London,20,Cierra más allá del extremo opuesto,tam_rango,pequeño,76,69.74,50.37,19.37,13.69,37.12,1/1,0.04
+3,NewYork,15,Escenario: Vuelve y se queda en rango,tam_rango,grande,76,13.16,4.81,8.34,6.94,9.12,1/1,0.04

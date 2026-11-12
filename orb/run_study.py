@@ -12,7 +12,6 @@ import argparse
 import itertools
 import json
 import os
-import shutil
 import sys
 
 import numpy as np
@@ -28,7 +27,7 @@ import config as C  # noqa: E402
 import database as db  # noqa: E402
 import engine as E  # noqa: E402
 
-RES = os.path.join(db.HERE, "results")
+RES = db.results_dir()
 lv = E._lvl
 
 # Paleta (paleta de referencia del skill dataviz, modo claro; la misma que el resto del repo)
@@ -344,8 +343,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", action="append", default=[], help="SIMBOLO=ruta.csv (velas de 1 minuto)")
     ap.add_argument("--tz", default="UTC", help="zona horaria de los CSV (p. ej. Europe/Athens)")
+    ap.add_argument("--source", default=C.SOURCE, choices=list(C.SOURCES) + ["csv"],
+                    help="dukascopy (2022→hoy, por defecto), binance (6 meses) o csv")
+    ap.add_argument("--no-bars", action="store_true", help="no guardar las velas en SQLite")
     args = ap.parse_args()
 
+    global RES
+    if args.source != "csv":
+        C.use_source(args.source)
+    else:
+        C.SOURCE = "csv"
+    RES = db.results_dir()
     os.makedirs(RES, exist_ok=True)
     con = db.connect()
     sources = {}
@@ -355,16 +363,20 @@ def main():
             sources[sym] = db.import_csv(path, args.tz)
     else:
         for sym in C.SYMBOLS:
-            sources[sym] = db.load_binance(sym)
+            sources[sym] = db.load_bars(sym)
 
-    evs, paths = [], {}
+    evs, gaps, paths = [], [], {}
     for sym, bars in sources.items():
-        print(f"[orb] {sym}: {len(bars)} velas 1m {bars.index[0]} -> {bars.index[-1]}")
-        db.write_bars(con, sym, bars)
-        e, p = E.extract_events(sym, bars)
+        print(f"[orb] {sym}: {len(bars)} velas 1m {bars.index[0]} -> {bars.index[-1]}", flush=True)
+        if not args.no_bars:
+            db.write_bars(con, sym, bars)
+        daily = E.ny_daily(bars)
+        e, p = E.extract_events(sym, bars, daily)
         evs.append(e)
+        gaps.append(E.extract_gaps(sym, bars, daily))
         paths.update(p)
     ev = pd.concat(evs, ignore_index=True)
+    gp = pd.concat(gaps, ignore_index=True)
     print(f"[orb] eventos: {len(ev)}  rupturas: {(ev.break_dir != 'none').sum()}")
 
     bt = breakout_table(ev)
@@ -384,18 +396,17 @@ def main():
         lambda x: bool(((x.IS_exp_R > 0) & (x.OOS_exp_R > 0)).all()), include_groups=False).rename("all_symbols_pos")
     robust = robust.merge(per_sym.reset_index(), how="left").sort_values("OOS_exp_R", ascending=False)
 
-    # Base de datos
-    db.write_table(con, "events", ev)
-    db.write_table(con, "strategy_grid", grid)
-    db.write_table(con, "trades", chosen_tr)
-    db.write_views(con)
-    con.close()
-    shutil.copy(db.DB_PATH, db.DB_LIGHT)
-    lc = db.connect(db.DB_LIGHT)
-    lc.execute("DROP TABLE bars_1m")
-    lc.commit()
-    lc.execute("VACUUM")
-    lc.close()
+    # Base de datos: completa (con velas) y ligera (sólo eventos), mismas tablas
+    if os.path.exists(db.db_light_path()):
+        os.remove(db.db_light_path())
+    for cx in (con, db.connect(db.db_light_path())):
+        db.write_table(cx, "events", ev)
+        db.write_table(cx, "gaps", gp)
+        db.write_table(cx, "strategy_grid", grid)
+        db.write_table(cx, "trades", chosen_tr)
+        db.write_views(cx)
+        cx.close()
+    gp.to_csv(os.path.join(RES, "gaps.csv"), index=False, float_format="%.5f")
 
     # CSV
     ev.to_csv(os.path.join(RES, "events.csv"), index=False, float_format="%.5f")

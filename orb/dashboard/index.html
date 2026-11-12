@@ -1,0 +1,414 @@
+<meta name="dash-one-writer">
+<style>
+  .orb { display: grid; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .orb h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .orb h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .orb p { margin: 0; max-width: 72ch; line-height: 1.5; }
+  .orb .muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .orb .lead { font-size: var(--cds-font-size-body); }
+  .orb .num { font-variant-numeric: tabular-nums; }
+  .orb section { display: grid; gap: var(--cds-gap-md); min-width: 0; }
+  .orb .filters { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-md); align-items: end; }
+  .orb .filters label { display: grid; gap: 4px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .orb .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--cds-gap-md); }
+  .orb .tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: 4px; }
+  .orb .tile .big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .orb .card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); min-width: 0; }
+  .orb .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--cds-gap-md); }
+  .orb .chart { position: relative; min-height: 180px; }
+  .orb .chart svg text { font-size: var(--cds-font-size-caption); fill: var(--cds-text-secondary); }
+  .orb .tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 6px 8px; font-size: var(--cds-font-size-caption); color: var(--color-fg); white-space: nowrap; z-index: 2; }
+  .orb .tree { display: grid; gap: 6px; min-height: 220px; }
+  .orb .node { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 8px 10px; border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: var(--color-bg); }
+  .orb .node .lbl { font-size: var(--cds-font-size-body); }
+  .orb .node .pc { font-variant-numeric: tabular-nums; font-weight: var(--cds-font-weight-medium); text-align: right; }
+  .orb .node .sub { grid-column: 1 / -1; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .orb .node .bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--cds-chart-grid); overflow: hidden; }
+  .orb .node .bar > span { display: block; height: 100%; border-radius: 3px; }
+  .orb .l1 { margin-left: 0; } .orb .l2 { margin-left: 22px; } .orb .l3 { margin-left: 44px; } .orb .l4 { margin-left: 66px; }
+  .orb .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .orb .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  .orb .tablewrap { overflow-x: auto; }
+  .orb table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .orb th, .orb td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .orb th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .orb td.r, .orb th.r { text-align: right; }
+  .orb .pos { color: var(--color-ok); } .orb .neg { color: var(--color-bad); }
+  .orb details summary { cursor: pointer; color: var(--color-fg-muted); }
+  .orb details { display: grid; gap: var(--cds-gap-sm); }
+  .orb [data-dash-source-state=refreshing] { opacity: .5; }
+</style>
+
+<div class="orb">
+  <header id="cabecera" style="display:grid;gap:var(--cds-gap-sm)">
+    <h1>ORB Londres y Nueva York</h1>
+    <p class="lead" id="resumen">Tras romper el rango de apertura, el precio vuelve al nivel roto el <b data-draw="t-vuelve">—</b> de las veces. Después continúa en la dirección de la primera ruptura el <b data-draw="t-cont">—</b> y rompe el otro extremo y sigue hacia ese lado el <b data-draw="t-giro">—</b> (sobre el total de rupturas).</p>
+    <p class="muted">Nasdaq 100 y S&amp;P 500, velas de 1 minuto. Rango de apertura de 15 o 20 minutos desde las 08:00 de Londres y las 09:30 de Nueva York. Ruptura = primer cierre fuera del rango. <span data-draw="t-n">—</span></p>
+  </header>
+
+  <div class="filters" id="filtros">
+    <label>Sesión<select class="dash-select" id="f-sesion" aria-label="Sesión"><option value="London">Londres</option><option value="NewYork">Nueva York</option></select></label>
+    <label>Rango de apertura<select class="dash-select" id="f-or" aria-label="Minutos del rango"><option value="15">15 min</option><option value="20">20 min</option></select></label>
+    <label>Índice<select class="dash-select" data-draw="f-simbolo" aria-label="Índice"></select></label>
+    <label>Primera ruptura<select class="dash-select" id="f-ruptura" aria-label="Dirección de la ruptura"><option value="todos">Ambas</option><option value="alcista">Alcista</option><option value="bajista">Bajista</option></select></label>
+    <label>Antes de la apertura<select class="dash-select" id="f-previo" aria-label="Contexto previo"><option value="todos">Todos</option><option value="alza">Al alza</option><option value="baja">A la baja</option><option value="rango">En rango</option></select></label>
+    <label>Tendencia diaria<select class="dash-select" id="f-diaria" aria-label="Tendencia diaria"><option value="todos">Todas</option><option value="alcista">Alcista</option><option value="bajista">Bajista</option><option value="lateral">Lateral</option></select></label>
+    <label>Año<select class="dash-select" data-draw="f-anio" aria-label="Año"></select></label>
+    <label>Continuar significa llegar a<select class="dash-select" id="f-umbral" aria-label="Umbral de continuación"><option value="1.272">Extensión 1.272</option><option value="1.618">Extensión 1.618</option><option value="2.0">Extensión 2.0</option></select></label>
+  </div>
+
+  <div class="tiles" id="indicadores">
+    <div class="tile"><span class="muted">Vuelve al nivel roto</span><span class="big" data-draw="k-vuelve">—</span><span class="muted">toca de nuevo el máximo o mínimo roto</span></div>
+    <div class="tile"><span class="muted">Retrocede al 50 % del rango</span><span class="big" data-draw="k-ret50">—</span><span class="muted">en algún momento de la sesión</span></div>
+    <div class="tile"><span class="muted">Toca el extremo opuesto</span><span class="big" data-draw="k-opuesto">—</span><span class="muted">retroceso del 100 % del rango</span></div>
+    <div class="tile"><span class="muted">Llega a la extensión 1.618</span><span class="big" data-draw="k-ext">—</span><span class="muted">a favor de la primera ruptura</span></div>
+  </div>
+
+  <section id="arbol">
+    <h2>Qué pasa después de la ruptura</h2>
+    <p class="muted">Cada paso muestra el porcentaje sobre el paso anterior. La barra y la cifra de abajo, cuántas de cada 100 rupturas acaban ahí.</p>
+    <div class="card"><div class="tree" data-draw="arbol" data-source="escenarios"></div></div>
+  </section>
+
+  <section id="contexto">
+    <h2>El escenario según lo que hacía el precio antes</h2>
+    <p class="muted">Con los demás filtros fijos. «Antes de la apertura» es la tendencia de la ventana previa (Londres: 00:00-08:00; Nueva York: 04:00-09:30, hora local): al alza o a la baja si el cambio neto es al menos el 40 % del rango de esa ventana, si no, en rango.</p>
+    <div class="legend" data-draw="leyenda"></div>
+    <div class="two">
+      <div class="card"><h2 style="font-size:var(--cds-font-size-body)">Por contexto antes de la apertura</h2><div class="chart" data-draw="por-previo" data-source="escenarios"></div></div>
+      <div class="card"><h2 style="font-size:var(--cds-font-size-body)">Por tendencia diaria (SMA 20)</h2><div class="chart" data-draw="por-diaria" data-source="escenarios"></div></div>
+    </div>
+    <div class="card"><h2 style="font-size:var(--cds-font-size-body)">Por año: ¿se repite el patrón?</h2><div class="chart" data-draw="por-anio" data-source="escenarios"></div></div>
+  </section>
+
+  <section id="gap">
+    <h2>Fibonacci del gap: cierre de Nueva York anterior → apertura de Nueva York</h2>
+    <p class="muted">0 = apertura de las 09:30, 1 = cierre de las 16:00 del día anterior (gap cerrado). Los niveles negativos miden cuánto se aleja a favor del gap. Gaps menores del 10 % del rango diario medio no cuentan. Usa los filtros de índice y año de arriba.</p>
+    <div class="filters">
+      <label>Gap<select class="dash-select" id="f-gdir" aria-label="Dirección del gap"><option value="todos">Ambos</option><option value="alcista">Alcista</option><option value="bajista">Bajista</option></select></label>
+      <label>Tamaño<select class="dash-select" id="f-gsize" aria-label="Tamaño del gap"><option value="todos">Todos</option><option value="pequeño">Pequeño (10-25 % del rango diario)</option><option value="medio">Medio (25-50 %)</option><option value="grande">Grande (&gt; 50 %)</option></select></label>
+      <label>Frente a la tendencia diaria<select class="dash-select" id="f-gtrend" aria-label="Gap frente a la tendencia"><option value="todos">Todos</option><option value="a favor">A favor</option><option value="en contra">En contra</option><option value="lateral">Lateral</option></select></label>
+    </div>
+    <p id="gap-resumen">Cierra el gap el <b data-draw="g-cierra">—</b> de los días y retrocede al menos al 50 % el <b data-draw="g-50">—</b>. <span class="muted" data-draw="g-n">—</span></p>
+    <div class="card"><div class="chart" data-draw="gap-escalera" data-source="gap_niveles" style="min-height:300px"></div></div>
+  </section>
+
+  <section id="hallazgos">
+    <h2>Condiciones que cambian la probabilidad (agente analista)</h2>
+    <p class="muted">Solo efectos estables: significativos tras corregir por pruebas múltiples, de al menos 5 puntos, con el mismo signo en 2022-2024 y en 2025-2026 y en la mayoría de los años.</p>
+    <div class="tablewrap">
+      <table data-source="hallazgos" data-row-key="id">
+        <thead><tr><th data-field="session">Sesión</th><th data-field="or_min">OR</th><th data-field="evento_txt">Evento</th><th data-field="condicion">Condición</th><th data-field="valor">Valor</th><th class="r" data-field="n">n</th><th class="r" data-field="p_cond">Prob. %</th><th class="r" data-field="p_base">Base %</th><th class="r" data-field="lift_pp">Dif. pp</th><th data-field="anios_mismo_signo">Años</th></tr></thead>
+        <tbody data-draw="t-hallazgos"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="patrones">
+    <h2>Patrones probados (agente de estrategia)</h2>
+    <p class="muted">Las dos mejores variantes de cada patrón, elegidas con 2022-2024 y comprobadas en 2025-2026. Expectativa en R por operación, neta de costes (1 pb por lado).</p>
+    <div class="tablewrap">
+      <table data-source="patrones" data-row-key="id">
+        <thead><tr><th data-field="pattern_txt">Patrón</th><th data-field="variant">Variante</th><th data-field="filtro">Filtro</th><th class="r" data-field="IS_n">n IS</th><th class="r" data-field="IS_exp_R">R IS</th><th class="r" data-field="OOS_n">n OOS</th><th class="r" data-field="OOS_win">% obj. OOS</th><th class="r" data-field="OOS_exp_R">R OOS</th><th data-field="anios_positivos">Años +</th></tr></thead>
+        <tbody data-draw="t-patrones"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details id="definiciones">
+    <summary>Definiciones</summary>
+    <p class="muted">Continúa sin volver: tras la ruptura nunca toca otra vez el nivel roto. Vuelve y continúa en la 1.ª dirección: toca el nivel roto y después alcanza la extensión elegida a favor de la ruptura antes de tocar el extremo opuesto. Rompe el otro extremo y continúa: toca el extremo opuesto y se extiende más allá en la misma medida. Rechazado en el otro extremo: lo toca pero no se extiende. Se queda en rango: vuelve y no alcanza ni la extensión ni el extremo opuesto. Seguimiento hasta las 12:00 en Londres y las 16:00 en Nueva York. Datos: CFD de Dukascopy (USATECHIDXUSD, USA500IDXUSD). Estudio de investigación, no es asesoramiento financiero.</p>
+  </details>
+</div>
+
+<script>
+(function () {
+  const SCEN = ['directa', 'retest_continua', 'giro_continua', 'giro_rechazo', 'rango'];
+  const SCEN_TXT = {
+    directa: 'Continúa sin volver', retest_continua: 'Vuelve y continúa en la 1.ª dirección',
+    giro_continua: 'Rompe el otro extremo y continúa', giro_rechazo: 'Rechazado en el otro extremo', rango: 'Se queda en rango'
+  };
+  const P = () => Object.assign({sesion: 'NewYork', or_min: '15', simbolo: 'todos', ruptura: 'todos', previo: 'todos',
+    diaria: 'todos', anio: 'todos', umbral: '1.272', gdir: 'todos', gsize: 'todos', gtrend: 'todos'}, dash.params());
+  const key = (o) => [o.sesion, o.or_min, o.simbolo, o.ruptura, o.previo, o.diaria, o.anio, o.umbral].join('|');
+  const gkey = (o) => [o.simbolo, o.gdir, o.gsize, o.gtrend, o.anio].join('|');
+  const fmt = (v) => (v === null || v === undefined || v === '' || isNaN(+v)) ? '—' : `${(+v).toFixed(0)} %`;
+  function rowOf(id, k) {
+    const d = dash.data(id);
+    if (d.status !== 'ok') return {status: d.status, row: null};
+    return {status: 'ok', row: d.data.find((r) => r.clave === k) || null};
+  }
+  function mark(el, id, field, k) {
+    el.setAttribute('data-source', id);
+    el.setAttribute('data-field', field);
+    el.setAttribute('data-where', 'clave=' + enc(k));
+  }
+  const enc = (k) => k.replace(/%/g, '%25').replace(/&/g, '%26').replace(/=/g, '%3D');
+  window.ORB = {SCEN, SCEN_TXT, P, key, gkey, fmt, rowOf, mark, enc};
+
+  // Controles fijos: sólo escuchan y fijan su valor
+  const bind = (id, name) => {
+    document.querySelectorAll('#' + id).forEach((sel) => {
+      sel.addEventListener('change', () => dash.setParams({[name]: sel.value}));
+    });
+  };
+  [['f-sesion', 'sesion'], ['f-or', 'or_min'], ['f-ruptura', 'ruptura'], ['f-previo', 'previo'], ['f-diaria', 'diaria'],
+   ['f-umbral', 'umbral'], ['f-gdir', 'gdir'], ['f-gsize', 'gsize'], ['f-gtrend', 'gtrend']].forEach(([i, n]) => bind(i, n));
+  dash.onData(() => {
+    const p = P();
+    const set = (id, v) => document.querySelectorAll('#' + id).forEach((s) => { if (document.activeElement !== s) s.value = v; });
+    set('f-sesion', p.sesion); set('f-or', p.or_min); set('f-ruptura', p.ruptura); set('f-previo', p.previo);
+    set('f-diaria', p.diaria); set('f-umbral', p.umbral); set('f-gdir', p.gdir); set('f-gsize', p.gsize); set('f-gtrend', p.gtrend);
+  });
+})();
+</script>
+
+<script>
+(function () {
+  const {P, key, fmt, rowOf, mark} = window.ORB;
+  // Selects cuyos valores salen de los datos
+  const optsFrom = (field, allTxt) => (sel) => {
+    const d = dash.data('escenarios');
+    const vals = d.status === 'ok' ? Array.from(new Set(d.data.map((r) => r[field]))).filter((v) => v !== 'todos').sort() : [];
+    const name = field === 'simbolo' ? 'simbolo' : 'anio';
+    sel.replaceChildren(new Option(allTxt, 'todos'), ...vals.map((v) => new Option(v, v)));
+    sel.value = P()[name];
+    sel.onchange = () => dash.setParams({[name]: sel.value});
+  };
+  dash.draw('f-simbolo', optsFrom('simbolo', 'Ambos'));
+  dash.draw('f-anio', optsFrom('anio', 'Todos'));
+
+  // Cifras sueltas del árbol actual
+  const single = (field) => (el) => {
+    const k = key(P());
+    const {status, row} = rowOf('escenarios', k);
+    mark(el, 'escenarios', field, k);
+    el.classList.toggle('dash-skeleton', status === 'loading');
+    el.textContent = row ? fmt(row[field]) : '—';
+  };
+  dash.draw('t-vuelve', single('p_vuelve'));
+  dash.draw('t-cont', single('p_retest_continua'));
+  dash.draw('t-giro', single('p_giro_continua'));
+  dash.draw('k-vuelve', single('p_vuelve'));
+  dash.draw('k-ret50', single('p_ret_50'));
+  dash.draw('k-opuesto', single('p_toca_opuesto'));
+  dash.draw('k-ext', single('p_ext_1618'));
+  dash.draw('t-n', (el) => {
+    const k = key(P());
+    const {row} = rowOf('escenarios', k);
+    mark(el, 'escenarios', 'n', k);
+    el.textContent = row ? `Rupturas con estos filtros: ${row.n}.` : 'Menos de 15 rupturas con estos filtros: amplía la selección.';
+  });
+
+  // Árbol de escenarios (diagrama de flujo indentado)
+  dash.draw('arbol', (el) => {
+    const k = key(P());
+    const {status, row} = rowOf('escenarios', k);
+    el.replaceChildren();
+    if (status === 'loading') { el.classList.add('dash-skeleton'); return; }
+    el.classList.remove('dash-skeleton');
+    if (!row) {
+      const p = document.createElement('p'); p.className = 'muted';
+      p.textContent = status === 'ok' ? 'Menos de 15 rupturas con esta combinación de filtros. Quita algún filtro.' : 'No se pudieron cargar los datos.';
+      el.append(p); return;
+    }
+    const col = (i) => dash.colors[i % dash.colors.length];
+    const node = (lvl, label, condField, shareField, color, subTxt) => {
+      const d = document.createElement('div'); d.className = `node l${lvl}`;
+      const l = document.createElement('span'); l.className = 'lbl'; l.textContent = label;
+      const pc = document.createElement('span'); pc.className = 'pc';
+      if (condField) { pc.textContent = fmt(row[condField]); mark(pc, 'escenarios', condField, k); } else { pc.textContent = ''; }
+      d.append(l, pc);
+      if (shareField) {
+        const bar = document.createElement('div'); bar.className = 'bar';
+        const s = document.createElement('span'); s.style.width = `${Math.max(0, Math.min(100, +row[shareField]))}%`; s.style.background = color;
+        bar.append(s); d.append(bar);
+        const sub = document.createElement('span'); sub.className = 'sub';
+        const b = document.createElement('b'); b.className = 'num'; b.textContent = (+row[shareField]).toFixed(0);
+        mark(b, 'escenarios', shareField, k);
+        sub.append(b, document.createTextNode(` de cada 100 rupturas${subTxt ? ' · ' + subTxt : ''}`));
+        d.append(sub);
+      }
+      return d;
+    };
+    const head = document.createElement('div'); head.className = 'node l1';
+    const hl = document.createElement('span'); hl.className = 'lbl';
+    const hn = document.createElement('b'); hn.className = 'num'; hn.textContent = row.n; mark(hn, 'escenarios', 'n', k);
+    hl.append(document.createTextNode('Ruptura del rango (primer cierre fuera) · '), hn, document.createTextNode(' casos'));
+    head.append(hl);
+    el.append(
+      head,
+      node(2, 'No vuelve: continúa sin tocar el nivel roto', 'p_directa', 'p_directa', col(0)),
+      node(2, 'Vuelve al nivel roto', 'p_vuelve', null, null),
+      node(3, 'Continúa en la dirección de la primera ruptura', 'c_retest_continua', 'p_retest_continua', col(1)),
+      node(3, 'Va hasta el otro extremo del rango', 'c_toca_opuesto', null, null),
+      node(4, 'Lo rompe y continúa hacia ese lado', null, 'p_giro_continua', col(2), 'giro completo'),
+      node(4, 'Es rechazado en el otro extremo', null, 'p_giro_rechazo', col(3)),
+      node(3, 'Se queda dentro del rango', 'c_rango', 'p_rango', col(4)),
+    );
+  });
+
+  dash.draw('leyenda', (el) => {
+    el.replaceChildren(...window.ORB.SCEN.map((s, i) => {
+      const sp = document.createElement('span'); const sw = document.createElement('i');
+      sw.style.background = dash.colors[i % dash.colors.length]; sp.append(sw, document.createTextNode(window.ORB.SCEN_TXT[s])); return sp;
+    }));
+  });
+})();
+</script>
+
+<script>
+(function () {
+  const {SCEN, SCEN_TXT, P, key, rowOf} = window.ORB;
+  // Barras 100 % apiladas: una fila por valor de una dimensión, con los demás filtros fijos
+  function stacked(el, dimName, values) {
+    const d = dash.data('escenarios');
+    el.replaceChildren();
+    if (d.status === 'loading') { el.classList.add('dash-skeleton'); return; }
+    el.classList.remove('dash-skeleton');
+    if (d.status !== 'ok') { el.textContent = 'No se pudieron cargar los datos.'; return; }
+    const p = P();
+    const rows = values.map(([v, txt]) => {
+      const k = key(Object.assign({}, p, {[dimName]: v}));
+      return {txt, k, row: d.data.find((r) => r.clave === k)};
+    }).filter((r) => r.row);
+    if (!rows.length) { el.textContent = 'Sin datos suficientes con estos filtros.'; return; }
+    const W = Math.max(260, el.clientWidth), rowH = 30, labW = Math.min(150, W * 0.32), top = 4;
+    const H = top + rows.length * rowH + 6;
+    const x = d3.scaleLinear().domain([0, 100]).range([labW, W - 8]);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', `Reparto de escenarios por ${dimName}`);
+    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
+    rows.forEach((r, i) => {
+      const y = top + i * rowH;
+      svg.append('text').attr('x', 0).attr('y', y + rowH / 2 + 4).text(`${r.txt} (n=${r.row.n})`);
+      let acc = 0;
+      SCEN.forEach((s, j) => {
+        const v = +r.row[`p_${s}`];
+        if (!(v > 0)) return;
+        svg.append('rect').attr('x', x(acc) + 1).attr('y', y + 5).attr('width', Math.max(0, x(acc + v) - x(acc) - 2))
+          .attr('height', rowH - 10).attr('rx', 3).style('fill', dash.colors[j % dash.colors.length])
+          .attr('data-source', 'escenarios').attr('data-field', `p_${s}`).attr('data-where', 'clave=' + window.ORB.enc(r.k))
+          .on('pointerenter pointermove', (ev) => {
+            const [mx, my] = d3.pointer(ev, el);
+            tip.style('display', null).style('left', `${Math.min(mx + 10, el.clientWidth - 200)}px`).style('top', `${my - 34}px`)
+              .text(`${r.txt} · ${SCEN_TXT[s]}: ${v.toFixed(1)} %`);
+          })
+          .on('pointerleave', () => tip.style('display', 'none'));
+        if (x(acc + v) - x(acc) > 30) {
+          svg.append('text').attr('x', (x(acc) + x(acc + v)) / 2).attr('y', y + rowH / 2 + 4).attr('text-anchor', 'middle')
+            .style('fill', '#fff').text(v.toFixed(0));
+        }
+        acc += v;
+      });
+    });
+  }
+  dash.draw('por-previo', (el) => stacked(el, 'previo', [['todos', 'Todos'], ['alza', 'Al alza'], ['baja', 'A la baja'], ['rango', 'En rango']]));
+  dash.draw('por-diaria', (el) => stacked(el, 'diaria', [['todos', 'Todas'], ['alcista', 'Alcista'], ['bajista', 'Bajista'], ['lateral', 'Lateral']]));
+  dash.draw('por-anio', (el) => {
+    const d = dash.data('escenarios');
+    const yrs = d.status === 'ok' ? Array.from(new Set(d.data.map((r) => r.anio))).filter((v) => v !== 'todos').sort() : [];
+    stacked(el, 'anio', [['todos', 'Todos'], ...yrs.map((y) => [y, y])]);
+  });
+})();
+</script>
+
+<script>
+(function () {
+  const {P, gkey, fmt, mark} = window.ORB;
+  const growOf = () => {
+    const d = dash.data('gap_niveles');
+    if (d.status !== 'ok') return {status: d.status, row: null, k: gkey(P())};
+    const k = gkey(P());
+    return {status: 'ok', row: d.data.find((r) => r.clave === k) || null, k};
+  };
+  const gsingle = (field) => (el) => {
+    const {status, row, k} = growOf();
+    mark(el, 'gap_niveles', field, k);
+    el.classList.toggle('dash-skeleton', status === 'loading');
+    el.textContent = row ? fmt(row[field]) : '—';
+  };
+  dash.draw('g-cierra', gsingle('ret_1'));
+  dash.draw('g-50', gsingle('ret_0.5'));
+  dash.draw('g-n', (el) => {
+    const {row, k} = growOf();
+    mark(el, 'gap_niveles', 'n', k);
+    el.textContent = row ? `Días con gap: ${row.n} · gap mediano ${(+row.gap_medio_pb).toFixed(0)} pb.` : 'Menos de 15 días con estos filtros.';
+  });
+
+  const LEVELS = [['aleja_1', '−1  se aleja'], ['aleja_0.618', '−0.618'], ['aleja_0.272', '−0.272'], [null, '0  apertura'],
+    ['ret_0.236', '0.236'], ['ret_0.382', '0.382'], ['ret_0.5', '0.5'], ['ret_0.618', '0.618'], ['ret_0.786', '0.786'],
+    ['ret_1', '1  cierre anterior'], ['ret_1.272', '1.272'], ['ret_1.618', '1.618']];
+  dash.draw('gap-escalera', (el) => {
+    const {status, row, k} = growOf();
+    el.replaceChildren();
+    if (status === 'loading') { el.classList.add('dash-skeleton'); return; }
+    el.classList.remove('dash-skeleton');
+    if (!row) { el.textContent = status === 'ok' ? 'Menos de 15 días con esta combinación de filtros.' : 'No se pudieron cargar los datos.'; return; }
+    const W = Math.max(280, el.clientWidth), rowH = 24, labW = 130, H = LEVELS.length * rowH + 8;
+    const x = d3.scaleLinear().domain([0, 100]).range([labW, W - 44]);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Probabilidad de tocar cada nivel Fibonacci del gap');
+    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
+    LEVELS.forEach(([f, txt], i) => {
+      const y = 4 + i * rowH;
+      svg.append('text').attr('x', 0).attr('y', y + rowH / 2 + 4).text(txt).style('font-weight', f === null || f === 'ret_1' ? 600 : null);
+      if (f === null) {
+        svg.append('line').attr('x1', labW).attr('x2', W - 44).attr('y1', y + rowH / 2).attr('y2', y + rowH / 2)
+          .style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '3 3');
+        return;
+      }
+      const v = +row[f];
+      const color = f.startsWith('aleja') ? dash.colors[1 % dash.colors.length] : dash.colors[0];
+      svg.append('rect').attr('x', labW).attr('y', y + 4).attr('height', rowH - 8).attr('rx', 3)
+        .attr('width', Math.max(0, x(v) - labW)).style('fill', color)
+        .attr('data-source', 'gap_niveles').attr('data-field', f).attr('data-where', 'clave=' + window.ORB.enc(k))
+        .on('pointerenter pointermove', (ev) => {
+          const [mx, my] = d3.pointer(ev, el);
+          tip.style('display', null).style('left', `${Math.min(mx + 10, el.clientWidth - 220)}px`).style('top', `${my - 34}px`)
+            .text(`Nivel ${txt.trim()}: lo toca el ${v.toFixed(1)} % de los días`);
+        })
+        .on('pointerleave', () => tip.style('display', 'none'));
+      svg.append('text').attr('x', x(v) + 6).attr('y', y + rowH / 2 + 4).text(`${v.toFixed(0)} %`);
+    });
+  });
+
+  // Tablas
+  dash.draw('t-hallazgos', (tb) => {
+    const d = dash.data('hallazgos');
+    tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    const cols = ['session', 'or_min', 'evento_txt', 'condicion', 'valor', 'n', 'p_cond', 'p_base', 'lift_pp', 'anios_mismo_signo'];
+    d.data.forEach((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.id);
+      cols.forEach((c) => {
+        const td = document.createElement('td');
+        const num = ['n', 'p_cond', 'p_base', 'lift_pp'].includes(c);
+        if (num) td.className = 'r';
+        td.textContent = num && c !== 'n' ? (+r[c]).toFixed(1) : r[c];
+        if (c === 'lift_pp') td.classList.add(+r[c] >= 0 ? 'pos' : 'neg');
+        tr.append(td);
+      });
+      tb.append(tr);
+    });
+  });
+  dash.draw('t-patrones', (tb) => {
+    const d = dash.data('patrones');
+    tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    const cols = ['pattern_txt', 'variant', 'filtro', 'IS_n', 'IS_exp_R', 'OOS_n', 'OOS_win', 'OOS_exp_R', 'anios_positivos'];
+    d.data.forEach((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.id);
+      cols.forEach((c) => {
+        const td = document.createElement('td');
+        const num = ['IS_n', 'IS_exp_R', 'OOS_n', 'OOS_win', 'OOS_exp_R'].includes(c);
+        if (num) td.className = 'r';
+        td.textContent = c.endsWith('exp_R') ? (+r[c]).toFixed(2) : c === 'OOS_win' ? (+r[c]).toFixed(0) : r[c];
+        if (c.endsWith('exp_R')) td.classList.add(+r[c] >= 0 ? 'pos' : 'neg');
+        tr.append(td);
+      });
+      tb.append(tr);
+    });
+  });
+})();
+</script>

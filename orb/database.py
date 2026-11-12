@@ -26,8 +26,28 @@ import data_loader as dl  # noqa: E402  (descargador ya existente del repo)
 
 import config as C  # noqa: E402
 
-DB_PATH = os.path.join(HERE, "data", "orb.sqlite")            # completa (no versionada)
-DB_LIGHT = os.path.join(HERE, "results", "orb_study.sqlite")  # sin velas (versionada)
+
+
+def db_path() -> str:
+    """Base de datos completa con velas de 1 minuto (no versionada)."""
+    return os.path.join(HERE, "data", f"orb_{C.SOURCE}.sqlite")
+
+
+def db_light_path() -> str:
+    """Base de datos de eventos sin velas (versionada en results/<fuente>/)."""
+    return os.path.join(results_dir(), "orb_study.sqlite")
+
+
+def results_dir() -> str:
+    return os.path.join(HERE, "results", C.SOURCE)
+
+
+def load_bars(symbol: str) -> pd.DataFrame:
+    """Velas de 1 minuto en UTC de la fuente activa (C.SOURCE)."""
+    if C.SOURCE == "dukascopy":
+        import dukascopy
+        return dukascopy.load(symbol, C.START, C.END)
+    return load_binance(symbol)
 
 
 def load_binance(symbol: str) -> pd.DataFrame:
@@ -72,7 +92,8 @@ def import_csv(path: str, tz: str = "UTC") -> pd.DataFrame:
     return out[~out.index.duplicated()].sort_index()
 
 
-def connect(path: str = DB_PATH) -> sqlite3.Connection:
+def connect(path: str | None = None) -> sqlite3.Connection:
+    path = path or db_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
     return sqlite3.connect(path)
 

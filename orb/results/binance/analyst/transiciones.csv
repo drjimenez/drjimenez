@@ -1,0 +1,101 @@
+session,or_min,ayer,hoy,n_ayer,p,p_base,lift_pp
+London,15,Continúa sin volver,Continúa sin volver,16,0.00,5.93,-5.93
+London,15,Continúa sin volver,"Vuelve, rompe el otro extremo y continúa",16,31.25,24.81,6.44
+London,15,Continúa sin volver,Llega al otro extremo y es rechazado,16,0.00,2.59,-2.59
+London,15,Continúa sin volver,Vuelve y se queda en rango,16,0.00,0.37,-0.37
+London,15,Continúa sin volver,Vuelve y continúa en la 1.ª dirección,16,68.75,66.30,2.45
+London,15,Llega al otro extremo y es rechazado,Continúa sin volver,7,14.29,5.93,8.36
+London,15,Llega al otro extremo y es rechazado,"Vuelve, rompe el otro extremo y continúa",7,28.57,24.81,3.76
+London,15,Llega al otro extremo y es rechazado,Llega al otro extremo y es rechazado,7,0.00,2.59,-2.59
+London,15,Llega al otro extremo y es rechazado,Vuelve y se queda en rango,7,0.00,0.37,-0.37
+London,15,Llega al otro extremo y es rechazado,Vuelve y continúa en la 1.ª dirección,7,57.14,66.30,-9.15
+London,15,Vuelve y continúa en la 1.ª dirección,Continúa sin volver,178,7.30,5.93,1.38
+London,15,Vuelve y continúa en la 1.ª dirección,"Vuelve, rompe el otro extremo y continúa",178,21.91,24.81,-2.90
+London,15,Vuelve y continúa en la 1.ª dirección,Llega al otro extremo y es rechazado,178,2.81,2.59,0.22
+London,15,Vuelve y continúa en la 1.ª dirección,Vuelve y se queda en rango,178,0.56,0.37,0.19
+London,15,Vuelve y continúa en la 1.ª dirección,Vuelve y continúa en la 1.ª dirección,178,67.42,66.30,1.12
+London,15,Vuelve y se queda en rango,Continúa sin volver,1,0.00,5.93,-5.93
+London,15,Vuelve y se queda en rango,"Vuelve, rompe el otro extremo y continúa",1,0.00,24.81,-24.81
+London,15,Vuelve y se queda en rango,Llega al otro extremo y es rechazado,1,0.00,2.59,-2.59
+London,15,Vuelve y se queda en rango,Vuelve y se queda en rango,1,0.00,0.37,-0.37
+London,15,Vuelve y se queda en rango,Vuelve y continúa en la 1.ª dirección,1,100.00,66.30,33.70
+London,15,"Vuelve, rompe el otro extremo y continúa",Continúa sin volver,68,2.94,5.93,-2.98
+London,15,"Vuelve, rompe el otro extremo y continúa","Vuelve, rompe el otro extremo y continúa",68,30.88,24.81,6.07
+London,15,"Vuelve, rompe el otro extremo y continúa",Llega al otro extremo y es rechazado,68,2.94,2.59,0.35
+London,15,"Vuelve, rompe el otro extremo y continúa",Vuelve y se queda en rango,68,0.00,0.37,-0.37
+London,15,"Vuelve, rompe el otro extremo y continúa",Vuelve y continúa en la 1.ª dirección,68,63.24,66.30,-3.06
+London,20,Continúa sin volver,Continúa sin volver,20,0.00,7.41,-7.41
+London,20,Continúa sin volver,"Vuelve, rompe el otro extremo y continúa",20,15.00,20.37,-5.37
+London,20,Continúa sin volver,Llega al otro extremo y es rechazado,20,0.00,3.33,-3.33
+London,20,Continúa sin volver,Vuelve y se queda en rango,20,0.00,1.85,-1.85
+London,20,Continúa sin volver,Vuelve y continúa en la 1.ª dirección,20,85.00,67.04,17.96
+London,20,Llega al otro extremo y es rechazado,Continúa sin volver,9,11.11,7.41,3.70
+London,20,Llega al otro extremo y es rechazado,"Vuelve, rompe el otro extremo y continúa",9,11.11,20.37,-9.26
+London,20,Llega al otro extremo y es rechazado,Llega al otro extremo y es rechazado,9,11.11,3.33,7.78
+London,20,Llega al otro extremo y es rechazado,Vuelve y se queda en rango,9,0.00,1.85,-1.85
+London,20,Llega al otro extremo y es rechazado,Vuelve y continúa en la 1.ª dirección,9,66.67,67.04,-0.37
+London,20,Vuelve y continúa en la 1.ª dirección,Continúa sin volver,181,8.84,7.41,1.43
+London,20,Vuelve y continúa en la 1.ª dirección,"Vuelve, rompe el otro extremo y continúa",181,18.78,20.37,-1.59
+London,20,Vuelve y continúa en la 1.ª dirección,Llega al otro extremo y es rechazado,181,3.31,3.33,-0.02
+London,20,Vuelve y continúa en la 1.ª dirección,Vuelve y se queda en rango,181,2.76,1.85,0.91
+London,20,Vuelve y continúa en la 1.ª dirección,Vuelve y continúa en la 1.ª dirección,181,66.30,67.04,-0.74
+London,20,Vuelve y se queda en rango,Continúa sin volver,5,20.00,7.41,12.59
+London,20,Vuelve y se queda en rango,"Vuelve, rompe el otro extremo y continúa",5,20.00,20.37,-0.37
+London,20,Vuelve y se queda en rango,Llega al otro extremo y es rechazado,5,0.00,3.33,-3.33
+London,20,Vuelve y se queda en rango,Vuelve y se queda en rango,5,0.00,1.85,-1.85
+London,20,Vuelve y se queda en rango,Vuelve y continúa en la 1.ª dirección,5,60.00,67.04,-7.04
+London,20,"Vuelve, rompe el otro extremo y continúa",Continúa sin volver,55,3.64,7.41,-3.77
+London,20,"Vuelve, rompe el otro extremo y continúa","Vuelve, rompe el otro extremo y continúa",55,29.09,20.37,8.72
+London,20,"Vuelve, rompe el otro extremo y continúa",Llega al otro extremo y es rechazado,55,3.64,3.33,0.30
+London,20,"Vuelve, rompe el otro extremo y continúa",Vuelve y se queda en rango,55,0.00,1.85,-1.85
+London,20,"Vuelve, rompe el otro extremo y continúa",Vuelve y continúa en la 1.ª dirección,55,63.64,67.04,-3.40
+NewYork,15,Continúa sin volver,Continúa sin volver,22,4.55,8.21,-3.66
+NewYork,15,Continúa sin volver,"Vuelve, rompe el otro extremo y continúa",22,18.18,17.54,0.64
+NewYork,15,Continúa sin volver,Llega al otro extremo y es rechazado,22,4.55,3.73,0.81
+NewYork,15,Continúa sin volver,Vuelve y se queda en rango,22,4.55,4.85,-0.31
+NewYork,15,Continúa sin volver,Vuelve y continúa en la 1.ª dirección,22,68.18,65.67,2.51
+NewYork,15,Llega al otro extremo y es rechazado,Continúa sin volver,10,0.00,8.21,-8.21
+NewYork,15,Llega al otro extremo y es rechazado,"Vuelve, rompe el otro extremo y continúa",10,30.00,17.54,12.46
+NewYork,15,Llega al otro extremo y es rechazado,Llega al otro extremo y es rechazado,10,10.00,3.73,6.27
+NewYork,15,Llega al otro extremo y es rechazado,Vuelve y se queda en rango,10,0.00,4.85,-4.85
+NewYork,15,Llega al otro extremo y es rechazado,Vuelve y continúa en la 1.ª dirección,10,60.00,65.67,-5.67
+NewYork,15,Vuelve y continúa en la 1.ª dirección,Continúa sin volver,177,8.47,8.21,0.27
+NewYork,15,Vuelve y continúa en la 1.ª dirección,"Vuelve, rompe el otro extremo y continúa",177,18.64,17.54,1.11
+NewYork,15,Vuelve y continúa en la 1.ª dirección,Llega al otro extremo y es rechazado,177,2.82,3.73,-0.91
+NewYork,15,Vuelve y continúa en la 1.ª dirección,Vuelve y se queda en rango,177,6.21,4.85,1.36
+NewYork,15,Vuelve y continúa en la 1.ª dirección,Vuelve y continúa en la 1.ª dirección,177,63.84,65.67,-1.83
+NewYork,15,Vuelve y se queda en rango,Continúa sin volver,13,15.38,8.21,7.18
+NewYork,15,Vuelve y se queda en rango,"Vuelve, rompe el otro extremo y continúa",13,30.77,17.54,13.23
+NewYork,15,Vuelve y se queda en rango,Llega al otro extremo y es rechazado,13,0.00,3.73,-3.73
+NewYork,15,Vuelve y se queda en rango,Vuelve y se queda en rango,13,0.00,4.85,-4.85
+NewYork,15,Vuelve y se queda en rango,Vuelve y continúa en la 1.ª dirección,13,53.85,65.67,-11.83
+NewYork,15,"Vuelve, rompe el otro extremo y continúa",Continúa sin volver,46,8.70,8.21,0.49
+NewYork,15,"Vuelve, rompe el otro extremo y continúa","Vuelve, rompe el otro extremo y continúa",46,6.52,17.54,-11.02
+NewYork,15,"Vuelve, rompe el otro extremo y continúa",Llega al otro extremo y es rechazado,46,6.52,3.73,2.79
+NewYork,15,"Vuelve, rompe el otro extremo y continúa",Vuelve y se queda en rango,46,2.17,4.85,-2.68
+NewYork,15,"Vuelve, rompe el otro extremo y continúa",Vuelve y continúa en la 1.ª dirección,46,76.09,65.67,10.42
+NewYork,20,Continúa sin volver,Continúa sin volver,21,9.52,7.92,1.60
+NewYork,20,Continúa sin volver,"Vuelve, rompe el otro extremo y continúa",21,23.81,13.58,10.22
+NewYork,20,Continúa sin volver,Llega al otro extremo y es rechazado,21,4.76,7.55,-2.79
+NewYork,20,Continúa sin volver,Vuelve y se queda en rango,21,0.00,4.91,-4.91
+NewYork,20,Continúa sin volver,Vuelve y continúa en la 1.ª dirección,21,61.90,66.04,-4.13
+NewYork,20,Llega al otro extremo y es rechazado,Continúa sin volver,20,15.00,7.92,7.08
+NewYork,20,Llega al otro extremo y es rechazado,"Vuelve, rompe el otro extremo y continúa",20,30.00,13.58,16.42
+NewYork,20,Llega al otro extremo y es rechazado,Llega al otro extremo y es rechazado,20,15.00,7.55,7.45
+NewYork,20,Llega al otro extremo y es rechazado,Vuelve y se queda en rango,20,0.00,4.91,-4.91
+NewYork,20,Llega al otro extremo y es rechazado,Vuelve y continúa en la 1.ª dirección,20,40.00,66.04,-26.04
+NewYork,20,Vuelve y continúa en la 1.ª dirección,Continúa sin volver,175,8.57,7.92,0.65
+NewYork,20,Vuelve y continúa en la 1.ª dirección,"Vuelve, rompe el otro extremo y continúa",175,11.43,13.58,-2.16
+NewYork,20,Vuelve y continúa en la 1.ª dirección,Llega al otro extremo y es rechazado,175,7.43,7.55,-0.12
+NewYork,20,Vuelve y continúa en la 1.ª dirección,Vuelve y se queda en rango,175,5.71,4.91,0.81
+NewYork,20,Vuelve y continúa en la 1.ª dirección,Vuelve y continúa en la 1.ª dirección,175,66.86,66.04,0.82
+NewYork,20,Vuelve y se queda en rango,Continúa sin volver,13,0.00,7.92,-7.92
+NewYork,20,Vuelve y se queda en rango,"Vuelve, rompe el otro extremo y continúa",13,15.38,13.58,1.80
+NewYork,20,Vuelve y se queda en rango,Llega al otro extremo y es rechazado,13,0.00,7.55,-7.55
+NewYork,20,Vuelve y se queda en rango,Vuelve y se queda en rango,13,7.69,4.91,2.79
+NewYork,20,Vuelve y se queda en rango,Vuelve y continúa en la 1.ª dirección,13,76.92,66.04,10.89
+NewYork,20,"Vuelve, rompe el otro extremo y continúa",Continúa sin volver,36,2.78,7.92,-5.15
+NewYork,20,"Vuelve, rompe el otro extremo y continúa","Vuelve, rompe el otro extremo y continúa",36,8.33,13.58,-5.25
+NewYork,20,"Vuelve, rompe el otro extremo y continúa",Llega al otro extremo y es rechazado,36,8.33,7.55,0.79
+NewYork,20,"Vuelve, rompe el otro extremo y continúa",Vuelve y se queda en rango,36,5.56,4.91,0.65
+NewYork,20,"Vuelve, rompe el otro extremo y continúa",Vuelve y continúa en la 1.ª dirección,36,75.00,66.04,8.96
