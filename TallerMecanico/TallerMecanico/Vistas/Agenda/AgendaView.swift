@@ -94,7 +94,8 @@ struct FilaCita: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            .frame(width: 64, alignment: .trailing)
+            .fixedSize()
+            .frame(minWidth: 64, alignment: .trailing)
 
             RoundedRectangle(cornerRadius: 2)
                 .fill(cita.completada ? Color.green : Color.accentColor)

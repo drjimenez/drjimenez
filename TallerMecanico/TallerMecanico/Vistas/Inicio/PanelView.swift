@@ -120,7 +120,8 @@ struct PanelView: View {
                     HStack {
                         Text(cita.fecha, format: .dateTime.hour().minute())
                             .font(.subheadline.monospacedDigit().bold())
-                            .frame(width: 64, alignment: .leading)
+                            .fixedSize()
+                            .frame(minWidth: 64, alignment: .leading)
                         VStack(alignment: .leading) {
                             Text(cita.motivo)
                             Text(cita.cliente?.nombre ?? "Sin cliente")
