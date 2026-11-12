@@ -1,0 +1,31 @@
+name: iOS · TallerMecanico
+
+on:
+  push:
+    paths:
+      - "TallerMecanico/**"
+      - ".github/workflows/ios-taller.yml"
+  pull_request:
+    paths:
+      - "TallerMecanico/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode
+        run: |
+          ls /Applications | grep Xcode || true
+          xcodebuild -version
+      - name: Compilar para el simulador
+        working-directory: TallerMecanico
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project TallerMecanico.xcodeproj \
+            -scheme TallerMecanico \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO | tee build.log | grep -E "error:|warning:|BUILD" || true
+          grep -q "BUILD SUCCEEDED" build.log

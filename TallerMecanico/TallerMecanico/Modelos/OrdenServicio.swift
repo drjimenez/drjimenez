@@ -1,0 +1,72 @@
+import Foundation
+import SwiftData
+
+@Model
+final class OrdenServicio {
+    var folio: Int = 0
+    var fechaIngreso: Date = Date.now
+    var fechaPromesa: Date?
+    var fechaEntrega: Date?
+    var estadoRaw: String = EstadoOrden.recibido.rawValue
+    var problemaReportado: String = ""
+    var diagnostico: String = ""
+    var observaciones: String = ""
+    var kilometraje: Int = 0
+    /// Nivel de combustible al recibir el vehículo (0 = vacío, 1 = lleno).
+    var nivelCombustible: Double = 0.5
+    var tasaIVA: Double = 0.16
+    var anticipo: Double = 0
+    var vehiculo: Vehiculo?
+
+    @Relationship(deleteRule: .cascade, inverse: \LineaOrden.orden)
+    var lineas: [LineaOrden] = []
+
+    init(folio: Int, problemaReportado: String, kilometraje: Int,
+         nivelCombustible: Double = 0.5, tasaIVA: Double = 0.16, anticipo: Double = 0) {
+        self.folio = folio
+        self.fechaIngreso = .now
+        self.problemaReportado = problemaReportado
+        self.kilometraje = kilometraje
+        self.nivelCombustible = nivelCombustible
+        self.tasaIVA = tasaIVA
+        self.anticipo = anticipo
+    }
+
+    var estado: EstadoOrden {
+        get { EstadoOrden(rawValue: estadoRaw) ?? .recibido }
+        set {
+            estadoRaw = newValue.rawValue
+            if newValue == .entregado {
+                if fechaEntrega == nil { fechaEntrega = .now }
+            } else {
+                fechaEntrega = nil
+            }
+        }
+    }
+
+    var folioTexto: String { String(format: "OS-%05d", folio) }
+
+    var lineasOrdenadas: [LineaOrden] { lineas.sorted { $0.creada < $1.creada } }
+
+    func lineas(de tipo: TipoLinea) -> [LineaOrden] {
+        lineasOrdenadas.filter { $0.tipo == tipo }
+    }
+
+    var totalManoDeObra: Double { lineas(de: .manoDeObra).reduce(0) { $0 + $1.importe } }
+    var totalRefacciones: Double { lineas(de: .refaccion).reduce(0) { $0 + $1.importe } }
+    var subtotal: Double { totalManoDeObra + totalRefacciones }
+    var iva: Double { (subtotal * tasaIVA * 100).rounded() / 100 }
+    var total: Double { subtotal + iva }
+    var saldo: Double { max(0, total - anticipo) }
+
+    var estaRetrasada: Bool {
+        guard estado.esActiva, let fechaPromesa else { return false }
+        return fechaPromesa < .now
+    }
+
+    var textoBusqueda: String {
+        [folioTexto, vehiculo?.placa ?? "", vehiculo?.descripcion ?? "",
+         vehiculo?.cliente?.nombre ?? "", problemaReportado]
+            .joined(separator: " ")
+    }
+}
