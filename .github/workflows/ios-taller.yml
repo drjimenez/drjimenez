@@ -83,17 +83,6 @@ jobs:
           captura 05-clientes          light -tab clientes
           captura 06-ficha-cliente     light -tab clientes -abrir cliente
           captura 07-inventario        light -tab inventario
-          # --- Diagnóstico temporal de la pantalla de inventario ---
-          echo "::group::Diagnóstico inventario"
-          sleep 20
-          xcrun simctl io "$UDID" screenshot "Capturas/07b-inventario-tarde.png"
-          xcrun simctl spawn "$UDID" launchctl list | grep -i taller || echo "PROCESO NO ENCONTRADO"
-          xcrun simctl spawn "$UDID" log show --last 45s --style compact \
-            --predicate 'process == "TallerMecanico" AND (messageType == error OR messageType == fault)' | tail -60 || true
-          ls -t ~/Library/Logs/DiagnosticReports 2>/dev/null | head -5
-          ULTIMO=$(ls -t ~/Library/Logs/DiagnosticReports/TallerMecanico* 2>/dev/null | head -1)
-          [ -n "$ULTIMO" ] && head -120 "$ULTIMO"
-          echo "::endgroup::"
           captura 08-agenda            light -tab agenda
           captura 09-ajustes           light -tab inicio -abrir ajustes
           captura 10-inicio-oscuro     dark  -tab inicio
