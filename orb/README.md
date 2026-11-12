@@ -1,202 +1,220 @@
 # ORB + Fibonacci: rango de apertura de Londres y Nueva York en Nasdaq 100 y S&P 500
 
-Estudio estadístico de la estrategia *Opening Range Breakout* (ORB) con niveles Fibonacci. Incluye
-una base de datos SQLite de eventos, tablas de probabilidad y una rejilla de reglas validada
-*in-sample* / *out-of-sample*. También hay un indicador Pine v6 para ver los niveles en TradingView.
+Estudio estadístico de la estrategia *Opening Range Breakout* (ORB) con niveles Fibonacci, con
+datos de **1 minuto desde enero de 2022 hasta noviembre de 2026**. Incluye:
 
-> **Aviso:** es un proyecto de investigación, no asesoramiento financiero. Los resultados se han
-> obtenido con *proxies* de datos y no garantizan resultados futuros.
+- una **base de datos SQLite** de aperturas, rupturas, escenarios y gaps;
+- un **agente analista**, que busca en qué condiciones cambian las probabilidades y si los
+  eventos se repiten;
+- un **agente de estrategia**, que prueba patrones con el Fibonacci entre el cierre de Nueva York
+  y la apertura de Nueva York del día siguiente;
+- un **dashboard** interactivo y un indicador Pine v6 para TradingView.
 
-## Qué mide
+> **Aviso:** es un proyecto de investigación, no asesoramiento financiero. Las probabilidades
+> pasadas no garantizan resultados futuros.
 
-1. **Rango de apertura (OR).** Máximo y mínimo de los primeros **15 o 20 minutos** desde la apertura
-   de **Londres (08:00, hora de Londres)** y de **Nueva York (09:30, hora de Nueva York)**. Las horas
-   se convierten a UTC día a día, así que se respetan los cambios de horario de verano de cada ciudad.
-2. **Ruptura.** Es la primera vela de 1 minuto que **cierra** fuera del rango. Se registra la
-   dirección (alcista o bajista) y los minutos que tarda en producirse. El precio se sigue hasta las
-   12:00 en Londres y hasta las 16:00 en Nueva York.
-3. **Retroceso o no.** Tras la ruptura se mide si el precio vuelve al nivel roto (*retest*), hasta qué
-   nivel Fibonacci del rango retrocede y si llega a romper el extremo opuesto (ruptura fallida).
-4. **Fibonacci entre el máximo y el mínimo del OR.** Los niveles se miden en unidades del rango
-   R = máximo − mínimo y se orientan en la dirección de la ruptura:
-
-   | Nivel | Significado (ruptura alcista; la bajista es simétrica) |
-   |---|---|
-   | Retroceso 0 | El máximo del OR, es decir, el nivel roto |
-   | Retroceso 0,236 / 0,382 / 0,5 / 0,618 / 0,786 | Dentro del rango, medidos desde el máximo hacia el mínimo |
-   | Retroceso 1 | El mínimo del OR, el extremo opuesto |
-   | Extensión 1,272 / 1,618 / 2,0 / 2,618 | Máximo + 0,272 / 0,618 / 1 / 1,618 × R |
-
-   Para cada ruptura se guarda **cuántos minutos tarda en tocar cada nivel** por primera vez. Con eso,
-   cualquier pregunta del tipo *"¿llega a 1,618 antes de retroceder al 50 %?"* es una consulta SQL.
-5. **Reglas.** Se prueban dos modelos:
-   - **Continuación** (a favor de la ruptura). Entrada al cierre de la ruptura o con orden límite en un
-     retroceso (0 / 0,236 / 0,382 / 0,5). Stop en un retroceso más profundo. Objetivo en una extensión.
-   - **Reversión** (en contra de la ruptura). Entrada al cierre de la ruptura o con orden límite en una
-     extensión (1,272 / 1,618). Stop en una extensión mayor. Objetivo de vuelta al rango (0 / 0,5 / 1).
-
-   Las reglas se eligen solo con **mayo-agosto** (*in-sample*) y se comprueban en
-   **septiembre-noviembre** (*out-of-sample*). El coste es de 1 punto básico por lado. Cuando el stop
-   y el objetivo caen en la misma vela, se cuenta el stop.
+**Dashboard:** https://claude.ai/artifact/6zyYorAnAspRnYcSZG4XYx
 
 ## Datos
 
-Son **6,4 meses** (2026-05-01 → 2026-11-11) de velas de **1 minuto** de los perpetuos de Binance
-**QQQUSDT** (proxy del Nasdaq 100) y **SPYUSDT** (proxy del S&P 500). Son gratuitos y cotizan
-24 horas, así que también cubren la apertura de Londres. Se excluyen los fines de semana y los
-festivos de cada bolsa. En total hay 1.084 rangos de apertura y 1.081 rupturas.
+| | |
+|---|---|
+| Instrumentos | **NAS100** (CFD Nasdaq 100, `USATECHIDXUSD`) y **US500** (CFD S&P 500, `USA500IDXUSD`) |
+| Período | 2022-01-03 → 2026-11-06, velas de 1 minuto (≈1,6 millones por índice) |
+| Fuente | Serie de Dukascopy. Años y meses cerrados de [HistData](https://www.histdata.com) (`NSXUSD`, `SPXUSD`), cuyos precios coinciden minuto a minuto con el datafeed de Dukascopy (comprobado en invierno y en verano). Los días sueltos se completan con el datafeed. |
+| Validación | *In-sample* 2022-2024 · *out-of-sample* 2025-2026 · estabilidad año a año |
 
-Si tienes datos de tu bróker (NAS100, US500, NQ, ES), puedes usarlos en su lugar. Consulta
-[Usar tus propios datos](#usar-tus-propios-datos).
+Los CFD cotizan casi 24 horas, así que cubren la apertura de Londres. Se excluyen fines de semana y
+festivos de cada bolsa. Total: **9.535 rangos de apertura y 9.515 rupturas**, además de 1.774 días
+con gap.
 
-## Resultados principales
+El primer estudio de 6 meses con perpetuos de Binance sigue en `results/binance/`.
 
-### Lo que pasa después de la ruptura (QQQ y SPY juntos)
+## Qué mide
+
+1. **Rango de apertura (OR).** Máximo y mínimo de los primeros **15 o 20 minutos** desde las
+   **08:00 de Londres** y las **09:30 de Nueva York**, en hora local de cada ciudad (con los cambios de
+   horario de verano de cada una).
+2. **Ruptura.** Es la primera vela que **cierra** fuera del rango. El precio se sigue hasta las
+   12:00 en Londres y las 16:00 en Nueva York.
+3. **Fibonacci del rango.** Se mide en unidades de R = máximo − mínimo, orientado a la ruptura:
+   0 = nivel roto, 0,5 = mitad, 1 = extremo opuesto. Las extensiones 1,272 / 1,618 / 2,0 / 2,618 van
+   más allá del nivel roto. Se guarda el minuto del primer toque de cada nivel.
+4. **Contexto antes de cada apertura.** En Londres se mira de 00:00 a 08:00 (Asia) y en Nueva York
+   de 04:00 a 09:30 (Europa y *premarket*). Si el cambio neto es al menos el 40 % del rango de esa
+   ventana, el precio venía **al alza** o **a la baja**; si no, en **rango**. También se guarda la
+   **tendencia diaria** (cierre frente a la SMA20 y su pendiente) y la dirección del día anterior.
+5. **Escenario tras la ruptura** (el árbol del dashboard):
+
+   | Escenario | Qué pasa |
+   |---|---|
+   | Continúa sin volver | Nunca vuelve a tocar el nivel roto |
+   | Vuelve y continúa en la 1.ª dirección | Toca el nivel roto y después llega a 1,272 a favor, antes de tocar el otro extremo |
+   | Vuelve, rompe el otro extremo y continúa | Llega al extremo opuesto y se extiende 0,272 R más allá |
+   | Llega al otro extremo y es rechazado | Toca el extremo opuesto pero no se extiende |
+   | Vuelve y se queda en rango | No llega ni a 1,272 ni al otro extremo |
+
+   En la base de datos también están las versiones con 1,618 y 2,0 como umbral de continuación.
+6. **Fibonacci del gap.** Se traza entre el **cierre de Nueva York (16:00) del día anterior** y la
+   **apertura de Nueva York (09:30)**: p = 0 es la apertura, p = 1 el cierre anterior (gap cerrado),
+   1,272 y 1,618 quedan más allá del cierre y −0,272 / −0,618 / −1 se alejan a favor del gap. Los gaps
+   menores del 10 % del rango diario medio cuentan como planos.
+
+## Resultados 2022-2026
+
+### Qué pasa después de la ruptura (NAS100 + US500)
 
 | | Londres 15m | Londres 20m | NY 15m | NY 20m |
 |---|---:|---:|---:|---:|
-| Días con ruptura | 100 % | 100 % | 100 % | 99 % |
-| Rupturas alcistas | 55 % | 56 % | 56 % | 56 % |
-| **Vuelve al nivel roto (retest)** | **94 %** | **93 %** | **92 %** | **92 %** |
-| No vuelve | 6 % | 7 % | 8 % | 8 % |
-| Retrocede al 38,2 % | 82 % | 78 % | 80 % | 74 % |
-| Retrocede al 50 % | 79 % | 73 % | 74 % | 68 % |
-| Retrocede al 61,8 % | 74 % | 70 % | 69 % | 60 % |
-| **Toca el extremo opuesto (100 %)** | **57 %** | **52 %** | **54 %** | **46 %** |
-| Llega a la extensión 1,272 | 92 % | 91 % | 90 % | 87 % |
-| Llega a la extensión 1,618 | 79 % | 77 % | 73 % | 69 % |
-| Llega a la extensión 2,0 | 64 % | 63 % | 57 % | 52 % |
-| **1,618 antes de retroceder al 50 %** | **49 %** | **53 %** | **47 %** | **50 %** |
+| Rupturas | 2.438 | 2.436 | 2.323 | 2.318 |
+| **Vuelve al nivel roto** | **95 %** | **95 %** | **95 %** | **95 %** |
+| Retrocede al 50 % | 73 % | 69 % | 72 % | 67 % |
+| **Toca el extremo opuesto** | **54 %** | **48 %** | **54 %** | **48 %** |
+| Llega a 1,618 | 75 % | 71 % | 77 % | 73 % |
+| Escenario: continúa sin volver | 4,6 % | 5,5 % | 5,2 % | 5,4 % |
+| Escenario: vuelve y continúa en la 1.ª dirección | **71,3 %** | 69,7 % | **71,7 %** | 72,3 % |
+| Escenario: vuelve, rompe el otro extremo y continúa | **20,3 %** | 18,8 % | **19,3 %** | 17,0 % |
+| Escenario: llega al otro extremo y es rechazado | 2,5 % | 3,0 % | 2,8 % | 3,2 % |
+| Escenario: vuelve y se queda en rango | 1,2 % | 3,0 % | 1,1 % | 2,1 % |
 
-![Retroceso máximo](results/binance/retrace_depth.png)
-![Extensión antes que retroceso](results/binance/heat_ext_before_retrace.png)
+Con 1,618 como umbral, «vuelve y continúa» baja a cerca del 55 % y los giros suben. El dashboard
+permite cambiar el umbral.
 
-### Lectura
+### Agente analista: qué condiciones cambian las probabilidades
 
-- **Casi siempre hay retroceso.** En más del 90 % de las rupturas el precio vuelve al nivel roto, y
-  en unas 3 de cada 4 llega al 50 % del rango. Perseguir la ruptura sin esperar al retroceso
-  significa casi siempre aguantar un drawdown.
-- **La mitad de las rupturas acaban tocando el extremo opuesto.** Es el resultado más llamativo.
-  En este período el rango de apertura funcionó más como zona de rango que como punto de partida
-  de una tendencia.
-- **Que la extensión llegue antes que el retroceso es una moneda al aire.** Llegar a 1,618 antes de
-  volver al 50 % ocurre entre el 47 % y el 53 % de las veces. Ningún nivel Fibonacci separa con
-  claridad las rupturas buenas de las malas.
-- **El OR de 20 minutos y los rangos grandes fallan menos.** En Nueva York, con OR de 20 minutos, el
-  extremo opuesto se toca un 46 % de las veces, frente al 54 % con 15 minutos. Por tamaño de rango,
-  el tercio grande toca el extremo opuesto entre un 30 % y un 44 % de las veces y el tercio pequeño
-  entre un 52 % y un 64 % (`results/binance/conditional_probabilities.csv`).
-- **Londres no predice Nueva York.** Nueva York rompe en la misma dirección que Londres el 51 % de
-  los días. Hay un subgrupo aparente: cuando Nueva York abre en el tramo 61,8-100 % del rango de
-  Londres, coincide en el 83 % de los casos, pero son solo 12 días.
+Hizo 1.815 pruebas y encontró **51 efectos estables**: significativos tras corregir por pruebas
+múltiples, de al menos 5 puntos y con el mismo signo en 2022-2024, en 2025-2026 y en al menos el 75 %
+de los años. Detalle en [`results/dukascopy/analyst/ANALISTA.md`](results/dukascopy/analyst/ANALISTA.md).
 
-### Reglas (448 combinaciones con al menos 25 operaciones *in-sample*)
+- **El tamaño del rango de apertura es lo que más pesa,** medido frente al rango diario medio. Con
+  un OR **pequeño** se toca el extremo opuesto un 60-66 % de las veces (base: 48-54 %) y se llega a
+  1,618 un 80-84 %. Con un OR **grande** el extremo opuesto baja al 38-45 % y 1,618 al 59-69 %.
+  Se cumple los 5 años.
+- **El contexto previo influye poco.** En Nueva York, cuando el precio venía **a la baja**, «vuelve y
+  continúa» sube al 76 % y el giro baja al 17 %. Cuando venía **al alza**, el giro sube al 23 %. Que la
+  ruptura vaya a favor o en contra del movimiento previo cambia unos 4 puntos como mucho.
+- **Miércoles en Nueva York:** más retrocesos al 50 % (+7 pp) y más toques del extremo opuesto.
+- **Si Nueva York abre por debajo del mínimo del día anterior,** «vuelve y continúa» sube al 79 % con
+  OR de 20 minutos.
+- **Los escenarios no se repiten de un día a otro.** Que ayer hubiera giro no cambia la probabilidad
+  de giro hoy: la diferencia frente a la base está entre −3,5 y +0,2 pp. Tampoco hay relación entre la
+  dirección de Londres y la de Nueva York.
 
-| | Expectativa media bruta IS | Bruta OOS | Neta IS | Neta OOS |
-|---|---:|---:|---:|---:|
-| Continuación | −0,14 R | +0,02 R | −0,52 R | −0,38 R |
-| Reversión | −0,02 R | −0,14 R | −0,23 R | −0,37 R |
+![Escenarios por contexto previo](results/dukascopy/analyst/escenarios_por_contexto_previo.png)
 
-- **Ninguna regla es robusta.** Solo 2 de 448 son positivas a la vez en IS y en OOS, y ninguna lo es
-  en los dos índices por separado. Con tantas combinaciones probadas, es lo que cabe esperar por puro
-  azar.
-- La mejor regla de cada sesión elegida en IS **pierde en OOS** (`results/binance/equity_selected.png`).
-- **Hubo un cambio de régimen.** En IS funcionaba algo mejor la reversión y en OOS la continuación.
-  Una regla fija de ORB y Fibonacci no se sostuvo en este período.
-- **Los costes pesan mucho en Londres.** La mediana del rango es de solo 8 pb en SPY y 16 pb en QQQ,
-  así que 2 pb de ida y vuelta se comen buena parte de cada operación. En Nueva York el rango es de
-  23 a 54 pb.
+### Agente de estrategia: Fibonacci cierre NY → apertura NY
 
-![Reglas IS vs OOS](results/binance/rules_is_vs_oos.png)
+![Patrones Fibonacci del gap](results/dukascopy/strategy/patrones_gap_fibonacci.png)
 
-**Conclusión.** La base de datos sirve para conocer las probabilidades, por ejemplo que casi siempre
-habrá retest, que hay un 75 % de probabilidad de tocar el 50 % y un 50 % de tocar el extremo
-opuesto. Úsalas para gestionar la operación: dónde poner el stop, dónde no perseguir el precio y
-dónde recoger beneficios. Por sí solas no dan una ventaja mecánica en estos 6 meses de datos proxy.
-Antes de operar con dinero real, valida con datos reales del subyacente y más historia. Consulta
-[Siguientes pasos](#siguientes-pasos).
+| Gap (en % del rango diario medio) | Días | Retrocede al 50 % | **Cierra el gap (1,0)** | Llega a 1,618 | Se aleja −1 |
+|---|---:|---:|---:|---:|---:|
+| Pequeño (10-25 %) | 532 | 91 % | **80 %** | 68 % | 72 % |
+| Medio (25-50 %) | 605 | 73 % | **52 %** | 36 % | 53 % |
+| Grande (> 50 %) | 637 | 53 % | **28 %** | 13 % | 20 % |
+
+- **La primera ruptura del OR15 es la mejor pista.** Si rompe **hacia el cierre anterior**, el gap
+  se cierra el **70 %** de los días y el 50 % se toca el 89 %. Si rompe **a favor del gap**, solo se
+  cierra el 34 % y el precio se aleja −0,618 el 80 % de los días.
+- Si Nueva York abre **dentro del rango del día anterior**, el gap se cierra el 62 %. Si abre fuera,
+  entre el 36 % y el 45 %.
+- Patrones probados: 5 familias con variantes de stop y objetivo, 232 combinaciones de variante y
+  filtro con al menos 40 operaciones IS.
+
+| Patrón | Mejor variante IS | R IS | R OOS | Años + |
+|---|---|---:|---:|---:|
+| P1 Fade del gap en la apertura | obj 0,618 · stop −0,272 · gap grande | +0,06 | −0,03 | 3/5 |
+| P2 Fade tras ruptura del OR hacia el cierre | obj 0,618 · stop extremo OR · gap grande | +0,12 | −0,05 | 3/5 |
+| P3 Gap and go (ruptura del OR a favor del gap) | obj 2R · stop extremo OR · gap grande | +0,13 | −0,12 | 2/5 |
+| P4 Retroceso Fibonacci y continuación | entrada 0,618 · stop 1,272 · obj 0 | +0,07 | −0,26 | 2/5 |
+| **P5 Gap cerrado y extensión** | **stop 0,618 · obj 1,618 · gap grande** | **+0,14** | **+0,27** | **4/5** |
+
+  **P5** consiste en que, con un gap grande, cuando el precio llega al cierre del día anterior se
+  entra a favor de ese movimiento, con stop en 0,618 y objetivo en 1,618. Es el único patrón cuya
+  mejor variante IS sigue ganando en OOS, en los dos índices (NAS100 +0,20 R, US500 +0,35 R) y en
+  2023, 2024, 2025 y 2026 (2022 −0,03 R). Son unas 40 operaciones al año. Es un **candidato** y no
+  una ventaja demostrada: salió de entre 240 combinaciones probadas y la muestra OOS es de 83
+  operaciones.
+  Detalle en [`results/dukascopy/strategy/ESTRATEGIA.md`](results/dukascopy/strategy/ESTRATEGIA.md).
+
+![Ejemplos de patrones](results/dukascopy/strategy/ejemplos_patrones.png)
+
+### Reglas ORB puras (continuación / reversión)
+
+Ninguna de las 448 reglas de entrada, stop y objetivo sobre el rango de apertura es positiva a la
+vez en IS y OOS. La expectativa media bruta es −0,02 a −0,05 R y la neta de −0,2 a −0,4 R. Con 5
+años de datos se confirma lo que se vio en 6 meses: **las probabilidades del rango sirven para
+gestionar la operación, pero por sí solas no dan una ventaja mecánica.**
 
 ## Estructura
 
 ```
-orb/config.py              Sesiones, horarios, festivos, niveles Fibonacci, rejilla de reglas, costes
-orb/engine.py              Extracción de eventos (OR, ruptura, retrocesos, extensiones) y simulador
-orb/database.py            Carga Binance / CSV propio, SQLite (tablas y vistas)
-orb/run_study.py           Ejecuta todo: base de datos → probabilidades → reglas → gráficos → informe
-orb/pine/orb_fib_indicator.pine   Indicador TradingView: OR Londres/NY + niveles Fibonacci + rupturas
-orb/results/binance/REPORT.md      Todas las tablas (generado)
-orb/results/binance/orb_study.sqlite      Base de datos de eventos y reglas (sin velas, ~0,5 MB)
-orb/results/binance/*.csv, *.png   Eventos, resúmenes, rejilla de reglas, operaciones y gráficos
-orb/data/orb.sqlite        Base de datos completa con velas de 1 minuto (se genera, no se versiona)
+orb/config.py               Sesiones, festivos 2022-2026, niveles, contexto, gap, fuentes de datos
+orb/engine.py               Eventos ORB, contexto previo, escenarios, gap Fibonacci, simulador
+orb/histdata.py             Descarga HistData (1 min, ZIP anual/mensual) + relleno con Dukascopy
+orb/dukascopy.py            Descarga del datafeed de Dukascopy (1 archivo por día, con límite de velocidad)
+orb/database.py             SQLite: velas, eventos, gaps, reglas; importación de CSV propios
+orb/run_study.py            Estudio ORB: probabilidades, rejilla de reglas IS/OOS, gráficos
+orb/agents/analyst.py       Agente analista
+orb/agents/strategy.py      Agente de estrategia (gap Fibonacci)
+orb/dashboard/build_data.py Tablas de probabilidad precalculadas para el dashboard
+orb/dashboard/index.html    Página del dashboard
+orb/run_all.py              Ejecuta todo
+orb/pine/orb_fib_indicator.pine   Indicador TradingView
+orb/results/dukascopy/      Resultados 2022-2026 (base de datos, CSV, gráficos, informes)
+orb/results/binance/        Primer estudio de 6 meses
 ```
 
 ## Uso
 
 ```bash
 pip install -r requirements.txt
-python3 orb/run_study.py          # descarga datos (1.ª vez), crea la BD y regenera orb/results/
+python3 orb/run_all.py                    # descarga (1.ª vez), base de datos, agentes y dashboard
+python3 orb/run_all.py --source binance   # estudio de 6 meses con Binance
 ```
 
-Para cambiar el período, las sesiones, los minutos del OR, los niveles o los costes, edita
-`orb/config.py`. Una ejecución completa tarda unos 15 segundos, sin contar la descarga.
+La primera descarga baja unos 30 ZIP de HistData. Después, todo el flujo tarda unos 2 minutos.
 
 ### Consultar la base de datos
 
 ```sql
--- sqlite3 orb/results/binance/orb_study.sqlite
-SELECT * FROM v_breakout_summary;            -- dirección, retest y % de rupturas fallidas
-SELECT * FROM v_ext1618_before_ret50;        -- % que llega a 1.618 antes de retroceder al 50 %
+-- sqlite3 orb/results/dukascopy/orb_study.sqlite
+SELECT * FROM v_breakout_summary;
 
--- ¿En NY (OR 15), si la ruptura llega a 1.272, cuántas veces vuelve después al 50 %?
-SELECT ROUND(100.0*AVG(COALESCE(t_ret_0500 > t_ext_0272, 0)), 1)
-FROM events WHERE session='NewYork' AND or_min=15 AND t_ext_0272 IS NOT NULL;
+-- Escenario según el contexto previo en Nueva York (OR 15)
+SELECT pre_trend, scenario, COUNT(*) FROM events
+WHERE session='NewYork' AND or_min=15 AND break_dir!='none' GROUP BY 1, 2;
+
+-- Cierre del gap según la tendencia diaria
+SELECT daily_trend, gap_size, ROUND(100.0*AVG(t_fill_1000 IS NOT NULL),1) AS pct_cierra
+FROM gaps WHERE gap_dir!='plano' GROUP BY 1, 2;
 ```
 
-Columnas de `events`: `or_high`, `or_low`, `or_range_bp`, `break_dir`, `min_to_break`, `retest`,
-`max_retrace`, `max_ext`, `opposite_break`, `close_x` (cierre del horizonte en unidades de R) y los
-minutos hasta cada nivel: `t_ret_0000` … `t_ret_1000` y `t_ext_0272` … `t_ext_1618` (NULL si no se toca).
+Tablas: `events` (aperturas y rupturas, con `pre_trend`, `daily_trend`, `scenario`,
+`scenario_1618`, `scenario_20` y los minutos hasta cada nivel), `gaps` (con `t_fill_*` y `t_away_*`),
+`strategy_grid` y `trades`. La base de datos completa con velas de 1 minuto se genera en
+`orb/data/` y no se versiona.
 
 ### Usar tus propios datos
 
-Exporta velas de **1 minuto** desde MT5 (*Símbolos → Barras → Exportar*) o desde TradingView
-(*Exportar datos del gráfico*) e indica la zona horaria del archivo:
-
 ```bash
-python3 orb/run_study.py --csv NAS100=nas100_m1.csv --csv US500=us500_m1.csv --tz Europe/Athens
+python3 orb/run_study.py --source csv --csv NAS100=nas100_m1.csv --tz Europe/Athens
 ```
 
-Muchos brókeres de MT5 usan la hora del servidor UTC+2/+3, que equivale a `Europe/Athens`. Las
-exportaciones de TradingView vienen en tiempo Unix, así que la zona no importa. Ajusta `START` y
-`END` en `config.py` al período de tu archivo. Si tienes más historia, cuanta más, mejor.
+Acepta exportaciones de 1 minuto de MT5 o de TradingView (ver `database.import_csv`).
 
 ### Indicador de TradingView
 
 Pega `orb/pine/orb_fib_indicator.pine` en el Pine Editor y úsalo en un gráfico de 1 a 5 minutos.
-Dibuja el OR de Londres y de Nueva York con los retrocesos 23,6 / 38,2 / 50 / 61,8 / 78,6 y las
-extensiones 1,272 / 1,618 / 2,0 / 2,618. Marca la primera ruptura por cierre y el primer retest, y
-muestra una tabla con las probabilidades del estudio. Para el rango de 20 minutos, cambia la sesión a
-`0800-0820` o `0930-0950`.
-
-> No se ha podido compilar en TradingView desde este entorno. Si el editor marca algún error,
-> indica la línea.
+Dibuja el OR de Londres y de Nueva York con sus retrocesos y extensiones y marca la ruptura y el
+retest. No se ha podido compilar desde este entorno.
 
 ## Limitaciones
 
-- **Proxies.** QQQUSDT y SPYUSDT siguen a QQQ y SPY, pero no son los futuros NQ/ES ni los CFD
-  NAS100/US500. La apertura de Londres ocurre de madrugada en EE. UU., cuando la liquidez de estos
-  perpetuos es baja.
-- **Muestra corta.** Son unos 135 días por sesión y unas 30-60 operaciones OOS por regla. Una
-  diferencia de ±5 puntos porcentuales en las probabilidades está dentro del ruido.
-- **Velas de 1 minuto.** No se sabe el orden de los precios dentro de cada minuto. Cuando el stop y
-  el objetivo caen en la misma vela, se resuelve de forma conservadora.
-
-## Siguientes pasos
-
-1. Repetir el estudio con datos reales de NQ/ES o NAS100/US500 y **2-3 años** de historia, usando
-   `--csv`.
-2. Probar filtros con lógica previa, no buscados en los resultados: tamaño del OR frente al ATR
-   diario, *gap* de apertura, días con noticias (CPI, FOMC, NFP), posición respecto al máximo y el
-   mínimo del día anterior.
-3. Estudiar la **ruptura fallida** como señal: entrar cuando el precio cierra dentro del rango tras
-   romper, con objetivo en el extremo opuesto, que se toca en la mitad de los casos.
-4. Validar con *walk-forward* (reoptimizar cada mes) antes de operar en real.
+- **CFD, no futuros.** La serie de Dukascopy sigue al índice de contado. NQ/ES pueden diferir un poco
+  en la apertura de Londres.
+- **Velas de 1 minuto.** El orden de los precios dentro de un minuto es desconocido. Cuando el stop y
+  el objetivo caen en la misma vela, se resuelve de forma conservadora (stop primero).
+- **Pruebas múltiples.** El analista corrige por ellas. En los patrones, cualquier variante positiva
+  debe confirmarse con datos nuevos antes de operarla.
+- **Costes.** Se usa 1 pb por lado. En Londres el OR mediano es de unos 13 pb, así que los costes
+  pesan mucho.

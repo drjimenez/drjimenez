@@ -7,5 +7,5 @@ P3-4,P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,
 P3-5,P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,a favor de la tendencia,201,27.363,0.078,164,17.683,0.059,3/5
 P4-6,P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,contra la tendencia,57,57.895,0.072,42,40.476,-0.256,2/5
 P4-7,P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj -0.272,grande,107,26.168,0.066,90,11.111,-0.304,1/5
-P5-8,P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,grande,328,0.0,-1.055,309,0.0,-1.06,0/5
-P5-9,P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,grande,328,0.0,-1.055,309,0.0,-1.06,0/5
+P5-8,P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,grande,95,37.895,0.142,83,39.759,0.268,4/5
+P5-9,P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,grande,95,27.368,0.137,83,22.892,0.018,4/5

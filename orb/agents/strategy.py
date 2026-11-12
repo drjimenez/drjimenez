@@ -58,17 +58,28 @@ def _first(m):
 
 
 def sim(h, lo, c, side: int, entry: float, stop: float, target: float, start: int,
-        limit: bool = False, cost_bp: float = C.COST_BP_PER_SIDE):
+        limit: bool = False, stop_entry: bool = False, cost_bp: float = C.COST_BP_PER_SIDE):
     """
     side +1 largo / −1 corto. Barras desde `start` hasta el final de los arrays (16:00 NY).
     limit=False: entrada a mercado en `entry` en la vela `start` (se evalúa desde la siguiente).
     limit=True : orden límite en `entry` desde `start`; se cancela si el objetivo llega antes.
+    stop_entry=True: orden stop (entra cuando el precio llega a `entry` moviéndose a favor).
     Empate stop/objetivo en una vela -> stop. Sin salida -> cierre de las 16:00.
     """
     risk = (entry - stop) * side
     if risk <= 0 or (target - entry) * side <= 0:
         return None
-    if limit:
+    if stop_entry:
+        fill = (h[start:] >= entry) if side > 0 else (lo[start:] <= entry)
+        jf = _first(fill)
+        if jf < 0:
+            return None
+        i = start + jf
+        sh = (lo[i:] <= stop) if side > 0 else (h[i:] >= stop)
+        th = (h[i:] >= target) if side > 0 else (lo[i:] <= target)
+        th = th.copy()
+        th[0] = False
+    elif limit:
         fill = (lo[start:] <= entry) if side > 0 else (h[start:] >= entry)
         tgt0 = (h[start:] >= target) if side > 0 else (lo[start:] <= target)
         jf, jt = _first(fill), _first(tgt0)
@@ -224,7 +235,7 @@ class StrategyAgent:
         # P5: el precio cierra el gap (toca el cierre anterior) y sigue: límite en p = 1
         for stp, tgt in itertools.product([0.618, 0.786], [1.272, 1.618]):
             add("P5", f"stop {stp:g} · obj {tgt:g}",
-                sim(hh, ll, cc, -s, P(1.0), P(stp), P(tgt), start=1, limit=True))
+                sim(hh, ll, cc, -s, P(1.0), P(stp), P(tgt), start=1, stop_entry=True))
         return out
 
     def run_patterns(self) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -313,7 +324,7 @@ class StrategyAgent:
                 ax.plot(mins, med, color=col, label=f"gap {size} (n={len(paths)})")
                 ax.fill_between(mins, np.percentile(M, 25, axis=0), np.percentile(M, 75, axis=0),
                                 color=col, alpha=0.10, linewidth=0)
-            for y in [0, 0.382, 0.5, 0.618, 1.0]:
+            for y in [0, 0.5, 1.0]:
                 ax.axhline(y, color=style.GRID, lw=1, ls="--", zorder=0)
                 ax.text(392, y, f"{y:g}", va="center", fontsize=7.5, color=style.INK2)
             ax.set_xticks([0, 60, 120, 180, 240, 300, 390], ["9:30", "10:30", "11:30", "12:30", "13:30", "14:30", "16:00"])

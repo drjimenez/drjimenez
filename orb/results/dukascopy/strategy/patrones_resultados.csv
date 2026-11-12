@@ -215,27 +215,27 @@ P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.2
 P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,grande,38,34.2105,-0.1430,-0.1098,-5.4357,30,26.6667,-0.2634,-0.2231,-7.9012,1/5,NAS100:-0.38 · US500:-0.14
 P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,a favor de la tendencia,73,36.9863,-0.3166,-0.2240,-23.1093,76,28.9474,-0.5030,-0.3768,-38.2317,0/5,NAS100:-0.56 · US500:-0.45
 P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,contra la tendencia,57,57.8947,0.0723,0.1857,4.1194,42,40.4762,-0.2559,-0.1175,-10.7470,2/5,NAS100:-0.40 · US500:-0.15
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,todos,995,0.4020,-1.1293,-0.9931,-1123.6818,776,0.5155,-1.1447,-0.9912,-888.3100,0/5,NAS100:-1.11 · US500:-1.18
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,pequeño,307,1.3029,-1.2249,-0.9777,-376.0459,222,1.8018,-1.2726,-0.9692,-282.5282,0/5,NAS100:-1.19 · US500:-1.35
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,medio,360,0.0000,-1.1158,-1.0000,-401.6785,245,0.0000,-1.1357,-1.0000,-278.2555,0/5,NAS100:-1.11 · US500:-1.16
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,grande,328,0.0000,-1.0547,-1.0000,-345.9574,309,0.0000,-1.0600,-1.0000,-327.5262,0/5,NAS100:-1.05 · US500:-1.07
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,a favor de la tendencia,389,0.0000,-1.1379,-1.0000,-442.6369,344,0.8721,-1.1520,-0.9851,-396.2918,0/5,NAS100:-1.11 · US500:-1.20
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,contra la tendencia,407,0.0000,-1.1403,-1.0000,-464.0835,261,0.0000,-1.1455,-1.0000,-298.9752,0/5,NAS100:-1.11 · US500:-1.18
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,todos,995,0.3015,-1.1283,-0.9921,-1122.6766,776,0.5155,-1.1401,-0.9865,-884.6869,0/5,NAS100:-1.10 · US500:-1.18
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,pequeño,307,0.9772,-1.2216,-0.9744,-375.0406,222,1.8018,-1.2563,-0.9528,-278.9052,0/5,NAS100:-1.16 · US500:-1.35
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,medio,360,0.0000,-1.1158,-1.0000,-401.6785,245,0.0000,-1.1357,-1.0000,-278.2555,0/5,NAS100:-1.11 · US500:-1.16
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,grande,328,0.0000,-1.0547,-1.0000,-345.9574,309,0.0000,-1.0600,-1.0000,-327.5262,0/5,NAS100:-1.05 · US500:-1.07
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,a favor de la tendencia,389,0.0000,-1.1379,-1.0000,-442.6369,344,0.8721,-1.1441,-0.9772,-393.5746,0/5,NAS100:-1.09 · US500:-1.20
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,contra la tendencia,407,0.0000,-1.1403,-1.0000,-464.0835,261,0.0000,-1.1455,-1.0000,-298.9752,0/5,NAS100:-1.11 · US500:-1.18
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,todos,995,0.1005,-1.2409,-0.9977,-1234.6563,776,0.2577,-1.2682,-0.9941,-984.1608,0/5,NAS100:-1.21 · US500:-1.33
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,pequeño,307,0.3257,-1.4339,-0.9926,-440.2034,222,0.9009,-1.5213,-0.9795,-337.7280,0/5,NAS100:-1.41 · US500:-1.63
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,medio,360,0.0000,-1.2067,-1.0000,-434.3982,245,0.0000,-1.2423,-1.0000,-304.3626,0/5,NAS100:-1.20 · US500:-1.28
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,grande,328,0.0000,-1.0977,-1.0000,-360.0548,309,0.0000,-1.1070,-1.0000,-342.0702,0/5,NAS100:-1.09 · US500:-1.13
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,a favor de la tendencia,389,0.0000,-1.2461,-1.0000,-484.7444,344,0.5814,-1.2848,-0.9868,-441.9695,0/5,NAS100:-1.22 · US500:-1.35
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,contra la tendencia,407,0.0000,-1.2504,-1.0000,-508.8968,261,0.0000,-1.2597,-1.0000,-328.7875,0/5,NAS100:-1.20 · US500:-1.32
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,todos,995,0.1005,-1.2392,-0.9961,-1233.0395,776,0.2577,-1.2641,-0.9900,-980.9271,0/5,NAS100:-1.20 · US500:-1.33
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,pequeño,307,0.3257,-1.4286,-0.9873,-438.5865,222,0.9009,-1.5067,-0.9650,-334.4943,0/5,NAS100:-1.38 · US500:-1.63
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,medio,360,0.0000,-1.2067,-1.0000,-434.3982,245,0.0000,-1.2423,-1.0000,-304.3626,0/5,NAS100:-1.20 · US500:-1.28
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,grande,328,0.0000,-1.0977,-1.0000,-360.0548,309,0.0000,-1.1070,-1.0000,-342.0702,0/5,NAS100:-1.09 · US500:-1.13
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,a favor de la tendencia,389,0.0000,-1.2461,-1.0000,-484.7444,344,0.5814,-1.2754,-0.9774,-438.7359,0/5,NAS100:-1.20 · US500:-1.35
-P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,contra la tendencia,407,0.0000,-1.2504,-1.0000,-508.8968,261,0.0000,-1.2597,-1.0000,-328.7875,0/5,NAS100:-1.20 · US500:-1.32
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,todos,532,46.6165,-0.3555,-0.1849,-189.1189,388,48.7113,-0.3369,-0.1329,-130.7224,0/5,NAS100:-0.34 · US500:-0.34
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,pequeño,246,34.5528,-0.6584,-0.4084,-161.9711,181,34.8066,-0.7137,-0.4041,-129.1781,0/5,NAS100:-0.68 · US500:-0.75
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,medio,191,57.0681,-0.1293,-0.0068,-24.6995,124,55.6452,-0.1569,-0.0140,-19.4587,0/5,NAS100:-0.22 · US500:-0.10
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,grande,95,56.8421,-0.0258,0.0356,-2.4483,83,68.6747,0.2158,0.2807,17.9144,3/5,NAS100:+0.14 · US500:+0.30
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,a favor de la tendencia,207,49.2754,-0.3051,-0.1392,-63.1471,190,45.7895,-0.4013,-0.1859,-76.2504,0/5,NAS100:-0.33 · US500:-0.47
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,contra la tendencia,211,44.5498,-0.4110,-0.2251,-86.7307,116,52.5862,-0.2773,-0.0690,-32.1659,0/5,NAS100:-0.39 · US500:-0.17
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,todos,532,30.8271,-0.3095,-0.1389,-164.6304,388,34.0206,-0.2258,-0.0218,-87.5969,0/5,NAS100:-0.24 · US500:-0.21
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,pequeño,246,24.3902,-0.6083,-0.3583,-149.6461,181,25.9669,-0.6298,-0.3202,-114.0000,0/5,NAS100:-0.55 · US500:-0.70
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,medio,191,35.6021,-0.1489,-0.0264,-28.4491,124,41.9355,0.0338,0.1768,4.1919,1/5,NAS100:-0.12 · US500:+0.19
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,grande,95,37.8947,0.1417,0.2031,13.4648,83,39.7590,0.2676,0.3325,22.2112,4/5,NAS100:+0.20 · US500:+0.35
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,a favor de la tendencia,207,33.3333,-0.2393,-0.0734,-49.5327,190,32.6316,-0.2873,-0.0719,-54.5932,0/5,NAS100:-0.19 · US500:-0.38
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,contra la tendencia,211,28.9100,-0.3751,-0.1892,-79.1436,116,43.9655,-0.0105,0.1978,-1.2175,1/5,NAS100:-0.19 · US500:+0.15
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,todos,532,23.4962,-0.7599,-0.4554,-404.2408,388,26.5464,-0.7286,-0.3645,-282.7093,0/5,NAS100:-0.68 · US500:-0.78
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,pequeño,246,10.9756,-1.1970,-0.7507,-294.4531,181,14.9171,-1.2139,-0.6612,-219.7104,0/5,NAS100:-1.12 · US500:-1.30
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,medio,191,30.8901,-0.5039,-0.2852,-96.2457,124,30.6452,-0.5187,-0.2635,-64.3142,0/5,NAS100:-0.57 · US500:-0.47
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,grande,95,41.0526,-0.1425,-0.0330,-13.5419,83,45.7831,0.0158,0.1317,1.3152,2/5,NAS100:+0.00 · US500:+0.03
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,a favor de la tendencia,207,23.6715,-0.7409,-0.4448,-153.3749,190,23.6842,-0.8221,-0.4375,-156.2032,0/5,NAS100:-0.74 · US500:-0.90
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,contra la tendencia,211,23.6967,-0.7937,-0.4618,-167.4665,116,29.3103,-0.6717,-0.2998,-77.9129,0/5,NAS100:-0.64 · US500:-0.71
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,todos,532,15.0376,-0.6781,-0.3737,-360.7542,388,17.7835,-0.5966,-0.2325,-231.5001,0/5,NAS100:-0.57 · US500:-0.62
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,pequeño,246,8.1301,-1.1301,-0.6839,-278.0138,181,12.1547,-1.0801,-0.5274,-195.4954,0/5,NAS100:-0.92 · US500:-1.22
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,medio,191,17.8010,-0.5012,-0.2824,-95.7227,124,22.5806,-0.3024,-0.0472,-37.4967,1/5,NAS100:-0.45 · US500:-0.16
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,grande,95,27.3684,0.1367,0.2462,12.9823,83,22.8916,0.0180,0.1338,1.4920,4/5,NAS100:-0.07 · US500:+0.12
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,a favor de la tendencia,207,14.4928,-0.6807,-0.3846,-140.9087,190,15.7895,-0.7166,-0.3320,-136.1447,0/5,NAS100:-0.56 · US500:-0.86
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,contra la tendencia,211,14.2180,-0.7465,-0.4147,-157.5211,116,24.1379,-0.3768,-0.0049,-43.7060,0/5,NAS100:-0.41 · US500:-0.35

@@ -5,7 +5,9 @@ junto con un **backtest independiente en Python** sobre Forex, Cripto, Índices 
 **informe en PDF** con los resultados.
 
 > **Nuevo:** estudio ORB + Fibonacci (rango de apertura de Londres y Nueva York en Nasdaq 100 y
-> S&P 500), con base de datos de probabilidades e indicador Pine: ver [`orb/README.md`](orb/README.md).
+> S&P 500, 1 minuto, 2022-2026), con base de datos de probabilidades, agente analista, agente de
+> estrategia (Fibonacci cierre NY → apertura NY), dashboard e indicador Pine: ver
+> [`orb/README.md`](orb/README.md).
 
 > **Aviso:** proyecto de investigación. No constituye asesoramiento financiero ni recomendación de
 > inversión. Los resultados son simulados, se han obtenido con *proxies* de datos y no garantizan
