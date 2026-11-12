@@ -80,7 +80,7 @@ GAP_AWAY_LEVELS = [0.272, 0.618, 1.0]
 # --- Fuentes de datos ---------------------------------------------------------------------------
 SOURCES = {
     # CFD de Dukascopy, 1 minuto, datos reales del índice (cotizan casi 24 h)
-    "dukascopy": {"start": "2022-01-03", "end": "2026-11-11", "is_end": "2024-12-31",
+    "dukascopy": {"start": "2022-01-03", "end": "2026-11-06", "is_end": "2024-12-31",
                   "symbols": {"NAS100": "Nasdaq 100 (CFD Dukascopy)", "US500": "S&P 500 (CFD Dukascopy)"}},
     # Perpetuos de Binance (estudio inicial de 6 meses)
     "binance": {"start": "2026-05-01", "end": "2026-11-11", "is_end": "2026-08-31",
