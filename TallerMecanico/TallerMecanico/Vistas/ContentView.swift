@@ -39,10 +39,10 @@ struct ContentView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
-        .onAppear(perform: cargarDemoSiHaceFalta)
         .task(id: fase) {
             guard fase == .active else { return }
             await TipoCambio.compartido.actualizarSiHaceFalta()
+            cargarDemoSiHaceFalta()
             RevalorizacionMonedas.aplicar(en: context)
         }
     }

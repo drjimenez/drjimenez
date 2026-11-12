@@ -89,7 +89,8 @@ enum DatosEjemplo {
         linea(.refaccion, anticongelante.nombre, 2, anticongelante.precioVenta, o3, anticongelante)
         o3.estado = .entregado
         let factura = Factura(folio: 1, diasGarantia: 30, metodoPago: .transferencia)
-        factura.fuenteTipoCambio = "US$: \(tc.detalleFuente(.dolar))"
+        let fuente = tc.fuenteParaDocumento(.dolar)
+        factura.fuenteTipoCambio = fuente.isEmpty ? "" : "US$: \(fuente)"
         context.insert(factura)
         factura.orden = o3
 

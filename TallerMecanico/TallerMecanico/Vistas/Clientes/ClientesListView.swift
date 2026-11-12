@@ -58,7 +58,7 @@ struct ClientesListView: View {
             .navigationDestination(for: Factura.self) { FacturaDetalleView(factura: $0) }
             .task {
                 guard ArranqueDemo.abrir == "cliente" else { return }
-                try? await Task.sleep(for: .seconds(1))
+                try? await Task.sleep(for: .seconds(3))
                 if let primero = clientes.first { ruta.append(primero) }
             }
         }

@@ -83,7 +83,7 @@ struct OrdenesListView: View {
     private func abrirParaDemo() async {
         let destino = ArranqueDemo.abrir
         guard ["orden", "facturas", "factura", "facturaPDF"].contains(destino) else { return }
-        try? await Task.sleep(for: .seconds(1))
+        try? await Task.sleep(for: .seconds(3))
         if destino == "orden" {
             if let primera = ordenes.min(by: { $0.folio < $1.folio }) { ruta.append(primera) }
             return

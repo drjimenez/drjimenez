@@ -85,7 +85,10 @@ struct FacturaFormView: View {
                               metodoPago: metodoPago, notas: notas.limpio)
         RevalorizacionMonedas.aplicar(en: context)
         factura.fuenteTipoCambio = orden.tiposDeCambioAplicados
-            .map { "\($0.moneda.simbolo): \(TipoCambio.compartido.detalleFuente($0.moneda))" }
+            .compactMap { tc -> String? in
+                let fuente = TipoCambio.compartido.fuenteParaDocumento(tc.moneda)
+                return fuente.isEmpty ? nil : "\(tc.moneda.simbolo): \(fuente)"
+            }
             .joined(separator: "; ")
         context.insert(factura)
         factura.orden = orden

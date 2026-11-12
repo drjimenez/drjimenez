@@ -63,6 +63,13 @@ final class TipoCambio {
         return "\(fuenteAutomatico[moneda] ?? "") · \(fecha.formatted(date: .abbreviated, time: .shortened))"
     }
 
+    /// Fuente para imprimir en documentos (vacía si nunca se actualizó).
+    func fuenteParaDocumento(_ moneda: Moneda) -> String {
+        if esManual(moneda) { return "registro manual" }
+        guard let fecha = fechaAutomatico[moneda] else { return "" }
+        return "\(fuenteAutomatico[moneda] ?? ""), \(fecha.formatted(date: .abbreviated, time: .omitted))"
+    }
+
     func historial(de moneda: Moneda) -> [Registro] { historial.filter { $0.moneda == moneda } }
 
     private var automaticoEsDeHoy: Bool {

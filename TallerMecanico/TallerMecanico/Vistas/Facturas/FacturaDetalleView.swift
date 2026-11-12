@@ -49,11 +49,11 @@ struct FacturaDetalleView: View {
                     }
                 }
                 HStack(spacing: 10) {
-                    Button("Ver PDF", systemImage: "doc.richtext", action: abrirPDF)
+                    botonAccion("Ver PDF", icono: "doc.richtext", accion: abrirPDF)
                         .buttonStyle(.glass)
-                    Button("Correo", systemImage: "envelope", action: enviarPorCorreo)
+                    botonAccion("Correo", icono: "envelope.fill", accion: enviarPorCorreo)
                         .buttonStyle(.glass)
-                    Button("Imprimir", systemImage: "printer", action: imprimir)
+                    botonAccion("Imprimir", icono: "printer.fill", accion: imprimir)
                         .buttonStyle(.glassProminent)
                 }
                 .frame(maxWidth: .infinity)
@@ -160,6 +160,17 @@ struct FacturaDetalleView: View {
                 try? await Task.sleep(for: .milliseconds(600))
                 abrirPDF()
             }
+        }
+    }
+
+    private func botonAccion(_ titulo: String, icono: String, accion: @escaping () -> Void) -> some View {
+        Button(action: accion) {
+            VStack(spacing: 4) {
+                Image(systemName: icono).font(.title3)
+                Text(titulo).font(.caption.weight(.semibold)).lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 2)
         }
     }
 
