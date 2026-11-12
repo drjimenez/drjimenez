@@ -21,6 +21,9 @@ final class OrdenServicio {
     @Relationship(deleteRule: .cascade, inverse: \LineaOrden.orden)
     var lineas: [LineaOrden] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \Factura.orden)
+    var factura: Factura?
+
     init(folio: Int, problemaReportado: String, kilometraje: Int,
          nivelCombustible: Double = 0.5, tasaIVA: Double = 0.16, anticipo: Double = 0) {
         self.folio = folio
@@ -54,6 +57,17 @@ final class OrdenServicio {
 
     var totalManoDeObra: Double { lineas(de: .manoDeObra).reduce(0) { $0 + $1.importe } }
     var totalRefacciones: Double { lineas(de: .refaccion).reduce(0) { $0 + $1.importe } }
+    /// Tiempo total de mano de obra (la cantidad de cada línea de mano de obra se captura en horas).
+    var horasManoDeObra: Double { lineas(de: .manoDeObra).reduce(0) { $0 + $1.cantidad } }
+
+    /// Días naturales que el vehículo estuvo en el taller.
+    var diasEnTaller: Int {
+        let cal = Calendar.current
+        let fin = fechaEntrega ?? .now
+        return max(0, cal.dateComponents([.day], from: cal.startOfDay(for: fechaIngreso),
+                                         to: cal.startOfDay(for: fin)).day ?? 0)
+    }
+
     var subtotal: Double { totalManoDeObra + totalRefacciones }
     var iva: Double { (subtotal * tasaIVA * 100).rounded() / 100 }
     var total: Double { subtotal + iva }

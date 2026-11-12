@@ -48,10 +48,10 @@ struct LineaFormView: View {
                               text: $descripcion, axis: .vertical)
                     Stepper(value: $cantidad, in: (tipo == .manoDeObra ? 0.5 : 1)...999,
                             step: tipo == .manoDeObra ? 0.5 : 1) {
-                        LabeledContent(tipo == .manoDeObra ? "Horas / servicios" : "Cantidad",
+                        LabeledContent(tipo == .manoDeObra ? "Tiempo (horas)" : "Cantidad",
                                        value: cantidad.formatted())
                     }
-                    LabeledContent("Precio unitario") {
+                    LabeledContent(tipo == .manoDeObra ? "Tarifa por hora" : "Precio unitario") {
                         TextField("Precio", value: $precio, format: .currency(code: Preferencias.moneda))
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)

@@ -1,6 +1,10 @@
 import SwiftUI
 import SwiftData
 
+enum RutaOrdenes: Hashable {
+    case facturas
+}
+
 struct OrdenesListView: View {
     enum Filtro: String, CaseIterable, Identifiable {
         case activas = "Activas"
@@ -15,7 +19,7 @@ struct OrdenesListView: View {
     @State private var filtro: Filtro = .activas
     @State private var busqueda = ""
     @State private var mostrarNuevaOrden = false
-    @State private var ruta: [OrdenServicio] = []
+    @State private var ruta = NavigationPath()
 
     private var filtradas: [OrdenServicio] {
         ordenes.filter { orden in
@@ -61,17 +65,32 @@ struct OrdenesListView: View {
             .navigationTitle("Órdenes")
             .searchable(text: $busqueda, prompt: "Folio, placa, cliente…")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Facturas", systemImage: "doc.text") { ruta.append(RutaOrdenes.facturas) }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Nueva orden", systemImage: "plus") { mostrarNuevaOrden = true }
                 }
             }
             .sheet(isPresented: $mostrarNuevaOrden) { NuevaOrdenView() }
             .navigationDestination(for: OrdenServicio.self) { OrdenDetalleView(orden: $0) }
-            .task {
-                guard ArranqueDemo.abrir == "orden" else { return }
-                try? await Task.sleep(for: .seconds(1))
-                if let primera = ordenes.min(by: { $0.folio < $1.folio }) { ruta = [primera] }
-            }
+            .navigationDestination(for: Factura.self) { FacturaDetalleView(factura: $0) }
+            .navigationDestination(for: RutaOrdenes.self) { _ in FacturasListView() }
+            .task { await abrirParaDemo() }
+        }
+    }
+
+    private func abrirParaDemo() async {
+        let destino = ArranqueDemo.abrir
+        guard ["orden", "facturas", "factura", "facturaPDF"].contains(destino) else { return }
+        try? await Task.sleep(for: .seconds(1))
+        if destino == "orden" {
+            if let primera = ordenes.min(by: { $0.folio < $1.folio }) { ruta.append(primera) }
+            return
+        }
+        ruta.append(RutaOrdenes.facturas)
+        if destino != "facturas", let factura = ordenes.compactMap(\.factura).first {
+            ruta.append(factura)
         }
     }
 

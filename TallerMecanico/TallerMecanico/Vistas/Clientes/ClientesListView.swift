@@ -55,6 +55,7 @@ struct ClientesListView: View {
             .navigationDestination(for: Cliente.self) { ClienteDetalleView(cliente: $0) }
             .navigationDestination(for: Vehiculo.self) { VehiculoDetalleView(vehiculo: $0) }
             .navigationDestination(for: OrdenServicio.self) { OrdenDetalleView(orden: $0) }
+            .navigationDestination(for: Factura.self) { FacturaDetalleView(factura: $0) }
             .task {
                 guard ArranqueDemo.abrir == "cliente" else { return }
                 try? await Task.sleep(for: .seconds(1))

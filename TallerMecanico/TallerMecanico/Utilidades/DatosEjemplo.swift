@@ -72,6 +72,9 @@ enum DatosEjemplo {
         linea(.refaccion, "Termostato", 1, 680, o3)
         linea(.refaccion, anticongelante.nombre, 2, anticongelante.precioVenta, o3, anticongelante)
         o3.estado = .entregado
+        let factura = Factura(folio: 1, diasGarantia: 30, metodoPago: .transferencia)
+        context.insert(factura)
+        factura.orden = o3
 
         let o4 = OrdenServicio(folio: 4, problemaReportado: "Revisión de luz de check engine.", kilometraje: 61_000)
         context.insert(o4)
@@ -95,6 +98,7 @@ enum DatosEjemplo {
     }
 
     static func borrarTodo(en context: ModelContext) {
+        try? context.delete(model: Factura.self)
         try? context.delete(model: LineaOrden.self)
         try? context.delete(model: OrdenServicio.self)
         try? context.delete(model: Cita.self)

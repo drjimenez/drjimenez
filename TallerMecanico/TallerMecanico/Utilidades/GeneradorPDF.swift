@@ -1,23 +1,38 @@
 import SwiftUI
 
 enum GeneradorPDF {
-    /// Genera un PDF (una sola página tamaño carta de ancho) con la orden de servicio.
+    /// Tamaño carta en puntos (8.5 × 11 in).
+    static let carta = CGSize(width: 612, height: 792)
+
     static func crear(orden: OrdenServicio) -> URL? {
-        let ancho: CGFloat = 612
-        let vista = OrdenDocumentoView(orden: orden, taller: .actual)
-            .frame(width: ancho)
+        crear(OrdenDocumentoView(orden: orden, taller: .actual), nombre: orden.folioTexto)
+    }
+
+    static func crear(factura: Factura) -> URL? {
+        crear(FacturaDocumentoView(factura: factura, taller: .actual), nombre: factura.folioTexto)
+    }
+
+    /// Renderiza una vista en una hoja tamaño carta lista para imprimir.
+    /// Si el contenido es más alto que la hoja, se reduce para que quepa completo.
+    static func crear<Contenido: View>(_ contenido: Contenido, nombre: String) -> URL? {
+        let vista = contenido
+            .frame(width: carta.width)
             .environment(\.colorScheme, .light)
 
         let renderer = ImageRenderer(content: vista)
-        renderer.proposedSize = ProposedViewSize(width: ancho, height: nil)
+        renderer.proposedSize = ProposedViewSize(width: carta.width, height: nil)
 
-        let url = URL.temporaryDirectory.appending(path: "\(orden.folioTexto).pdf")
+        let url = URL.temporaryDirectory.appending(path: "\(nombre).pdf")
         var exito = false
 
         renderer.render { tamano, dibujar in
-            var caja = CGRect(origin: .zero, size: tamano)
+            var caja = CGRect(origin: .zero, size: carta)
             guard let pdf = CGContext(url as CFURL, mediaBox: &caja, nil) else { return }
             pdf.beginPDFPage(nil)
+            let escala = min(1, carta.height / max(tamano.height, 1), carta.width / max(tamano.width, 1))
+            // El origen del PDF está abajo a la izquierda: se alinea el contenido arriba.
+            pdf.translateBy(x: 0, y: carta.height - tamano.height * escala)
+            pdf.scaleBy(x: escala, y: escala)
             dibujar(pdf)
             pdf.endPDFPage()
             pdf.closePDF()

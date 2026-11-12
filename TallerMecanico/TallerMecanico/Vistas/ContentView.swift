@@ -51,5 +51,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .modelContainer(for: [Cliente.self, Vehiculo.self, OrdenServicio.self,
-                              LineaOrden.self, Refaccion.self, Cita.self], inMemory: true)
+                              LineaOrden.self, Refaccion.self, Cita.self, Factura.self], inMemory: true)
 }

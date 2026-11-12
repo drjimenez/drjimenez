@@ -6,7 +6,8 @@ struct OrdenDetalleView: View {
     @Bindable var orden: OrdenServicio
 
     @State private var agregarLinea: TipoLinea?
-    @State private var pdfURL: URL?
+    @State private var documento: DocumentoPDF?
+    @State private var mostrarFactura = false
 
     var body: some View {
         Form {
@@ -29,15 +30,31 @@ struct OrdenDetalleView: View {
                 TextField("Notas que no aparecen en el documento", text: $orden.observaciones, axis: .vertical)
             }
 
-            Section("Documento") {
-                Button("Generar PDF de la orden", systemImage: "doc.richtext") {
-                    pdfURL = GeneradorPDF.crear(orden: orden)
-                }
-                if let pdfURL {
-                    ShareLink(item: pdfURL,
-                              preview: SharePreview(orden.folioTexto, image: Image(systemName: "doc.fill"))) {
-                        Label("Compartir \(orden.folioTexto).pdf", systemImage: "square.and.arrow.up")
+            Section {
+                if let factura = orden.factura {
+                    NavigationLink(value: factura) {
+                        HStack {
+                            Label("Factura \(factura.folioTexto)", systemImage: "doc.text.fill")
+                            Spacer()
+                            GarantiaBadge(factura: factura)
+                        }
                     }
+                } else {
+                    Button("Generar factura al cliente", systemImage: "doc.badge.plus") {
+                        mostrarFactura = true
+                    }
+                    .disabled(orden.lineas.isEmpty)
+                }
+                Button("Orden de servicio en PDF", systemImage: "doc.richtext") {
+                    if let url = GeneradorPDF.crear(orden: orden) {
+                        documento = DocumentoPDF(url: url, titulo: orden.folioTexto)
+                    }
+                }
+            } header: {
+                Text("Facturación y documentos")
+            } footer: {
+                if orden.factura == nil {
+                    Text("La factura detalla mano de obra, tiempo, refacciones, anticipo y la garantía de mano de obra en una hoja carta imprimible.")
                 }
             }
         }
@@ -46,7 +63,8 @@ struct OrdenDetalleView: View {
         .sheet(item: $agregarLinea) { tipo in
             LineaFormView(orden: orden, tipo: tipo)
         }
-        .onChange(of: orden.lineas.count) { pdfURL = nil }
+        .sheet(item: $documento) { VistaPreviaPDF(documento: $0) }
+        .sheet(isPresented: $mostrarFactura) { FacturaFormView(orden: orden) }
     }
 
     private var encabezado: some View {
@@ -163,6 +181,5 @@ struct OrdenDetalleView: View {
         linea.refaccion?.existencia += linea.unidadesInventario
         orden.lineas.removeAll { $0.persistentModelID == linea.persistentModelID }
         context.delete(linea)
-        pdfURL = nil
     }
 }

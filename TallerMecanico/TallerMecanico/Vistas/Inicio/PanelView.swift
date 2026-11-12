@@ -57,6 +57,7 @@ struct PanelView: View {
             .sheet(isPresented: $mostrarAjustes) { AjustesView() }
             .sheet(isPresented: $mostrarNuevaOrden) { NuevaOrdenView() }
             .navigationDestination(for: OrdenServicio.self) { OrdenDetalleView(orden: $0) }
+            .navigationDestination(for: Factura.self) { FacturaDetalleView(factura: $0) }
             .task {
                 switch ArranqueDemo.abrir {
                 case "ajustes": mostrarAjustes = true

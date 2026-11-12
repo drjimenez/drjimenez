@@ -13,7 +13,8 @@ struct TallerMecanicoApp: App {
             OrdenServicio.self,
             LineaOrden.self,
             Refaccion.self,
-            Cita.self
+            Cita.self,
+            Factura.self
         ])
     }
 }

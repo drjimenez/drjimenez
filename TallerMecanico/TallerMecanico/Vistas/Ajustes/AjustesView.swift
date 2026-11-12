@@ -12,6 +12,7 @@ struct AjustesView: View {
     @AppStorage(Preferencias.terminosKey) private var terminos = Preferencias.terminosPredeterminados
     @AppStorage(Preferencias.ivaKey) private var tasaIVA = 0.16
     @AppStorage(Preferencias.monedaKey) private var moneda = Preferencias.monedaPredeterminada
+    @AppStorage(Preferencias.diasGarantiaKey) private var diasGarantia = 30
 
     @State private var confirmarBorrado = false
 
@@ -49,6 +50,14 @@ struct AjustesView: View {
                     Text("Impuestos y moneda")
                 } footer: {
                     Text("El IVA se aplica a las órdenes nuevas; las existentes conservan su tasa.")
+                }
+
+                Section {
+                    Stepper("Garantía: \(diasGarantia) días", value: $diasGarantia, in: 0...365, step: 15)
+                } header: {
+                    Text("Garantía")
+                } footer: {
+                    Text("Plazo de garantía sobre la mano de obra que se propone al generar cada factura.")
                 }
 
                 Section("Términos y condiciones") {

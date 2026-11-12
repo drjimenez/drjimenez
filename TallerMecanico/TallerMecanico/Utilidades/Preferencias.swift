@@ -9,6 +9,7 @@ enum Preferencias {
     static let terminosKey = "terminosOrden"
     static let ivaKey = "tasaIVA"
     static let monedaKey = "moneda"
+    static let diasGarantiaKey = "diasGarantia"
 
     static let monedaPredeterminada = Locale.current.currency?.identifier ?? "MXN"
     static let terminosPredeterminados = """
@@ -19,6 +20,10 @@ enum Preferencias {
 
     static var moneda: String {
         UserDefaults.standard.string(forKey: monedaKey) ?? monedaPredeterminada
+    }
+
+    static var diasGarantia: Int {
+        UserDefaults.standard.object(forKey: diasGarantiaKey) as? Int ?? 30
     }
 
     static var tasaIVA: Double {
