@@ -1,0 +1,9 @@
+session,or_min,symbol,days,range_bp_median,pct_up,pct_down,pct_no_break,min_to_break_median,pct_retest_level,pct_no_retest,pct_failed_opposite,pct_close_beyond_level
+London,15,QQQUSDT,136,16.3,54.4,45.6,0.0,8.0,93.4,6.6,53.7,47.1
+London,15,SPYUSDT,136,8.0,55.1,44.9,0.0,7.0,94.9,5.1,58.8,48.5
+London,20,QQQUSDT,136,17.1,55.9,44.1,0.0,9.5,91.9,8.1,47.1,49.3
+London,20,SPYUSDT,136,9.1,55.1,44.9,0.0,11.5,93.4,6.6,53.7,50.0
+NewYork,15,QQQUSDT,135,48.1,54.8,45.2,0.0,4.0,91.1,8.9,50.4,49.6
+NewYork,15,SPYUSDT,135,23.2,57.0,43.0,0.0,4.0,92.6,7.4,48.1,58.5
+NewYork,20,QQQUSDT,135,54.1,55.6,43.0,1.5,9.0,93.2,6.8,41.4,49.6
+NewYork,20,SPYUSDT,135,26.5,56.3,43.0,0.7,8.0,91.0,9.0,41.8,56.7

@@ -1,0 +1,118 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0
+// ORB Londres / Nueva York + Fibonacci
+// Dibuja el rango de apertura (15 o 20 min) de Londres y Nueva York, los retrocesos Fibonacci
+// dentro del rango y las extensiones fuera de él, y marca la primera ruptura por cierre y el
+// primer retest del nivel roto. Mismas definiciones que el estudio en Python (orb/engine.py).
+// Úsalo en gráficos de 1 a 5 minutos.
+//@version=6
+indicator("ORB Londres/NY + Fibonacci", overlay = true, max_lines_count = 500, max_labels_count = 500)
+
+grpL = "Londres"
+showLon = input.bool(true, "Mostrar Londres", group = grpL)
+lonOR   = input.session("0800-0815", "Rango de apertura (hora de Londres)", group = grpL, tooltip = "Pon 0800-0820 para el rango de 20 minutos")
+lonHor  = input.session("0800-1200", "Horizonte (hasta cuándo se dibujan los niveles)", group = grpL)
+colLon  = input.color(#2a78d6, "Color", group = grpL)
+
+grpN = "Nueva York"
+showNy = input.bool(true, "Mostrar Nueva York", group = grpN)
+nyOR   = input.session("0930-0945", "Rango de apertura (hora de Nueva York)", group = grpN, tooltip = "Pon 0930-0950 para el rango de 20 minutos")
+nyHor  = input.session("0930-1600", "Horizonte (hasta cuándo se dibujan los niveles)", group = grpN)
+colNy  = input.color(#eb6834, "Color", group = grpN)
+
+grpF = "Fibonacci"
+showRet   = input.bool(true, "Retrocesos dentro del rango (23.6 / 38.2 / 50 / 61.8 / 78.6)", group = grpF)
+showExt   = input.bool(true, "Extensiones fuera del rango (1.272 / 1.618 / 2.0 / 2.618)", group = grpF)
+showMarks = input.bool(true, "Marcar ruptura y retest", group = grpF)
+showStats = input.bool(true, "Tabla de probabilidades del estudio", group = grpF)
+
+var RET = array.from(0.236, 0.382, 0.5, 0.618, 0.786)
+var EXT = array.from(0.272, 0.618, 1.0, 1.618)
+
+newLine(int x1, float y, color col, string sty, int w) =>
+    line.new(x1, y, bar_index, y, color = col, style = sty, width = w)
+
+// Una llamada por sesión: las variables 'var' de cada llamada son independientes.
+orb(string sessOR, string sessHor, string tz, color col, string name, bool enabled) =>
+    inOR  = enabled and not na(time(timeframe.period, sessOR, tz))
+    inHor = enabled and not na(time(timeframe.period, sessHor, tz))
+    var float hi = na
+    var float lo = na
+    var int startBar = na
+    var bool active = false
+    var int dir = 0
+    var bool retested = false
+    var array<line> lines = array.new<line>()
+
+    if inOR and not inOR[1]
+        hi := high
+        lo := low
+        startBar := bar_index
+        active := false
+        dir := 0
+        retested := false
+        array.clear(lines)
+    else if inOR
+        hi := na(hi) ? high : math.max(hi, high)
+        lo := na(lo) ? low : math.min(lo, low)
+
+    // Cierre del rango: primera vela fuera del OR dentro del horizonte
+    if inOR[1] and not inOR and inHor and not na(hi) and not na(startBar)
+        active := true
+        r = hi - lo
+        lightCol = color.new(col, 55)
+        array.push(lines, newLine(startBar, hi, col, line.style_solid, 2))
+        array.push(lines, newLine(startBar, lo, col, line.style_solid, 2))
+        if showRet
+            for k in RET
+                array.push(lines, newLine(startBar, lo + r * k, k == 0.5 ? col : lightCol, line.style_dotted, 1))
+        if showExt
+            for e in EXT
+                array.push(lines, newLine(startBar, hi + r * e, lightCol, line.style_dashed, 1))
+                array.push(lines, newLine(startBar, lo - r * e, lightCol, line.style_dashed, 1))
+        label.new(startBar, hi, name + " OR", style = label.style_label_lower_left, color = color.new(col, 85), textcolor = col, size = size.small)
+
+    if active and inHor
+        for l in lines
+            l.set_x2(bar_index)
+        // Ruptura: primer CIERRE fuera del rango
+        if dir == 0 and close > hi
+            dir := 1
+            if showMarks
+                label.new(bar_index, high, "▲ ruptura " + name, style = label.style_label_down, color = col, textcolor = color.white, size = size.small)
+        else if dir == 0 and close < lo
+            dir := -1
+            if showMarks
+                label.new(bar_index, low, "▼ ruptura " + name, style = label.style_label_up, color = col, textcolor = color.white, size = size.small)
+        else if dir != 0 and not retested and ((dir == 1 and low <= hi) or (dir == -1 and high >= lo))
+            retested := true
+            if showMarks
+                label.new(bar_index, dir == 1 ? hi : lo, "retest", style = label.style_label_left, color = color.new(col, 80), textcolor = col, size = size.tiny)
+    else if active and not inHor
+        active := false
+    dir
+
+orb(lonOR, lonHor, "Europe/London", colLon, "Londres", showLon)
+orb(nyOR, nyHor, "America/New_York", colNy, "NY", showNy)
+
+// Probabilidades medidas en el estudio (QQQ + SPY, 1 min, may-nov 2026, OR 15 min).
+// Actualízalas con los valores de orb/results/REPORT.md si cambias datos o período.
+if showStats and barstate.islast
+    var table t = table.new(position.top_right, 3, 6, bgcolor = color.new(color.gray, 90), border_width = 1)
+    table.cell(t, 0, 0, "Tras la ruptura (OR 15m)", text_size = size.small)
+    table.cell(t, 1, 0, "Londres", text_size = size.small)
+    table.cell(t, 2, 0, "NY", text_size = size.small)
+    table.cell(t, 0, 1, "Retest del nivel roto", text_size = size.small)
+    table.cell(t, 1, 1, "94%", text_size = size.small)
+    table.cell(t, 2, 1, "92%", text_size = size.small)
+    table.cell(t, 0, 2, "Retrocede al 50%", text_size = size.small)
+    table.cell(t, 1, 2, "79%", text_size = size.small)
+    table.cell(t, 2, 2, "74%", text_size = size.small)
+    table.cell(t, 0, 3, "Toca el extremo opuesto", text_size = size.small)
+    table.cell(t, 1, 3, "57%", text_size = size.small)
+    table.cell(t, 2, 3, "54%", text_size = size.small)
+    table.cell(t, 0, 4, "Llega a 1.618", text_size = size.small)
+    table.cell(t, 1, 4, "79%", text_size = size.small)
+    table.cell(t, 2, 4, "73%", text_size = size.small)
+    table.cell(t, 0, 5, "1.618 antes que 50%", text_size = size.small)
+    table.cell(t, 1, 5, "49%", text_size = size.small)
+    table.cell(t, 2, 5, "47%", text_size = size.small)
