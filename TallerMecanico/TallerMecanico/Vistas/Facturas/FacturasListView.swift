@@ -72,7 +72,7 @@ struct FilaFactura: View {
             Spacer(minLength: 8)
             VStack(alignment: .trailing, spacing: 4) {
                 Text((factura.orden?.total ?? 0).comoMoneda).font(.subheadline.bold())
-                GarantiaBadge(factura: factura)
+                GarantiaBadge(factura: factura, compacto: true)
             }
         }
     }

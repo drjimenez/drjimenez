@@ -287,9 +287,12 @@ struct FacturaDocumentoView: View {
 
     private func lineaFirma(_ titulo: String) -> some View {
         VStack(spacing: 4) {
-            Rectangle().fill(tinta).frame(height: 0.5)
+            Rectangle()
+                .fill(tinta)
+                .frame(maxWidth: .infinity, minHeight: 0.8, maxHeight: 0.8)
             Text(titulo).font(.system(size: 8)).foregroundStyle(gris)
         }
-        .padding(.top, 26)
+        .frame(maxWidth: .infinity)
+        .padding(.top, 34)
     }
 }

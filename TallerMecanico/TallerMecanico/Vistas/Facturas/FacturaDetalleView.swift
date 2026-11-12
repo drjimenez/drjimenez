@@ -3,10 +3,17 @@ import SwiftData
 
 struct GarantiaBadge: View {
     let factura: Factura
+    var compacto = false
+
+    private var texto: String {
+        let dias = factura.diasRestantesGarantia
+        if !factura.garantiaVigente { return compacto ? "Vencida" : "Garantía vencida" }
+        return compacto ? "\(dias) días" : "Garantía: \(dias) días"
+    }
 
     var body: some View {
         let vigente = factura.garantiaVigente
-        Label(vigente ? "Garantía: \(factura.diasRestantesGarantia) días" : "Garantía vencida",
+        Label(texto,
               systemImage: vigente ? "checkmark.shield.fill" : "shield.slash")
             .font(.caption.weight(.semibold))
             .lineLimit(1)

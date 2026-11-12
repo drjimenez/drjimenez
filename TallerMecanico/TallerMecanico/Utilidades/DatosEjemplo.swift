@@ -63,7 +63,8 @@ enum DatosEjemplo {
         o2.diagnostico = "Balatas delanteras al 10%. Discos dentro de tolerancia."
         linea(.manoDeObra, "Cambio de balatas delanteras", 1.5, 450, o2)
 
-        let o3 = OrdenServicio(folio: 3, problemaReportado: "Sobrecalentamiento en tráfico.", kilometraje: 60_800)
+        let o3 = OrdenServicio(folio: 3, problemaReportado: "Sobrecalentamiento en tráfico.", kilometraje: 60_800,
+                               anticipo: 1_000)
         context.insert(o3)
         o3.vehiculo = hilux
         o3.fechaIngreso = cal.date(byAdding: .day, value: -6, to: ahora) ?? ahora
