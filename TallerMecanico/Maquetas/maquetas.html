@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Maquetas Taller</title>
+<style>
+:root{--acc:#F96B24;--bg:#F2F2F7;--card:#fff;--txt:#000;--sec:#6e6e73;--sep:rgba(60,60,67,.18);--glass:rgba(255,255,255,.62);--glassb:rgba(255,255,255,.9)}
+.dark{--bg:#000;--card:#1c1c1e;--txt:#fff;--sec:#98989f;--sep:rgba(84,84,88,.6);--glass:rgba(44,44,46,.6);--glassb:rgba(255,255,255,.14);--acc:#FF863E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"SF Pro Text","Inter","Helvetica Neue",Arial,sans-serif;background:#ddd;display:flex;flex-wrap:wrap;gap:40px;padding:40px}
+.phone{width:393px;height:852px;border-radius:55px;overflow:hidden;position:relative;background:var(--bg);color:var(--txt);box-shadow:0 0 0 11px #1a1a1a,0 0 0 13px #444,0 30px 60px rgba(0,0,0,.35)}
+.status{height:54px;display:flex;justify-content:space-between;align-items:center;padding:14px 34px 0;font-weight:600;font-size:17px;position:relative;z-index:5}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:124px;height:36px;background:#000;border-radius:20px;z-index:6}
+.icons{display:flex;gap:6px;align-items:center;font-size:13px}
+.bat{width:26px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1px;opacity:.9}.bat i{display:block;height:100%;background:currentColor;border-radius:2px}
+.scroll{position:absolute;top:54px;bottom:0;left:0;right:0;overflow:hidden;padding-bottom:100px}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:4px 16px;height:48px}
+.gbtn{width:44px;height:44px;border-radius:22px;background:var(--glass);backdrop-filter:blur(20px);border:.5px solid var(--glassb);box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--txt)}
+.gbtn.p{background:var(--acc);color:#fff;border-color:transparent}
+.gpill{height:44px;border-radius:22px;padding:0 16px;background:var(--glass);backdrop-filter:blur(20px);border:.5px solid var(--glassb);display:flex;align-items:center;gap:6px;font-size:16px;font-weight:500;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+h1{font-size:34px;font-weight:700;padding:2px 16px 10px;letter-spacing:.3px}
+.navtitle{font-size:17px;font-weight:600}
+.tabbar{position:absolute;bottom:22px;left:16px;right:16px;height:64px;border-radius:32px;background:var(--glass);backdrop-filter:blur(24px) saturate(1.6);border:.5px solid var(--glassb);box-shadow:0 8px 30px rgba(0,0,0,.14);display:flex;justify-content:space-around;align-items:center;padding:0 6px;z-index:9}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:500;color:var(--txt);flex:1;padding:7px 0;border-radius:26px}
+.tab .ic{font-size:21px;line-height:24px}
+.tab.on{color:var(--acc);background:rgba(120,120,128,.14)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 16px}
+.metric{border-radius:24px;padding:14px;background:var(--glass);backdrop-filter:blur(20px);border:.5px solid var(--glassb);box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.metric .ic{font-size:22px}.metric .v{font-size:27px;font-weight:700;margin:6px 0 2px;white-space:nowrap}.metric .t{font-size:14px;color:var(--sec);line-height:1.2}
+.panel{margin:16px;border-radius:24px;padding:16px;background:var(--glass);backdrop-filter:blur(20px);border:.5px solid var(--glassb);box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.panel h3{font-size:17px;font-weight:600;margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.link{color:var(--acc);font-size:15px;margin-top:6px}
+.row{display:flex;align-items:center;gap:12px;padding:6px 0}
+.circ{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.mono{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:600}
+.f1{flex:1;min-width:0}.sub{font-size:15px}.cap{font-size:12.5px;color:var(--sec)}
+.right{text-align:right}.b{font-weight:600}
+.list{margin:0 16px 22px;border-radius:26px;background:var(--card);overflow:hidden}
+.list .it{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:.5px solid var(--sep);min-height:50px;font-size:17px}
+.list .it:last-child{border-bottom:none}
+.chev{color:var(--sec);opacity:.6;font-size:15px}
+.shead{font-size:13px;color:var(--sec);text-transform:uppercase;padding:0 32px 7px;letter-spacing:.2px}
+.seg{margin:0 16px 14px;height:36px;border-radius:18px;background:rgba(120,120,128,.14);display:flex;padding:2px}
+.seg div{flex:1;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;border-radius:16px}
+.seg .on{background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.search{margin:0 16px 12px;height:38px;border-radius:19px;background:rgba(120,120,128,.14);display:flex;align-items:center;gap:6px;padding:0 12px;color:var(--sec);font-size:17px}
+.badge{display:inline-flex;gap:4px;align-items:center;font-size:12px;font-weight:600;padding:4px 8px;border-radius:12px;white-space:nowrap}
+.prog{height:5px;border-radius:3px;background:rgba(120,120,128,.2);overflow:hidden}.prog i{display:block;height:100%}
+.lc{display:flex;justify-content:space-between;width:100%}.lc span:last-child{color:var(--sec)}
+.contact{display:flex;gap:10px;margin:0 16px 22px}
+.contact div{flex:1;height:62px;border-radius:31px;background:var(--glass);backdrop-filter:blur(20px);border:.5px solid var(--glassb);box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;gap:2px;color:var(--acc)}
+.contact div b{font-size:19px}
+.av{width:40px;height:40px;border-radius:20px;background:linear-gradient(180deg,#ff9a5a,var(--acc));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;flex-shrink:0}
+.cal{margin:0 16px 22px;border-radius:26px;background:var(--card);padding:14px 14px 10px}
+.cal .hd{display:flex;justify-content:space-between;font-weight:600;font-size:17px;padding:0 4px 10px}.cal .hd span:last-child{color:var(--acc)}
+.cal table{width:100%;text-align:center;border-collapse:collapse;font-size:19px}
+.cal th{font-size:12px;color:var(--sec);font-weight:600;padding-bottom:6px}
+.cal td{height:40px}.cal td span{display:inline-flex;width:38px;height:38px;border-radius:19px;align-items:center;justify-content:center}
+.cal .sel span{background:var(--acc);color:#fff;font-weight:600}.cal .mut{color:var(--sec);opacity:.4}
+.bar{width:4px;align-self:stretch;border-radius:2px;background:var(--acc)}
+.sheetbg{position:absolute;inset:0;background:rgba(0,0,0,.25)}
+.sheet{position:absolute;top:66px;left:8px;right:8px;bottom:0;border-radius:38px 38px 0 0;background:var(--bg);overflow:hidden}
+.field{color:var(--sec)}
+.bg-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(249,107,36,.30),var(--bg) 50%)}
+.dark .bg-grad{background:linear-gradient(180deg,rgba(255,134,62,.30),#000 50%)}
+.caption{width:393px;text-align:center;font-weight:600;margin-top:22px;font-size:18px;color:#333}
+.wrap{display:flex;flex-direction:column;align-items:center}
+</style></head><body>
+<script>
+const T = s => s; // helper
+const status = `<div class="island"></div><div class="status"><span>9:41</span><span class="icons">●●●● <span class="bat"><i></i></span></span></div>`;
+const tabs = on => `<div class="tabbar">${[["inicio","🏠","Inicio"],["ordenes","🔧","Órdenes"],["clientes","👥","Clientes"],["inventario","📦","Inventario"],["agenda","📅","Agenda"]].map(([k,i,t])=>`<div class="tab ${k==on?'on':''}"><span class="ic">${i}</span>${t}</div>`).join("")}</div>`;
+const est = {
+ rep:["En reparación","🔧","#007AFF"], ref:["Esperando refacciones","📦","#D4A100"], listo:["Listo para entregar","✔︎","#34C759"], ent:["Entregado","🚗","#30B0C7"]};
+const badge = k => { const [t,i,c]=est[k]; return `<span class="badge" style="color:${c};background:${c}26">${i} ${t}</span>`};
+const filaOrden = (f,veh,cli,tot,k) => { const [t,i,c]=est[k]; return `<div class="row"><div class="circ" style="background:${c}26;color:${c}">${i}</div><div class="f1"><div class="mono" style="font-size:16px">${f}</div><div class="sub">${veh}</div><div class="cap">${cli}</div></div><div class="right"><div class="b" style="font-size:15px">${tot}</div><div style="font-size:11px;color:${c}">${t}</div></div></div>`};
+const O = {
+ o1:["OS-00001","Nissan Versa (ABC-123-D)","Ana López","$3,027.60","rep"],
+ o2:["OS-00002","Volkswagen Jetta (JKL-456-M)","Carlos Ramírez","$783.00","ref"],
+ o4:["OS-00004","Toyota Hilux (NL-7788-X)","Transportes del Norte","$696.00","listo"]};
+const screens = [];
+
+// 1 Inicio
+const inicio = dark => `<div class="phone ${dark?'dark':''}"><div class="bg-grad"></div>${status}<div class="scroll">
+<div class="nav"><div class="gbtn">⚙︎</div><div class="gbtn">＋</div></div>
+<h1>Taller Jiménez</h1>
+<div class="grid">
+ <div class="metric"><div class="ic" style="color:#007AFF">🔧</div><div class="v">3</div><div class="t">Órdenes activas</div></div>
+ <div class="metric"><div class="ic" style="color:#34C759">✔︎</div><div class="v">1</div><div class="t">Listas para entregar</div></div>
+ <div class="metric"><div class="ic" style="color:#30B0C7">💵</div><div class="v">$2,737.60</div><div class="t">Ingresos del mes</div></div>
+ <div class="metric"><div class="ic" style="color:#FF9500">⚠︎</div><div class="v">2</div><div class="t">Refacciones con stock bajo</div></div>
+</div>
+<div class="panel"><h3>🚘 Vehículos en el taller</h3>${filaOrden(...O.o1)}${filaOrden(...O.o2)}${filaOrden(...O.o4)}</div>
+<div class="panel"><h3>📅 Citas de hoy</h3>
+ <div class="row"><span class="b" style="width:64px">10:00</span><div><div>Alineación y balanceo</div><div class="cap">Ana López</div></div></div>
+ <div class="row"><span class="b" style="width:64px">16:00</span><div><div>Diagnóstico de suspensión</div><div class="cap">Transportes del Norte</div></div></div>
+ <div class="link">Abrir agenda</div></div>
+</div>${tabs("inicio")}</div>`;
+screens.push(["01-inicio","Inicio · panel del taller",inicio(false)]);
+
+// 2 Órdenes
+screens.push(["02-ordenes","Órdenes de servicio",`<div class="phone">${status}<div class="scroll">
+<div class="nav"><div></div><div class="gbtn">＋</div></div><h1>Órdenes</h1>
+<div class="search">🔍 Folio, placa, cliente…</div>
+<div class="seg"><div class="on">Activas</div><div>Entregadas</div><div>Todas</div></div>
+<div class="list">${[O.o4,O.o2,O.o1].map(o=>`<div class="it" style="padding:8px 16px">${filaOrden(...o).replace('class="row"','class="row" style="flex:1"')}<span class="chev">›</span></div>`).join("")}</div>
+</div>${tabs("ordenes")}</div>`]);
+
+// 3 Detalle
+const detalle = dark => `<div class="phone ${dark?'dark':''}">${status}<div class="scroll">
+<div class="nav"><div class="gbtn">‹</div><div class="navtitle">OS-00001</div><div style="width:44px"></div></div>
+<div style="height:8px"></div>
+<div class="list"><div class="it" style="flex-direction:column;align-items:stretch;gap:10px;padding:14px 16px">
+ <div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="mono" style="font-size:22px">OS-00001</div><div class="cap" style="font-size:15px">Ingreso: 12 nov 2026, 9:12</div></div>${badge("rep")}</div>
+ <div class="prog"><i style="width:70%;background:#007AFF"></i></div></div>
+ <div class="it"><div class="lc"><span>Estado</span><span>En reparación ⌃⌄</span></div></div>
+ <div class="it"><div class="lc"><span>Entrega prometida</span><span>12 nov 2026 · 14:12</span></div></div></div>
+<div class="shead">Vehículo y cliente</div>
+<div class="list"><div class="it"><div class="lc"><span>Vehículo</span><span>Nissan Versa 2021</span></div></div>
+ <div class="it"><div class="lc"><span>Placas</span><span>ABC-123-D</span></div></div>
+ <div class="it"><div class="lc"><span>Cliente</span><span>Ana López</span></div></div></div>
+<div class="contact" style="margin-top:-10px"><div><b>📞</b>Llamar</div><div><b>💬</b>WhatsApp</div><div><b>✉︎</b>Correo</div></div>
+<div class="shead">Refacciones</div>
+<div class="list">
+ <div class="it"><div class="f1"><div>Aceite sintético 5W-30 (L)</div><div class="cap">4 × $210.00</div></div><span>$840.00</span></div>
+ <div class="it"><div class="f1"><div>Filtro de aceite</div><div class="cap">1 × $160.00</div></div><span>$160.00</span></div>
+ <div class="it"><div class="f1"><div>Bujía iridio</div><div class="cap">4 × $190.00</div></div><span>$760.00</span></div>
+ <div class="it" style="color:var(--acc)">⊕ Agregar refacción</div></div>
+<div class="shead">Totales</div>
+<div class="list"><div class="it"><div class="lc"><span>Subtotal</span><span>$2,610.00</span></div></div>
+ <div class="it"><div class="lc"><span>IVA (16 %)</span><span>$417.60</span></div></div>
+ <div class="it"><div class="lc b"><span>Total</span><span style="color:var(--txt)">$3,027.60</span></div></div></div>
+</div>${tabs("ordenes")}</div>`;
+screens.push(["03-detalle-orden","Detalle de la orden",detalle(false)]);
+
+// 4 Nueva orden (hoja)
+screens.push(["04-nueva-orden","Nueva orden de servicio",`<div class="phone">${status}<div class="sheetbg"></div><div class="sheet">
+<div class="nav" style="padding-top:12px;height:64px"><div class="gpill">Cancelar</div><div class="navtitle">Orden OS-00005</div><div class="gbtn p">✓</div></div>
+<div style="height:10px"></div>
+<div class="shead">Vehículo</div>
+<div class="list"><div class="it"><div class="lc"><span>Vehículo</span><span>Nissan Versa (ABC-123-D) ›</span></div></div>
+ <div class="it" style="color:var(--acc)">👤 Registrar cliente nuevo</div></div>
+<div class="shead">Recepción</div>
+<div class="list"><div class="it"><div class="lc"><span>Kilometraje</span><span>48,200</span></div></div>
+ <div class="it" style="flex-direction:column;align-items:stretch;gap:10px"><div class="lc"><span>Combustible</span><span>75 %</span></div>
+ <div style="display:flex;align-items:center;gap:10px;color:var(--sec)">⛽︎<div style="flex:1;height:6px;border-radius:3px;background:rgba(120,120,128,.2);position:relative"><i style="position:absolute;left:0;top:0;bottom:0;width:75%;background:var(--acc);border-radius:3px"></i><b style="position:absolute;left:calc(75% - 14px);top:-11px;width:28px;height:28px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)"></b></div>⛽︎</div></div>
+ <div class="it"><div class="lc"><span>Fecha promesa de entrega</span><span style="width:51px;height:31px;border-radius:16px;background:#34C759;position:relative"><b style="position:absolute;right:2px;top:2px;width:27px;height:27px;border-radius:14px;background:#fff"></b></span></div></div>
+ <div class="it"><div class="lc"><span>Entrega</span><span>13 nov 2026 · 18:00</span></div></div></div>
+<div class="shead">Problema reportado por el cliente</div>
+<div class="list"><div class="it" style="align-items:flex-start;min-height:90px">Ruido en la suspensión delantera al pasar topes.</div></div>
+<div class="shead">Anticipo</div>
+<div class="list"><div class="it">$500.00</div></div>
+</div></div>`]);
+
+// 5 Clientes
+screens.push(["05-clientes","Clientes",`<div class="phone">${status}<div class="scroll">
+<div class="nav"><div></div><div class="gbtn">👤</div></div><h1>Clientes</h1>
+<div class="search">🔍 Nombre, teléfono o placa</div>
+<div class="list">${[["AL","Ana López","Nissan Versa (ABC-123-D)"],["CR","Carlos Ramírez","Volkswagen Jetta (JKL-456-M)"],["TD","Transportes del Norte","Toyota Hilux (NL-7788-X)"]].map(([i,n,v])=>`<div class="it"><div class="av">${i}</div><div class="f1"><div class="b">${n}</div><div class="cap" style="font-size:15px">${v}</div></div><span class="chev">›</span></div>`).join("")}</div>
+</div>${tabs("clientes")}</div>`]);
+
+// 6 Ficha cliente
+screens.push(["06-ficha-cliente","Ficha del cliente",`<div class="phone">${status}<div class="scroll">
+<div class="nav"><div class="gbtn">‹</div><div class="navtitle">Transportes del Norte</div><div class="gpill">Editar</div></div>
+<div style="height:8px"></div>
+<div class="list"><div class="it" style="padding:16px"><div class="av" style="width:64px;height:64px;border-radius:32px;font-size:25px">TD</div><div><div class="b" style="font-size:22px">Transportes del Norte</div><div class="cap" style="font-size:15px">Cliente desde noviembre de 2026</div></div></div></div>
+<div class="contact" style="margin-top:-10px"><div><b>📞</b>Llamar</div><div><b>💬</b>WhatsApp</div><div><b>✉︎</b>Correo</div></div>
+<div class="shead">Contacto</div>
+<div class="list"><div class="it"><div class="lc"><span>Teléfono</span><span>81 5555 0101</span></div></div>
+ <div class="it"><div class="lc"><span>Correo</span><span>flotilla@example.com</span></div></div>
+ <div class="it"><div class="lc"><span>Total facturado</span><span>$2,737.60</span></div></div></div>
+<div class="shead">Vehículos</div>
+<div class="list"><div class="it"><div class="f1"><div class="b">Toyota Hilux 2022</div><div class="cap" style="font-size:15px">NL-7788-X · 61,000 km</div></div><span class="chev">›</span></div>
+ <div class="it" style="color:var(--acc)">🚙 Agregar vehículo</div></div>
+<div class="shead">Notas</div>
+<div class="list"><div class="it">Facturar a nombre de la empresa.</div></div>
+</div>${tabs("clientes")}</div>`]);
+
+// 7 Inventario
+const ref = (n,d,p,e,col) => `<div class="it"><div class="f1"><div class="b">${n}</div><div class="cap">${d}</div><div style="font-size:15px">${p}</div></div><div class="right" style="color:${col||'var(--txt)'};min-width:56px;text-align:center"><div style="font-size:23px;font-weight:700">${e}</div><div style="font-size:11px">en stock</div></div></div>`;
+screens.push(["07-inventario","Inventario de refacciones",`<div class="phone">${status}<div class="scroll">
+<div class="nav"><div class="gpill">⚠︎</div><div class="gbtn">＋</div></div><h1>Inventario</h1>
+<div class="search">🔍 Nombre, código, marca…</div>
+<div class="list"><div class="it"><div class="lc"><span>Artículos</span><span>5</span></div></div><div class="it"><div class="lc"><span>Valor del inventario (costo)</span><span>$7,540.00</span></div></div></div>
+<div class="list">
+${ref("Aceite sintético 5W-30 (L)","ACE-530 · Mobil · Estante A1","$210.00",24)}
+${ref("Anticongelante (galón)","ANT-G · Prestone · Estante A3","$390.00",1,"#FF9500")}
+${ref("Balatas delanteras cerámicas","BD-778 · Brembo · Estante B1","$980.00",2,"#FF9500")}
+${ref("Bujía iridio","BJ-IR4 · NGK · Cajón C3","$190.00",16)}
+${ref("Filtro de aceite","FA-1021 · Fram · Estante A2","$160.00",8)}
+</div></div>${tabs("inventario")}</div>`]);
+
+// 8 Agenda
+let cal = "";{ const first=0; /* nov 2026 starts Sunday */ let d=1; let rows=""; for(let w=0;w<5;w++){rows+="<tr>";for(let k=0;k<7;k++){ const idx=w*7+k; const day=idx-first+1; rows+= day>=1&&day<=30?`<td class="${day==12?'sel':''}"><span>${day}</span></td>`:`<td></td>`;}rows+="</tr>";} cal=rows; }
+screens.push(["08-agenda","Agenda de citas",`<div class="phone">${status}<div class="scroll">
+<div class="nav"><div class="gpill">Hoy</div><div class="gbtn">＋</div></div><h1>Agenda</h1>
+<div class="cal"><div class="hd"><span>noviembre de 2026 ›</span><span>‹ &nbsp; ›</span></div>
+<table><tr>${["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"].map(x=>`<th>${x}</th>`).join("")}</tr>${cal}</table></div>
+<div class="shead">Jueves, 12 de noviembre de 2026</div>
+<div class="list">
+ <div class="it" style="align-items:stretch"><div class="right" style="width:56px"><div class="b" style="font-size:15px">10:00</div><div class="cap" style="font-size:11px">60 min</div></div><div class="bar"></div><div><div class="b">Alineación y balanceo</div><div style="font-size:15px">Ana López</div><div class="cap">Nissan Versa (ABC-123-D)</div></div></div>
+ <div class="it" style="align-items:stretch"><div class="right" style="width:56px"><div class="b" style="font-size:15px">16:00</div><div class="cap" style="font-size:11px">90 min</div></div><div class="bar"></div><div><div class="b">Diagnóstico de suspensión</div><div style="font-size:15px">Transportes del Norte</div><div class="cap">Toyota Hilux (NL-7788-X)</div></div></div>
+</div></div>${tabs("agenda")}</div>`]);
+
+screens.push(["09-inicio-oscuro","Inicio · modo oscuro",inicio(true)]);
+screens.push(["10-detalle-oscuro","Detalle · modo oscuro",detalle(true)]);
+
+document.body.innerHTML = screens.map(([id,cap,html])=>`<div class="wrap" id="${id}">${html}<div class="caption">${cap}</div></div>`).join("");
+</script></body></html>
