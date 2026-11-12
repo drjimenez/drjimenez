@@ -1,0 +1,13 @@
+session,or_min,contexto_previo,directa,retest_continua,giro_continua,giro_rechazo,rango,n
+London,15,alza,5.3,72.1,18.8,3.0,0.9,741
+London,15,baja,5.0,71.5,19.7,2.0,1.8,603
+London,15,rango,4.0,70.7,21.8,2.6,1.0,1094
+London,20,alza,5.5,69.1,19.8,2.4,3.1,741
+London,20,baja,5.6,68.6,18.8,2.8,4.2,602
+London,20,rango,5.3,70.7,18.2,3.5,2.3,1093
+NewYork,15,alza,5.8,67.4,22.6,2.2,2.1,674
+NewYork,15,baja,3.7,76.3,16.9,2.4,0.6,617
+NewYork,15,rango,5.6,71.7,18.6,3.4,0.7,1032
+NewYork,20,alza,5.6,70.6,18.3,2.5,3.0,673
+NewYork,20,baja,5.4,74.8,14.5,3.7,1.6,615
+NewYork,20,rango,5.2,71.9,17.7,3.3,1.8,1030

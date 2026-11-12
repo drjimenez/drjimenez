@@ -1,0 +1,13 @@
+session,or_min,ruptura_vs_previo,directa,retest_continua,giro_continua,giro_rechazo,rango,n
+London,15,a favor,6.0,69.6,19.6,2.8,2.0,652
+London,15,en contra,4.3,73.8,18.8,2.3,0.7,692
+London,15,sin tendencia,4.0,70.7,21.8,2.6,1.0,1094
+London,20,a favor,5.7,67.9,19.4,3.1,3.9,644
+London,20,en contra,5.4,69.8,19.3,2.1,3.3,699
+London,20,sin tendencia,5.3,70.7,18.2,3.5,2.3,1093
+NewYork,15,a favor,5.8,70.7,20.1,2.5,0.9,642
+NewYork,15,en contra,3.9,72.6,19.6,2.2,1.8,649
+NewYork,15,sin tendencia,5.6,71.7,18.6,3.4,0.7,1032
+NewYork,20,a favor,6.2,71.2,17.2,3.3,2.1,632
+NewYork,20,en contra,4.9,73.9,15.7,2.9,2.6,656
+NewYork,20,sin tendencia,5.2,71.9,17.7,3.3,1.8,1030

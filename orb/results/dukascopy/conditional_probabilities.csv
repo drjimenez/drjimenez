@@ -1,0 +1,49 @@
+dimension,value,session,or_min,breaks,pct_retest,pct_ret_50,pct_ext_1618,pct_ext_1618_before_ret_50,pct_failed_opposite
+break_dir,down,London,15,1169,95.4,75.2,73.9,52.3,52.5
+break_dir,up,London,15,1269,95.4,71.7,75.7,53.9,50.5
+break_dir,down,London,20,1131,95.4,71.4,70.7,52.6,45.8
+break_dir,up,London,20,1305,93.8,67.3,70.7,51.5,44.9
+break_dir,down,NewYork,15,1121,95.7,72.5,75.5,53.1,52.3
+break_dir,up,NewYork,15,1202,94.0,71.0,78.4,53.7,50.9
+break_dir,down,NewYork,20,1120,95.1,67.4,72.4,52.7,46.4
+break_dir,up,NewYork,20,1198,94.2,67.2,73.5,52.9,44.7
+range_tercile,pequeño,London,15,813,95.9,80.2,81.8,54.4,59.0
+range_tercile,medio,London,15,812,94.8,72.3,75.6,53.9,48.8
+range_tercile,grande,London,15,813,95.3,67.7,67.0,51.0,46.6
+range_tercile,pequeño,London,20,812,96.2,75.6,79.2,54.8,54.8
+range_tercile,medio,London,20,812,92.2,69.6,70.3,51.7,43.7
+range_tercile,grande,London,20,812,95.2,62.4,62.6,49.5,37.4
+range_tercile,pequeño,NewYork,15,775,94.3,76.1,82.2,54.3,59.0
+range_tercile,medio,NewYork,15,773,94.8,72.2,76.2,51.6,49.2
+range_tercile,grande,NewYork,15,775,95.4,67.0,72.5,54.2,46.6
+range_tercile,pequeño,NewYork,20,773,94.8,73.0,79.9,53.8,53.2
+range_tercile,medio,NewYork,20,772,94.2,67.0,72.9,52.2,43.4
+range_tercile,grande,NewYork,20,773,94.8,62.0,66.1,52.4,40.1
+break_speed,>5 min,London,15,1399,95.2,72.1,73.8,52.5,50.3
+break_speed,≤5 min,London,15,1039,95.6,75.2,76.1,53.9,53.1
+break_speed,>5 min,London,20,1483,93.8,66.6,68.0,50.6,42.8
+break_speed,≤5 min,London,20,953,95.7,73.2,74.8,54.1,49.2
+break_speed,>5 min,NewYork,15,1194,93.7,70.9,75.3,52.8,49.7
+break_speed,≤5 min,NewYork,15,1129,96.0,72.6,78.7,54.0,53.6
+break_speed,>5 min,NewYork,20,1395,94.1,65.5,71.9,52.7,43.0
+break_speed,≤5 min,NewYork,20,923,95.3,70.0,74.6,53.0,49.4
+weekday,Fri,London,15,489,95.7,71.0,75.3,55.2,51.3
+weekday,Mon,London,15,454,95.6,74.2,70.3,52.4,54.8
+weekday,Thu,London,15,495,95.8,72.7,76.8,53.1,46.7
+weekday,Tue,London,15,500,94.8,72.2,75.0,53.8,51.6
+weekday,Wed,London,15,500,95.0,76.8,76.4,51.0,53.2
+weekday,Fri,London,20,489,95.5,64.8,73.4,55.4,43.8
+weekday,Mon,London,20,452,95.4,70.1,64.4,50.0,46.7
+weekday,Thu,London,20,495,94.5,69.3,72.7,52.7,40.6
+weekday,Tue,London,20,500,92.6,68.8,72.2,54.0,46.0
+weekday,Wed,London,20,500,94.8,73.0,70.2,47.8,49.6
+weekday,Fri,NewYork,15,466,94.4,68.0,74.5,53.2,48.9
+weekday,Mon,NewYork,15,437,94.5,70.3,74.1,51.3,48.7
+weekday,Thu,NewYork,15,461,95.9,75.7,77.2,55.5,53.8
+weekday,Tue,NewYork,15,486,92.8,65.8,80.7,57.6,47.9
+weekday,Wed,NewYork,15,473,96.6,79.1,78.0,49.0,58.4
+weekday,Fri,NewYork,20,465,95.1,63.2,73.3,52.9,40.6
+weekday,Mon,NewYork,20,436,95.6,67.4,70.9,50.7,43.8
+weekday,Thu,NewYork,20,460,95.9,71.1,71.1,51.1,48.3
+weekday,Tue,NewYork,20,486,91.8,60.9,76.5,58.2,41.8
+weekday,Wed,NewYork,20,471,94.9,74.1,72.8,50.7,53.3

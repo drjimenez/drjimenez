@@ -1,0 +1,241 @@
+pattern,pattern_txt,variant,filtro,IS_n,IS_win,IS_exp_R,IS_exp_R_gross,IS_total_R,OOS_n,OOS_win,OOS_exp_R,OOS_exp_R_gross,OOS_total_R,anios_positivos,por_simbolo_OOS
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.272,todos,995,40.9045,-0.2035,-0.0122,-202.5289,779,40.5648,-0.2257,-0.0086,-175.8412,0/5,NAS100:-0.19 · US500:-0.26
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.272,pequeño,307,41.3681,-0.3525,-0.0053,-108.2063,225,36.8889,-0.5413,-0.1130,-121.7947,0/5,NAS100:-0.51 · US500:-0.57
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.272,medio,360,37.7778,-0.2543,-0.0917,-91.5647,245,44.8980,-0.1113,0.0795,-27.2625,0/5,NAS100:-0.06 · US500:-0.16
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.272,grande,328,43.9024,-0.0084,0.0685,-2.7578,309,39.8058,-0.0867,-0.0024,-26.7839,1/5,NAS100:-0.08 · US500:-0.10
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.272,a favor de la tendencia,389,38.3033,-0.2633,-0.0694,-102.4228,345,44.6377,-0.1583,0.0779,-54.6045,0/5,NAS100:-0.12 · US500:-0.20
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.272,contra la tendencia,407,42.7518,-0.1688,0.0279,-68.7180,263,41.8251,-0.1691,0.0372,-44.4788,1/5,NAS100:-0.13 · US500:-0.20
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.618,todos,995,59.7990,-0.0918,-0.0076,-91.3176,779,60.5905,-0.0659,0.0297,-51.3314,0/5,NAS100:-0.05 · US500:-0.08
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.618,pequeño,307,66.4495,-0.0775,0.0752,-23.8060,225,62.6667,-0.1745,0.0140,-39.2559,1/5,NAS100:-0.17 · US500:-0.18
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.618,medio,360,56.1111,-0.1578,-0.0862,-56.8237,245,63.6735,-0.0445,0.0395,-10.9018,0/5,NAS100:-0.03 · US500:-0.05
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.618,grande,328,57.6220,-0.0326,0.0013,-10.6879,309,56.6343,-0.0038,0.0333,-1.1737,3/5,NAS100:+0.02 · US500:-0.03
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.618,a favor de la tendencia,389,58.8689,-0.1104,-0.0251,-42.9446,345,61.7391,-0.0684,0.0356,-23.5829,0/5,NAS100:-0.06 · US500:-0.07
+P1,Fade del gap en la apertura,obj 0.382 · stop −0.618,contra la tendencia,407,60.1966,-0.0838,0.0028,-34.1089,263,61.5970,-0.0348,0.0560,-9.1577,1/5,NAS100:-0.06 · US500:-0.01
+P1,Fade del gap en la apertura,obj 0.382 · stop −1,todos,995,68.7437,-0.0540,-0.0020,-53.7328,779,67.2657,-0.0489,0.0101,-38.1273,0/5,NAS100:-0.03 · US500:-0.07
+P1,Fade del gap en la apertura,obj 0.382 · stop −1,pequeño,307,76.5472,-0.0365,0.0579,-11.2161,225,72.8889,-0.1092,0.0073,-24.5622,1/5,NAS100:-0.07 · US500:-0.15
+P1,Fade del gap en la apertura,obj 0.382 · stop −1,medio,360,68.3333,-0.0887,-0.0445,-31.9451,245,69.7959,-0.0628,-0.0109,-15.3927,0/5,NAS100:-0.04 · US500:-0.08
+P1,Fade del gap en la apertura,obj 0.382 · stop −1,grande,328,61.8902,-0.0322,-0.0113,-10.5716,309,61.1650,0.0059,0.0288,1.8276,2/5,NAS100:-0.00 · US500:+0.01
+P1,Fade del gap en la apertura,obj 0.382 · stop −1,a favor de la tendencia,389,68.6375,-0.0629,-0.0102,-24.4659,345,68.4058,-0.0453,0.0190,-15.6134,0/5,NAS100:-0.02 · US500:-0.07
+P1,Fade del gap en la apertura,obj 0.382 · stop −1,contra la tendencia,407,69.0418,-0.0510,0.0025,-20.7726,263,67.6806,-0.0367,0.0194,-9.6470,1/5,NAS100:-0.04 · US500:-0.04
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.272,todos,995,36.0804,-0.1572,0.0341,-156.3938,779,34.5315,-0.2046,0.0125,-159.4024,0/5,NAS100:-0.18 · US500:-0.23
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.272,pequeño,307,38.4365,-0.2562,0.0909,-78.6549,225,35.1111,-0.4317,-0.0035,-97.1403,0/5,NAS100:-0.38 · US500:-0.48
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.272,medio,360,33.6111,-0.2087,-0.0460,-75.1383,245,36.3265,-0.1598,0.0310,-39.1448,0/5,NAS100:-0.16 · US500:-0.16
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.272,grande,328,36.5854,-0.0079,0.0690,-2.6007,309,32.6861,-0.0748,0.0094,-23.1172,1/5,NAS100:-0.07 · US500:-0.08
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.272,a favor de la tendencia,389,34.4473,-0.2066,-0.0127,-80.3566,345,39.1304,-0.1094,0.1268,-37.7329,0/5,NAS100:-0.05 · US500:-0.18
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.272,contra la tendencia,407,36.1179,-0.1574,0.0394,-64.0610,263,34.6008,-0.1720,0.0343,-45.2441,1/5,NAS100:-0.24 · US500:-0.11
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.618,todos,995,54.0704,-0.0719,0.0124,-71.4913,779,53.9153,-0.0353,0.0603,-27.4694,0/5,NAS100:-0.03 · US500:-0.04
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.618,pequeño,307,62.5407,-0.0214,0.1314,-6.5633,225,60.8889,-0.0870,0.1015,-19.5699,1/5,NAS100:-0.11 · US500:-0.07
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.618,medio,360,50.2778,-0.1562,-0.0846,-56.2444,245,56.3265,-0.0416,0.0423,-10.2034,0/5,NAS100:-0.02 · US500:-0.06
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.618,grande,328,50.3049,-0.0265,0.0074,-8.6836,309,46.9256,0.0075,0.0445,2.3039,2/5,NAS100:+0.02 · US500:-0.01
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.618,a favor de la tendencia,389,54.2416,-0.0777,0.0076,-30.2389,345,55.6522,-0.0344,0.0696,-11.8658,0/5,NAS100:-0.01 · US500:-0.06
+P1,Fade del gap en la apertura,obj 0.5 · stop −0.618,contra la tendencia,407,52.3342,-0.0920,-0.0054,-37.4284,263,53.6122,-0.0115,0.0793,-3.0292,1/5,NAS100:-0.08 · US500:+0.06
+P1,Fade del gap en la apertura,obj 0.5 · stop −1,todos,995,63.0151,-0.0382,0.0138,-38.0125,779,60.2054,-0.0373,0.0218,-29.0487,0/5,NAS100:-0.03 · US500:-0.05
+P1,Fade del gap en la apertura,obj 0.5 · stop −1,pequeño,307,73.2899,0.0049,0.0993,1.5139,225,69.7778,-0.0698,0.0467,-15.7102,2/5,NAS100:-0.05 · US500:-0.09
+P1,Fade del gap en la apertura,obj 0.5 · stop −1,medio,360,62.7778,-0.0818,-0.0375,-29.4393,245,63.2653,-0.0622,-0.0103,-15.2365,0/5,NAS100:-0.05 · US500:-0.07
+P1,Fade del gap en la apertura,obj 0.5 · stop −1,grande,328,53.6585,-0.0308,-0.0098,-10.0871,309,50.8091,0.0061,0.0291,1.8979,2/5,NAS100:+0.00 · US500:+0.01
+P1,Fade del gap en la apertura,obj 0.5 · stop −1,a favor de la tendencia,389,63.4961,-0.0463,0.0064,-18.0287,345,61.7391,-0.0313,0.0330,-10.7906,0/5,NAS100:-0.00 · US500:-0.06
+P1,Fade del gap en la apertura,obj 0.5 · stop −1,contra la tendencia,407,61.4251,-0.0469,0.0066,-19.1067,263,59.3156,-0.0342,0.0219,-8.9890,2/5,NAS100:-0.06 · US500:-0.01
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.272,todos,995,31.4573,-0.1377,0.0536,-136.9944,779,31.3222,-0.1485,0.0687,-115.6514,0/5,NAS100:-0.13 · US500:-0.16
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.272,pequeño,307,35.5049,-0.1854,0.1617,-56.9122,225,33.7778,-0.3230,0.1052,-72.6844,0/5,NAS100:-0.32 · US500:-0.33
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.272,medio,360,26.9444,-0.2810,-0.1184,-101.1750,245,32.2449,-0.1357,0.0551,-33.2551,0/5,NAS100:-0.09 · US500:-0.17
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.272,grande,328,32.6220,0.0643,0.1412,21.0928,309,28.8026,-0.0314,0.0528,-9.7118,3/5,NAS100:-0.04 · US500:-0.02
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.272,a favor de la tendencia,389,29.8201,-0.1897,0.0041,-73.8122,345,36.8116,-0.0114,0.2249,-3.9178,1/5,NAS100:+0.02 · US500:-0.05
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.272,contra la tendencia,407,31.2039,-0.1514,0.0454,-61.6060,263,31.1787,-0.1314,0.0749,-34.5688,1/5,NAS100:-0.21 · US500:-0.06
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.618,todos,995,48.3417,-0.0654,0.0188,-65.0653,779,49.0372,-0.0130,0.0826,-10.1382,1/5,NAS100:-0.01 · US500:-0.02
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.618,pequeño,307,58.6319,0.0199,0.1726,6.0969,225,56.4444,-0.0588,0.1297,-13.2380,2/5,NAS100:-0.14 · US500:+0.02
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.618,medio,360,42.7778,-0.2043,-0.1327,-73.5374,245,50.6122,-0.0389,0.0450,-9.5401,0/5,NAS100:+0.02 · US500:-0.09
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.618,grande,328,44.8171,0.0072,0.0411,2.3751,309,42.3948,0.0409,0.0780,12.6399,4/5,NAS100:+0.06 · US500:+0.02
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.618,a favor de la tendencia,389,48.3290,-0.0756,0.0097,-29.4094,345,51.8841,0.0032,0.1072,1.1203,1/5,NAS100:+0.02 · US500:-0.01
+P1,Fade del gap en la apertura,obj 0.618 · stop −0.618,contra la tendencia,407,47.6658,-0.0677,0.0189,-27.5660,263,48.6692,0.0073,0.0981,1.9228,1/5,NAS100:-0.07 · US500:+0.08
+P1,Fade del gap en la apertura,obj 0.618 · stop −1,todos,995,57.2864,-0.0342,0.0178,-34.0708,779,54.9422,-0.0320,0.0270,-24.9634,2/5,NAS100:-0.02 · US500:-0.04
+P1,Fade del gap en la apertura,obj 0.618 · stop −1,pequeño,307,71.0098,0.0545,0.1489,16.7379,225,65.7778,-0.0500,0.0665,-11.2571,3/5,NAS100:-0.05 · US500:-0.05
+P1,Fade del gap en la apertura,obj 0.618 · stop −1,medio,360,54.1667,-0.1343,-0.0900,-48.3313,245,56.3265,-0.0909,-0.0390,-22.2585,0/5,NAS100:-0.06 · US500:-0.12
+P1,Fade del gap en la apertura,obj 0.618 · stop −1,grande,328,47.8659,-0.0076,0.0134,-2.4773,309,45.9547,0.0277,0.0506,8.5522,2/5,NAS100:+0.02 · US500:+0.04
+P1,Fade del gap en la apertura,obj 0.618 · stop −1,a favor de la tendencia,389,57.5835,-0.0463,0.0065,-18.0046,345,57.6812,-0.0134,0.0508,-4.6275,1/5,NAS100:+0.01 · US500:-0.03
+P1,Fade del gap en la apertura,obj 0.618 · stop −1,contra la tendencia,407,56.5111,-0.0308,0.0227,-12.5367,263,53.9924,-0.0350,0.0211,-9.2146,2/5,NAS100:-0.07 · US500:-0.01
+P1,Fade del gap en la apertura,obj 1 · stop −0.272,todos,995,20.5025,-0.1354,0.0559,-134.7173,779,21.5661,-0.0610,0.1561,-47.5071,1/5,NAS100:-0.01 · US500:-0.11
+P1,Fade del gap en la apertura,obj 1 · stop −0.272,pequeño,307,26.0586,-0.1285,0.2186,-39.4490,225,26.6667,-0.1812,0.2471,-40.7727,2/5,NAS100:-0.17 · US500:-0.19
+P1,Fade del gap en la apertura,obj 1 · stop −0.272,medio,360,18.6111,-0.2795,-0.1168,-100.6079,245,22.8571,-0.0997,0.0911,-24.4351,0/5,NAS100:+0.03 · US500:-0.21
+P1,Fade del gap en la apertura,obj 1 · stop −0.272,grande,328,17.3780,0.0163,0.0932,5.3396,309,16.8285,0.0573,0.1415,17.7007,3/5,NAS100:+0.07 · US500:+0.05
+P1,Fade del gap en la apertura,obj 1 · stop −0.272,a favor de la tendencia,389,19.0231,-0.2069,-0.0130,-80.4877,345,26.6667,0.1463,0.3825,50.4598,3/5,NAS100:+0.19 · US500:+0.10
+P1,Fade del gap en la apertura,obj 1 · stop −0.272,contra la tendencia,407,21.3759,-0.0983,0.0985,-39.9898,263,19.3916,-0.1106,0.0957,-29.0812,1/5,NAS100:-0.18 · US500:-0.04
+P1,Fade del gap en la apertura,obj 1 · stop −0.618,todos,995,34.4724,-0.0550,0.0292,-54.7590,779,34.2747,0.0129,0.1085,10.0438,1/5,NAS100:+0.07 · US500:-0.04
+P1,Fade del gap en la apertura,obj 1 · stop −0.618,pequeño,307,44.2997,0.0070,0.1598,2.1616,225,44.8889,-0.0125,0.1760,-2.8075,2/5,NAS100:-0.01 · US500:-0.01
+P1,Fade del gap en la apertura,obj 1 · stop −0.618,medio,360,33.8889,-0.1606,-0.0890,-57.8333,245,37.9592,-0.0178,0.0662,-4.3555,0/5,NAS100:+0.10 · US500:-0.12
+P1,Fade del gap en la apertura,obj 1 · stop −0.618,grande,328,25.9146,0.0028,0.0366,0.9127,309,23.6246,0.0557,0.0928,17.2068,4/5,NAS100:+0.09 · US500:+0.01
+P1,Fade del gap en la apertura,obj 1 · stop −0.618,a favor de la tendencia,389,33.9332,-0.0685,0.0168,-26.6500,345,38.5507,0.0857,0.1896,29.5585,2/5,NAS100:+0.12 · US500:+0.05
+P1,Fade del gap en la apertura,obj 1 · stop −0.618,contra la tendencia,407,33.9066,-0.0656,0.0210,-26.7118,263,30.0380,-0.0364,0.0544,-9.5633,1/5,NAS100:-0.02 · US500:-0.05
+P1,Fade del gap en la apertura,obj 1 · stop −1,todos,995,42.3116,-0.0272,0.0248,-27.0647,779,40.3081,-0.0022,0.0568,-1.7338,1/5,NAS100:+0.05 · US500:-0.05
+P1,Fade del gap en la apertura,obj 1 · stop −1,pequeño,307,57.0033,0.0478,0.1422,14.6827,225,56.8889,0.0235,0.1400,5.2789,4/5,NAS100:+0.09 · US500:-0.04
+P1,Fade del gap en la apertura,obj 1 · stop −1,medio,360,42.5000,-0.1021,-0.0578,-36.7518,245,43.2653,-0.0716,-0.0197,-17.5505,0/5,NAS100:+0.02 · US500:-0.15
+P1,Fade del gap en la apertura,obj 1 · stop −1,grande,328,28.3537,-0.0152,0.0057,-4.9956,309,25.8900,0.0341,0.0570,10.5378,2/5,NAS100:+0.04 · US500:+0.02
+P1,Fade del gap en la apertura,obj 1 · stop −1,a favor de la tendencia,389,41.9023,-0.0390,0.0138,-15.1517,345,44.3478,0.0486,0.1128,16.7587,2/5,NAS100:+0.09 · US500:+0.01
+P1,Fade del gap en la apertura,obj 1 · stop −1,contra la tendencia,407,41.5233,-0.0289,0.0247,-11.7505,263,36.5019,-0.0347,0.0214,-9.1346,2/5,NAS100:+0.01 · US500:-0.08
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.5 · stop extremo OR,todos,248,72.1774,0.0023,0.0668,0.5595,184,66.3043,-0.0887,-0.0197,-16.3238,2/5,NAS100:-0.06 · US500:-0.12
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.5 · stop extremo OR,pequeño,31,93.5484,0.0185,0.0963,0.5734,22,86.3636,-0.0582,0.0274,-1.2807,2/5,NAS100:-0.30 · US500:+0.03
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.5 · stop extremo OR,medio,83,77.1084,-0.0879,-0.0186,-7.2925,58,72.4138,-0.1342,-0.0482,-7.7816,2/5,NAS100:-0.04 · US500:-0.21
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.5 · stop extremo OR,grande,134,64.1791,0.0543,0.1129,7.2786,104,58.6538,-0.0698,-0.0138,-7.2614,3/5,NAS100:-0.04 · US500:-0.10
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.5 · stop extremo OR,a favor de la tendencia,102,69.6078,0.0328,0.1002,3.3467,84,71.4286,-0.0299,0.0451,-2.5092,2/5,NAS100:+0.15 · US500:-0.19
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.5 · stop extremo OR,contra la tendencia,96,73.9583,-0.0264,0.0373,-2.5369,61,62.2951,-0.1893,-0.1225,-11.5502,1/5,NAS100:-0.37 · US500:-0.04
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.618 · stop extremo OR,todos,300,67.0000,0.0000,0.0619,0.0108,213,63.3803,-0.0607,0.0067,-12.9280,1/5,NAS100:-0.04 · US500:-0.08
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.618 · stop extremo OR,pequeño,39,82.0513,-0.0914,-0.0064,-3.5649,23,73.9130,-0.1162,-0.0269,-2.6715,0/5,NAS100:-0.24 · US500:-0.07
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.618 · stop extremo OR,medio,104,69.2308,-0.1497,-0.0860,-15.5661,72,72.2222,-0.0607,0.0220,-4.3701,1/5,NAS100:+0.01 · US500:-0.11
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.618 · stop extremo OR,grande,157,61.7834,0.1219,0.1769,19.1417,118,55.9322,-0.0499,0.0039,-5.8864,3/5,NAS100:-0.04 · US500:-0.06
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.618 · stop extremo OR,a favor de la tendencia,122,65.5738,0.0332,0.0972,4.0449,100,70.0000,0.0138,0.0870,1.3845,3/5,NAS100:+0.14 · US500:-0.09
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 0.618 · stop extremo OR,contra la tendencia,115,67.8261,-0.0254,0.0377,-2.9182,72,61.1111,-0.1346,-0.0704,-9.6904,1/5,NAS100:-0.26 · US500:-0.03
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 1 · stop extremo OR,todos,392,54.0816,-0.0020,0.0583,-0.7726,293,52.2184,-0.0372,0.0279,-10.8887,3/5,NAS100:+0.00 · US500:-0.08
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 1 · stop extremo OR,pequeño,73,75.3425,-0.0628,0.0168,-4.5873,59,77.9661,-0.0529,0.0298,-3.1210,2/5,NAS100:-0.16 · US500:+0.03
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 1 · stop extremo OR,medio,150,63.3333,-0.0270,0.0319,-4.0454,96,57.2917,-0.0652,0.0088,-6.2623,1/5,NAS100:+0.02 · US500:-0.14
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 1 · stop extremo OR,grande,169,36.6864,0.0465,0.0997,7.8601,138,37.6812,-0.0109,0.0404,-1.5054,2/5,NAS100:+0.05 · US500:-0.08
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 1 · stop extremo OR,a favor de la tendencia,153,52.2876,0.0200,0.0817,3.0597,138,54.3478,0.0322,0.1037,4.4433,2/5,NAS100:+0.12 · US500:-0.06
+P2,Fade tras ruptura del OR15 hacia el cierre,obj 1 · stop extremo OR,contra la tendencia,164,54.8780,-0.0695,-0.0077,-11.3959,99,49.4949,-0.1084,-0.0465,-10.7339,3/5,NAS100:-0.06 · US500:-0.15
+P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,todos,502,25.0996,0.0581,0.1146,29.1898,397,16.8766,-0.0746,-0.0133,-29.6063,3/5,NAS100:-0.08 · US500:-0.07
+P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,pequeño,150,21.3333,-0.0320,0.0246,-4.8003,109,21.1009,-0.0506,0.0184,-5.5206,1/5,NAS100:+0.03 · US500:-0.13
+P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,medio,195,26.1538,0.0661,0.1260,12.8949,122,19.6721,-0.0301,0.0346,-3.6694,3/5,NAS100:-0.18 · US500:+0.09
+P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,grande,157,27.3885,0.1344,0.1864,21.0953,166,12.0482,-0.1230,-0.0693,-20.4163,2/5,NAS100:-0.08 · US500:-0.17
+P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,a favor de la tendencia,201,27.3632,0.0780,0.1353,15.6842,164,17.6829,0.0586,0.1240,9.6117,3/5,NAS100:+0.02 · US500:+0.10
+P3,Gap and go (ruptura del OR15 a favor del gap),obj 2R · stop extremo OR,contra la tendencia,205,21.9512,0.0028,0.0612,0.5803,141,13.4752,-0.2487,-0.1883,-35.0733,2/5,NAS100:-0.21 · US500:-0.29
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −0.618 · stop extremo OR,todos,328,60.6707,-0.0347,0.0271,-11.3905,253,52.1739,-0.1459,-0.0805,-36.9108,1/5,NAS100:-0.11 · US500:-0.18
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −0.618 · stop extremo OR,pequeño,60,78.3333,-0.1469,-0.0829,-8.8122,30,63.3333,-0.3628,-0.2707,-10.8828,0/5,NAS100:-0.55 · US500:-0.28
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −0.618 · stop extremo OR,medio,121,67.7686,-0.0510,0.0197,-6.1682,70,72.8571,0.0073,0.0826,0.5105,3/5,NAS100:+0.08 · US500:-0.03
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −0.618 · stop extremo OR,grande,147,47.6190,0.0244,0.0781,3.5900,153,40.5229,-0.1735,-0.1178,-26.5385,2/5,NAS100:-0.12 · US500:-0.24
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −0.618 · stop extremo OR,a favor de la tendencia,125,67.2000,0.0048,0.0672,0.6041,99,58.5859,-0.0102,0.0602,-1.0058,2/5,NAS100:+0.08 · US500:-0.09
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −0.618 · stop extremo OR,contra la tendencia,134,55.9701,-0.0822,-0.0171,-11.0182,101,45.5446,-0.2745,-0.2110,-27.7199,2/5,NAS100:-0.22 · US500:-0.32
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −1 · stop extremo OR,todos,414,49.0338,-0.0066,0.0524,-2.7311,319,40.7524,-0.1224,-0.0583,-39.0415,1/5,NAS100:-0.12 · US500:-0.13
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −1 · stop extremo OR,pequeño,89,67.4157,-0.1867,-0.1251,-16.6119,52,61.5385,-0.3195,-0.2343,-16.6115,0/5,NAS100:-0.32 · US500:-0.32
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −1 · stop extremo OR,medio,169,58.5799,0.0117,0.0756,1.9704,103,59.2233,0.0132,0.0825,1.3645,2/5,NAS100:-0.04 · US500:+0.05
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −1 · stop extremo OR,grande,156,28.2051,0.0763,0.1286,11.9104,164,22.5610,-0.1451,-0.0909,-23.7945,1/5,NAS100:-0.11 · US500:-0.19
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −1 · stop extremo OR,a favor de la tendencia,158,50.6329,-0.0030,0.0574,-0.4703,129,44.1860,-0.0071,0.0611,-0.9170,3/5,NAS100:+0.02 · US500:-0.03
+P3,Gap and go (ruptura del OR15 a favor del gap),obj −1 · stop extremo OR,contra la tendencia,179,49.1620,-0.0388,0.0215,-6.9511,119,36.9748,-0.2160,-0.1532,-25.6996,1/5,NAS100:-0.22 · US500:-0.21
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj -0.272,todos,442,30.5430,-0.2832,-0.1496,-125.1602,348,28.1609,-0.3276,-0.1732,-114.0218,0/5,NAS100:-0.29 · US500:-0.37
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj -0.272,pequeño,159,24.5283,-0.5857,-0.3576,-93.1309,108,19.4444,-0.7805,-0.4908,-84.2976,0/5,NAS100:-0.73 · US500:-0.83
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj -0.272,medio,139,39.5683,-0.0607,0.0476,-8.4432,116,42.2414,-0.0127,0.1185,-1.4713,2/5,NAS100:-0.00 · US500:-0.02
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj -0.272,grande,144,28.4722,-0.1638,-0.1102,-23.5861,124,22.5806,-0.2278,-0.1694,-28.2530,0/5,NAS100:-0.17 · US500:-0.29
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj -0.272,a favor de la tendencia,164,32.9268,-0.2450,-0.1103,-40.1809,168,25.0000,-0.4730,-0.3090,-79.4643,0/5,NAS100:-0.46 · US500:-0.49
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj -0.272,contra la tendencia,187,32.0856,-0.2257,-0.0897,-42.1970,120,31.6667,-0.2154,-0.0691,-25.8514,0/5,NAS100:+0.02 · US500:-0.44
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj 0,todos,244,38.5246,-0.3998,-0.2382,-97.5630,202,35.1485,-0.4956,-0.2963,-100.1015,0/5,NAS100:-0.55 · US500:-0.44
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj 0,pequeño,129,32.5581,-0.5958,-0.3666,-76.8597,99,28.2828,-0.7434,-0.4497,-73.5936,0/5,NAS100:-0.76 · US500:-0.72
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj 0,medio,65,55.3846,-0.0333,0.0775,-2.1639,61,49.1803,-0.1849,-0.0432,-11.2802,1/5,NAS100:-0.40 · US500:+0.02
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj 0,grande,50,32.0000,-0.3708,-0.3173,-18.5395,42,30.9524,-0.3626,-0.3024,-15.2277,0/5,NAS100:-0.27 · US500:-0.47
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj 0,a favor de la tendencia,102,37.2549,-0.4128,-0.2630,-42.1063,103,27.1845,-0.6547,-0.4551,-67.4304,0/5,NAS100:-0.62 · US500:-0.70
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 0.786 · obj 0,contra la tendencia,90,45.5556,-0.2745,-0.0988,-24.7075,65,41.5385,-0.3788,-0.1757,-24.6200,0/5,NAS100:-0.42 · US500:-0.34
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj -0.272,todos,442,40.2715,-0.1688,-0.0815,-74.6237,348,34.7701,-0.2547,-0.1537,-88.6392,0/5,NAS100:-0.25 · US500:-0.26
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj -0.272,pequeño,159,37.1069,-0.3853,-0.2362,-61.2700,108,31.4815,-0.5414,-0.3520,-58.4761,0/5,NAS100:-0.53 · US500:-0.55
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj -0.272,medio,139,49.6403,-0.0342,0.0367,-4.7481,116,48.2759,-0.0595,0.0263,-6.9016,2/5,NAS100:-0.07 · US500:-0.05
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj -0.272,grande,144,34.7222,-0.0598,-0.0247,-8.6056,124,25.0000,-0.1876,-0.1494,-23.2614,0/5,NAS100:-0.17 · US500:-0.21
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj -0.272,a favor de la tendencia,164,41.4634,-0.1631,-0.0750,-26.7481,168,31.5476,-0.3678,-0.2606,-61.7876,1/5,NAS100:-0.36 · US500:-0.38
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj -0.272,contra la tendencia,187,39.5722,-0.1710,-0.0821,-31.9770,120,38.3333,-0.1497,-0.0540,-17.9660,0/5,NAS100:-0.02 · US500:-0.27
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj 0,todos,244,50.8197,-0.2678,-0.1621,-65.3379,202,46.5347,-0.3491,-0.2188,-70.5145,0/5,NAS100:-0.40 · US500:-0.29
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj 0,pequeño,129,47.2868,-0.3847,-0.2348,-49.6267,99,44.4444,-0.4728,-0.2808,-46.8055,0/5,NAS100:-0.47 · US500:-0.48
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj 0,medio,65,64.6154,-0.0269,0.0456,-1.7479,61,52.4590,-0.2438,-0.1511,-14.8725,1/5,NAS100:-0.43 · US500:-0.07
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj 0,grande,50,42.0000,-0.2793,-0.2443,-13.9632,42,42.8571,-0.2104,-0.1710,-8.8365,0/5,NAS100:-0.23 · US500:-0.18
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj 0,a favor de la tendencia,102,48.0392,-0.3036,-0.2057,-30.9691,103,37.8641,-0.5006,-0.3701,-51.5597,0/5,NAS100:-0.50 · US500:-0.51
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1 · obj 0,contra la tendencia,90,57.7778,-0.1638,-0.0490,-14.7463,65,53.8462,-0.2197,-0.0869,-14.2775,1/5,NAS100:-0.21 · US500:-0.22
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj -0.272,todos,442,46.3801,-0.1395,-0.0788,-61.6408,348,39.6552,-0.2265,-0.1563,-78.8057,0/5,NAS100:-0.22 · US500:-0.23
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj -0.272,pequeño,159,48.4277,-0.2634,-0.1599,-41.8796,108,40.7407,-0.4141,-0.2826,-44.7206,0/5,NAS100:-0.39 · US500:-0.44
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj -0.272,medio,139,52.5180,-0.1200,-0.0709,-16.6851,116,53.4483,-0.0662,-0.0067,-7.6828,0/5,NAS100:-0.09 · US500:-0.05
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj -0.272,grande,144,38.1944,-0.0214,0.0030,-3.0760,124,25.8065,-0.2129,-0.1864,-26.4023,1/5,NAS100:-0.19 · US500:-0.25
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj -0.272,a favor de la tendencia,164,46.3415,-0.1581,-0.0970,-25.9297,168,36.3095,-0.3341,-0.2597,-56.1369,0/5,NAS100:-0.33 · US500:-0.34
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj -0.272,contra la tendencia,187,48.1283,-0.0949,-0.0332,-17.7543,120,42.5000,-0.1360,-0.0695,-16.3149,0/5,NAS100:-0.03 · US500:-0.24
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj 0,todos,244,59.8361,-0.1879,-0.1145,-45.8557,202,53.4653,-0.2795,-0.1890,-56.4510,0/5,NAS100:-0.31 · US500:-0.25
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj 0,pequeño,129,59.6899,-0.2510,-0.1469,-32.3745,99,53.5354,-0.3682,-0.2349,-36.4470,0/5,NAS100:-0.33 · US500:-0.41
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj 0,medio,65,69.2308,-0.0609,-0.0105,-3.9553,61,60.6557,-0.1688,-0.1045,-10.2994,1/5,NAS100:-0.33 · US500:-0.02
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj 0,grande,50,48.0000,-0.1905,-0.1663,-9.5259,42,42.8571,-0.2311,-0.2037,-9.7046,0/5,NAS100:-0.23 · US500:-0.23
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj 0,a favor de la tendencia,102,53.9216,-0.2567,-0.1887,-26.1836,103,44.6602,-0.4100,-0.3194,-42.2272,0/5,NAS100:-0.41 · US500:-0.42
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.382 · stop 1.272 · obj 0,contra la tendencia,90,71.1111,-0.0356,0.0441,-3.2061,65,60.0000,-0.1737,-0.0815,-11.2905,1/5,NAS100:-0.15 · US500:-0.19
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj -0.272,todos,387,22.7390,-0.2932,-0.1013,-113.4873,293,17.0648,-0.4894,-0.2658,-143.4026,0/5,NAS100:-0.46 · US500:-0.52
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj -0.272,pequeño,143,18.8811,-0.6260,-0.3015,-89.5209,99,12.1212,-0.9542,-0.5516,-94.4635,0/5,NAS100:-0.78 · US500:-1.14
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj -0.272,medio,124,32.2581,0.0580,0.2113,7.1859,92,27.1739,-0.1584,0.0271,-14.5745,2/5,NAS100:-0.31 · US500:-0.04
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj -0.272,grande,120,17.5000,-0.2596,-0.1856,-31.1523,102,12.7451,-0.3369,-0.2526,-34.3645,0/5,NAS100:-0.26 · US500:-0.42
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj -0.272,a favor de la tendencia,148,25.6757,-0.2023,-0.0073,-29.9367,145,14.4828,-0.6620,-0.4297,-95.9932,1/5,NAS100:-0.58 · US500:-0.75
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj -0.272,contra la tendencia,156,23.0769,-0.2861,-0.0871,-44.6288,99,20.2020,-0.3574,-0.1385,-35.3796,0/5,NAS100:-0.22 · US500:-0.47
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj 0,todos,201,28.8557,-0.4193,-0.1859,-84.2765,158,18.9873,-0.7551,-0.4607,-119.3110,0/5,NAS100:-0.89 · US500:-0.61
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj 0,pequeño,110,27.2727,-0.5810,-0.2505,-63.9081,84,16.6667,-0.9649,-0.5420,-81.0521,0/5,NAS100:-0.99 · US500:-0.94
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj 0,medio,48,39.5833,-0.0658,0.0878,-3.1572,43,27.9070,-0.4215,-0.2330,-18.1234,2/5,NAS100:-0.78 · US500:-0.04
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj 0,grande,43,20.9302,-0.4003,-0.3261,-17.2113,31,12.9032,-0.6495,-0.5562,-20.1355,0/5,NAS100:-0.77 · US500:-0.54
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj 0,a favor de la tendencia,90,28.8889,-0.4049,-0.1866,-36.4445,85,14.1176,-0.8836,-0.6012,-75.1065,0/5,NAS100:-0.82 · US500:-0.95
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 0.786 · obj 0,contra la tendencia,72,38.8889,-0.1586,0.0950,-11.4178,47,21.2766,-0.7391,-0.4153,-34.7386,0/5,NAS100:-1.14 · US500:-0.47
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj -0.272,todos,387,33.3333,-0.1535,-0.0437,-59.3962,293,24.9147,-0.3394,-0.2115,-99.4547,0/5,NAS100:-0.35 · US500:-0.33
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj -0.272,pequeño,143,31.4685,-0.3850,-0.1994,-55.0620,99,25.2525,-0.5878,-0.3576,-58.1971,0/5,NAS100:-0.52 · US500:-0.67
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj -0.272,medio,124,43.5484,0.0408,0.1286,5.0638,92,34.7826,-0.1704,-0.0643,-15.6783,1/5,NAS100:-0.29 · US500:-0.07
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj -0.272,grande,120,25.0000,-0.0783,-0.0360,-9.3980,102,15.6863,-0.2508,-0.2026,-25.5792,1/5,NAS100:-0.24 · US500:-0.27
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj -0.272,a favor de la tendencia,148,35.1351,-0.1197,-0.0082,-17.7183,145,22.0690,-0.4626,-0.3297,-67.0704,1/5,NAS100:-0.41 · US500:-0.52
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj -0.272,contra la tendencia,156,31.4103,-0.2065,-0.0927,-32.2160,99,28.2828,-0.2177,-0.0925,-21.5552,1/5,NAS100:-0.19 · US500:-0.24
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj 0,todos,201,42.7861,-0.2544,-0.1209,-51.1368,158,33.5443,-0.4689,-0.3005,-74.0919,0/5,NAS100:-0.58 · US500:-0.35
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj 0,pequeño,110,42.7273,-0.3345,-0.1455,-36.7954,84,35.7143,-0.5276,-0.2857,-44.3218,1/5,NAS100:-0.53 · US500:-0.53
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj 0,medio,48,52.0833,-0.0462,0.0417,-2.2179,43,32.5581,-0.4566,-0.3488,-19.6346,1/5,NAS100:-0.73 · US500:-0.17
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj 0,grande,43,32.5581,-0.2819,-0.2395,-12.1235,31,29.0323,-0.3270,-0.2736,-10.1355,0/5,NAS100:-0.54 · US500:-0.12
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj 0,a favor de la tendencia,90,41.1111,-0.2789,-0.1540,-25.1022,85,27.0588,-0.6091,-0.4476,-51.7769,1/5,NAS100:-0.61 · US500:-0.61
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1 · obj 0,contra la tendencia,72,52.7778,-0.0646,0.0804,-4.6537,47,38.2979,-0.3750,-0.1897,-17.6245,1/5,NAS100:-0.53 · US500:-0.27
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj -0.272,todos,387,40.0517,-0.1320,-0.0609,-51.0893,293,30.7167,-0.2877,-0.2049,-84.3075,0/5,NAS100:-0.29 · US500:-0.29
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj -0.272,pequeño,143,43.3566,-0.2531,-0.1329,-36.1904,99,35.3535,-0.4287,-0.2795,-42.4374,0/5,NAS100:-0.36 · US500:-0.50
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj -0.272,medio,124,46.7742,-0.0980,-0.0412,-12.1548,92,41.3043,-0.1466,-0.0779,-13.4865,0/5,NAS100:-0.25 · US500:-0.06
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj -0.272,grande,120,29.1667,-0.0229,0.0045,-2.7441,102,16.6667,-0.2783,-0.2470,-28.3836,1/5,NAS100:-0.25 · US500:-0.31
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj -0.272,a favor de la tendencia,148,40.5405,-0.1348,-0.0626,-19.9563,145,27.5862,-0.4048,-0.3187,-58.6948,0/5,NAS100:-0.37 · US500:-0.44
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj -0.272,contra la tendencia,156,41.0256,-0.1092,-0.0355,-17.0305,99,33.3333,-0.1857,-0.1046,-18.3871,1/5,NAS100:-0.15 · US500:-0.22
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj 0,todos,201,52.7363,-0.1752,-0.0887,-35.2140,158,42.4051,-0.3561,-0.2470,-56.2660,0/5,NAS100:-0.42 · US500:-0.29
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj 0,pequeño,110,55.4545,-0.2087,-0.0863,-22.9608,84,46.4286,-0.3917,-0.2350,-32.9027,0/5,NAS100:-0.35 · US500:-0.44
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj 0,medio,48,58.3333,-0.0958,-0.0389,-4.5971,43,44.1860,-0.2950,-0.2252,-12.6847,1/5,NAS100:-0.52 · US500:-0.06
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj 0,grande,43,39.5349,-0.1780,-0.1506,-7.6561,31,29.0323,-0.3445,-0.3099,-10.6786,1/5,NAS100:-0.48 · US500:-0.22
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj 0,a favor de la tendencia,90,47.7778,-0.2406,-0.1597,-21.6524,85,35.2941,-0.4775,-0.3729,-40.5891,0/5,NAS100:-0.48 · US500:-0.48
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.5 · stop 1.272 · obj 0,contra la tendencia,72,66.6667,0.0446,0.1385,3.2084,47,46.8085,-0.2766,-0.1567,-13.0017,2/5,NAS100:-0.36 · US500:-0.22
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj -0.272,todos,339,13.5693,-0.4095,-0.0774,-138.8199,262,9.9237,-0.6336,-0.2446,-165.9952,0/5,NAS100:-0.67 · US500:-0.60
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj -0.272,pequeño,133,12.7820,-0.7446,-0.1950,-99.0383,91,6.5934,-1.2810,-0.5848,-116.5753,0/5,NAS100:-1.33 · US500:-1.23
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj -0.272,medio,99,15.1515,-0.2690,-0.0074,-26.6322,81,17.2840,-0.1843,0.1308,-14.9310,2/5,NAS100:-0.33 · US500:-0.06
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj -0.272,grande,107,13.0841,-0.1229,0.0041,-13.1494,90,6.6667,-0.3832,-0.2384,-34.4889,1/5,NAS100:-0.32 · US500:-0.45
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj -0.272,a favor de la tendencia,129,17.0543,-0.2258,0.1031,-29.1270,134,8.9552,-0.8028,-0.4022,-107.5814,2/5,NAS100:-0.86 · US500:-0.75
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj -0.272,contra la tendencia,135,12.5926,-0.4832,-0.1344,-65.2383,89,12.3596,-0.4433,-0.0644,-39.4568,0/5,NAS100:-0.27 · US500:-0.58
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj 0,todos,166,15.6627,-0.6387,-0.2417,-106.0294,140,10.7143,-0.9670,-0.4651,-135.3841,0/5,NAS100:-1.19 · US500:-0.73
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj 0,pequeño,91,14.2857,-0.8901,-0.3316,-80.9980,75,8.0000,-1.3527,-0.6257,-101.4559,0/5,NAS100:-1.51 · US500:-1.19
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj 0,medio,37,21.6216,-0.2636,0.0116,-9.7526,35,17.1429,-0.5132,-0.1980,-17.9620,2/5,NAS100:-1.02 · US500:+0.09
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj 0,grande,38,13.1579,-0.4021,-0.2728,-15.2787,30,10.0000,-0.5322,-0.3752,-15.9661,0/5,NAS100:-0.61 · US500:-0.46
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj 0,a favor de la tendencia,73,15.0685,-0.6552,-0.2950,-47.8274,76,6.5789,-1.1630,-0.6717,-88.3883,0/5,NAS100:-1.19 · US500:-1.14
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 0.786 · obj 0,contra la tendencia,57,22.8070,-0.3183,0.1234,-18.1444,42,14.2857,-0.8702,-0.3316,-36.5505,0/5,NAS100:-1.47 · US500:-0.42
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj -0.272,todos,339,25.6637,-0.1588,-0.0127,-53.8284,262,18.7023,-0.3614,-0.1904,-94.6947,0/5,NAS100:-0.42 · US500:-0.30
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj -0.272,pequeño,133,26.3158,-0.3654,-0.1237,-48.6032,91,20.8791,-0.6110,-0.3048,-55.5986,0/5,NAS100:-0.68 · US500:-0.55
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj -0.272,medio,99,29.2929,-0.1057,0.0094,-10.4646,81,25.9259,-0.1997,-0.0611,-16.1760,1/5,NAS100:-0.30 · US500:-0.11
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj -0.272,grande,107,21.4953,0.0490,0.1048,5.2393,90,10.0000,-0.2547,-0.1910,-22.9201,3/5,NAS100:-0.27 · US500:-0.24
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj -0.272,a favor de la tendencia,129,27.9070,-0.1053,0.0393,-13.5879,134,17.1642,-0.4677,-0.2915,-62.6724,1/5,NAS100:-0.49 · US500:-0.44
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj -0.272,contra la tendencia,135,22.2222,-0.2774,-0.1239,-37.4456,89,21.3483,-0.2144,-0.0477,-19.0779,1/5,NAS100:-0.21 · US500:-0.22
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj 0,todos,166,31.9277,-0.3130,-0.1384,-51.9640,140,25.7143,-0.5053,-0.2846,-70.7474,0/5,NAS100:-0.69 · US500:-0.31
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj 0,pequeño,91,31.8681,-0.4114,-0.1658,-37.4337,75,26.6667,-0.6217,-0.3019,-46.6246,0/5,NAS100:-0.73 · US500:-0.51
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj 0,medio,37,37.8378,-0.1305,-0.0095,-4.8284,35,22.8571,-0.5403,-0.4016,-18.9100,1/5,NAS100:-0.84 · US500:-0.18
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj 0,grande,38,26.3158,-0.2553,-0.1985,-9.7020,30,26.6667,-0.1738,-0.1047,-5.2128,1/5,NAS100:-0.40 · US500:+0.06
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj 0,a favor de la tendencia,73,28.7671,-0.3926,-0.2342,-28.6622,76,19.7368,-0.6830,-0.4669,-51.9090,0/5,NAS100:-0.78 · US500:-0.59
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1 · obj 0,contra la tendencia,57,40.3509,-0.0969,0.0974,-5.5226,42,30.9524,-0.3617,-0.1248,-15.1923,1/5,NAS100:-0.63 · US500:-0.16
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj -0.272,todos,339,33.3333,-0.1367,-0.0514,-46.3384,262,24.8092,-0.3066,-0.2067,-80.3233,0/5,NAS100:-0.33 · US500:-0.29
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj -0.272,pequeño,133,39.0977,-0.2181,-0.0770,-29.0129,91,30.7692,-0.4352,-0.2564,-39.6051,0/5,NAS100:-0.42 · US500:-0.45
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj -0.272,medio,99,33.3333,-0.2458,-0.1786,-24.3316,81,33.3333,-0.1652,-0.0843,-13.3818,0/5,NAS100:-0.26 · US500:-0.08
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj -0.272,grande,107,26.1682,0.0655,0.0981,7.0062,90,11.1111,-0.3037,-0.2665,-27.3364,1/5,NAS100:-0.29 · US500:-0.32
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj -0.272,a favor de la tendencia,129,34.1085,-0.1391,-0.0546,-17.9476,134,23.1343,-0.4045,-0.3015,-54.1988,0/5,NAS100:-0.42 · US500:-0.39
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj -0.272,contra la tendencia,135,33.3333,-0.1285,-0.0389,-17.3452,89,26.9663,-0.1839,-0.0866,-16.3686,1/5,NAS100:-0.15 · US500:-0.21
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,todos,166,43.9759,-0.1952,-0.0932,-32.4083,140,35.7143,-0.3620,-0.2331,-50.6803,0/5,NAS100:-0.46 · US500:-0.26
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,pequeño,91,47.2527,-0.2244,-0.0810,-20.4215,75,38.6667,-0.4347,-0.2480,-32.6034,0/5,NAS100:-0.45 · US500:-0.42
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,medio,37,45.9459,-0.1771,-0.1064,-6.5511,35,37.1429,-0.2907,-0.2098,-10.1757,1/5,NAS100:-0.53 · US500:-0.00
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,grande,38,34.2105,-0.1430,-0.1098,-5.4357,30,26.6667,-0.2634,-0.2231,-7.9012,1/5,NAS100:-0.38 · US500:-0.14
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,a favor de la tendencia,73,36.9863,-0.3166,-0.2240,-23.1093,76,28.9474,-0.5030,-0.3768,-38.2317,0/5,NAS100:-0.56 · US500:-0.45
+P4,Retroceso Fibonacci y continuación a favor del gap,entrada 0.618 · stop 1.272 · obj 0,contra la tendencia,57,57.8947,0.0723,0.1857,4.1194,42,40.4762,-0.2559,-0.1175,-10.7470,2/5,NAS100:-0.40 · US500:-0.15
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,todos,995,0.4020,-1.1293,-0.9931,-1123.6818,776,0.5155,-1.1447,-0.9912,-888.3100,0/5,NAS100:-1.11 · US500:-1.18
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,pequeño,307,1.3029,-1.2249,-0.9777,-376.0459,222,1.8018,-1.2726,-0.9692,-282.5282,0/5,NAS100:-1.19 · US500:-1.35
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,medio,360,0.0000,-1.1158,-1.0000,-401.6785,245,0.0000,-1.1357,-1.0000,-278.2555,0/5,NAS100:-1.11 · US500:-1.16
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,grande,328,0.0000,-1.0547,-1.0000,-345.9574,309,0.0000,-1.0600,-1.0000,-327.5262,0/5,NAS100:-1.05 · US500:-1.07
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,a favor de la tendencia,389,0.0000,-1.1379,-1.0000,-442.6369,344,0.8721,-1.1520,-0.9851,-396.2918,0/5,NAS100:-1.11 · US500:-1.20
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.272,contra la tendencia,407,0.0000,-1.1403,-1.0000,-464.0835,261,0.0000,-1.1455,-1.0000,-298.9752,0/5,NAS100:-1.11 · US500:-1.18
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,todos,995,0.3015,-1.1283,-0.9921,-1122.6766,776,0.5155,-1.1401,-0.9865,-884.6869,0/5,NAS100:-1.10 · US500:-1.18
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,pequeño,307,0.9772,-1.2216,-0.9744,-375.0406,222,1.8018,-1.2563,-0.9528,-278.9052,0/5,NAS100:-1.16 · US500:-1.35
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,medio,360,0.0000,-1.1158,-1.0000,-401.6785,245,0.0000,-1.1357,-1.0000,-278.2555,0/5,NAS100:-1.11 · US500:-1.16
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,grande,328,0.0000,-1.0547,-1.0000,-345.9574,309,0.0000,-1.0600,-1.0000,-327.5262,0/5,NAS100:-1.05 · US500:-1.07
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,a favor de la tendencia,389,0.0000,-1.1379,-1.0000,-442.6369,344,0.8721,-1.1441,-0.9772,-393.5746,0/5,NAS100:-1.09 · US500:-1.20
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.618 · obj 1.618,contra la tendencia,407,0.0000,-1.1403,-1.0000,-464.0835,261,0.0000,-1.1455,-1.0000,-298.9752,0/5,NAS100:-1.11 · US500:-1.18
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,todos,995,0.1005,-1.2409,-0.9977,-1234.6563,776,0.2577,-1.2682,-0.9941,-984.1608,0/5,NAS100:-1.21 · US500:-1.33
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,pequeño,307,0.3257,-1.4339,-0.9926,-440.2034,222,0.9009,-1.5213,-0.9795,-337.7280,0/5,NAS100:-1.41 · US500:-1.63
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,medio,360,0.0000,-1.2067,-1.0000,-434.3982,245,0.0000,-1.2423,-1.0000,-304.3626,0/5,NAS100:-1.20 · US500:-1.28
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,grande,328,0.0000,-1.0977,-1.0000,-360.0548,309,0.0000,-1.1070,-1.0000,-342.0702,0/5,NAS100:-1.09 · US500:-1.13
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,a favor de la tendencia,389,0.0000,-1.2461,-1.0000,-484.7444,344,0.5814,-1.2848,-0.9868,-441.9695,0/5,NAS100:-1.22 · US500:-1.35
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.272,contra la tendencia,407,0.0000,-1.2504,-1.0000,-508.8968,261,0.0000,-1.2597,-1.0000,-328.7875,0/5,NAS100:-1.20 · US500:-1.32
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,todos,995,0.1005,-1.2392,-0.9961,-1233.0395,776,0.2577,-1.2641,-0.9900,-980.9271,0/5,NAS100:-1.20 · US500:-1.33
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,pequeño,307,0.3257,-1.4286,-0.9873,-438.5865,222,0.9009,-1.5067,-0.9650,-334.4943,0/5,NAS100:-1.38 · US500:-1.63
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,medio,360,0.0000,-1.2067,-1.0000,-434.3982,245,0.0000,-1.2423,-1.0000,-304.3626,0/5,NAS100:-1.20 · US500:-1.28
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,grande,328,0.0000,-1.0977,-1.0000,-360.0548,309,0.0000,-1.1070,-1.0000,-342.0702,0/5,NAS100:-1.09 · US500:-1.13
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,a favor de la tendencia,389,0.0000,-1.2461,-1.0000,-484.7444,344,0.5814,-1.2754,-0.9774,-438.7359,0/5,NAS100:-1.20 · US500:-1.35
+P5,Gap cerrado y extensión más allá del cierre anterior,stop 0.786 · obj 1.618,contra la tendencia,407,0.0000,-1.2504,-1.0000,-508.8968,261,0.0000,-1.2597,-1.0000,-328.7875,0/5,NAS100:-1.20 · US500:-1.32
