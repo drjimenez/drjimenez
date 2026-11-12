@@ -45,8 +45,10 @@ def results_dir() -> str:
 def load_bars(symbol: str) -> pd.DataFrame:
     """Velas de 1 minuto en UTC de la fuente activa (C.SOURCE)."""
     if C.SOURCE == "dukascopy":
-        import dukascopy
-        return dukascopy.load(symbol, C.START, C.END)
+        # Serie CFD de Dukascopy: años/meses cerrados desde HistData (mismos precios, archivos
+        # grandes y rápidos de bajar) y los últimos días desde el datafeed de Dukascopy.
+        import histdata
+        return histdata.load(symbol, C.START, C.END)
     return load_binance(symbol)
 
 
