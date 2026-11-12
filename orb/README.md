@@ -68,8 +68,8 @@ Si tienes datos de tu bróker (NAS100, US500, NQ, ES), puedes usarlos en su luga
 | Llega a la extensión 2,0 | 64 % | 63 % | 57 % | 52 % |
 | **1,618 antes de retroceder al 50 %** | **49 %** | **53 %** | **47 %** | **50 %** |
 
-![Retroceso máximo](results/retrace_depth.png)
-![Extensión antes que retroceso](results/heat_ext_before_retrace.png)
+![Retroceso máximo](results/binance/retrace_depth.png)
+![Extensión antes que retroceso](results/binance/heat_ext_before_retrace.png)
 
 ### Lectura
 
@@ -85,7 +85,7 @@ Si tienes datos de tu bróker (NAS100, US500, NQ, ES), puedes usarlos en su luga
 - **El OR de 20 minutos y los rangos grandes fallan menos.** En Nueva York, con OR de 20 minutos, el
   extremo opuesto se toca un 46 % de las veces, frente al 54 % con 15 minutos. Por tamaño de rango,
   el tercio grande toca el extremo opuesto entre un 30 % y un 44 % de las veces y el tercio pequeño
-  entre un 52 % y un 64 % (`results/conditional_probabilities.csv`).
+  entre un 52 % y un 64 % (`results/binance/conditional_probabilities.csv`).
 - **Londres no predice Nueva York.** Nueva York rompe en la misma dirección que Londres el 51 % de
   los días. Hay un subgrupo aparente: cuando Nueva York abre en el tramo 61,8-100 % del rango de
   Londres, coincide en el 83 % de los casos, pero son solo 12 días.
@@ -100,14 +100,14 @@ Si tienes datos de tu bróker (NAS100, US500, NQ, ES), puedes usarlos en su luga
 - **Ninguna regla es robusta.** Solo 2 de 448 son positivas a la vez en IS y en OOS, y ninguna lo es
   en los dos índices por separado. Con tantas combinaciones probadas, es lo que cabe esperar por puro
   azar.
-- La mejor regla de cada sesión elegida en IS **pierde en OOS** (`results/equity_selected.png`).
+- La mejor regla de cada sesión elegida en IS **pierde en OOS** (`results/binance/equity_selected.png`).
 - **Hubo un cambio de régimen.** En IS funcionaba algo mejor la reversión y en OOS la continuación.
   Una regla fija de ORB y Fibonacci no se sostuvo en este período.
 - **Los costes pesan mucho en Londres.** La mediana del rango es de solo 8 pb en SPY y 16 pb en QQQ,
   así que 2 pb de ida y vuelta se comen buena parte de cada operación. En Nueva York el rango es de
   23 a 54 pb.
 
-![Reglas IS vs OOS](results/rules_is_vs_oos.png)
+![Reglas IS vs OOS](results/binance/rules_is_vs_oos.png)
 
 **Conclusión.** La base de datos sirve para conocer las probabilidades, por ejemplo que casi siempre
 habrá retest, que hay un 75 % de probabilidad de tocar el 50 % y un 50 % de tocar el extremo
@@ -124,9 +124,9 @@ orb/engine.py              Extracción de eventos (OR, ruptura, retrocesos, exte
 orb/database.py            Carga Binance / CSV propio, SQLite (tablas y vistas)
 orb/run_study.py           Ejecuta todo: base de datos → probabilidades → reglas → gráficos → informe
 orb/pine/orb_fib_indicator.pine   Indicador TradingView: OR Londres/NY + niveles Fibonacci + rupturas
-orb/results/REPORT.md      Todas las tablas (generado)
-orb/results/orb_study.sqlite      Base de datos de eventos y reglas (sin velas, ~0,5 MB)
-orb/results/*.csv, *.png   Eventos, resúmenes, rejilla de reglas, operaciones y gráficos
+orb/results/binance/REPORT.md      Todas las tablas (generado)
+orb/results/binance/orb_study.sqlite      Base de datos de eventos y reglas (sin velas, ~0,5 MB)
+orb/results/binance/*.csv, *.png   Eventos, resúmenes, rejilla de reglas, operaciones y gráficos
 orb/data/orb.sqlite        Base de datos completa con velas de 1 minuto (se genera, no se versiona)
 ```
 
@@ -143,7 +143,7 @@ Para cambiar el período, las sesiones, los minutos del OR, los niveles o los co
 ### Consultar la base de datos
 
 ```sql
--- sqlite3 orb/results/orb_study.sqlite
+-- sqlite3 orb/results/binance/orb_study.sqlite
 SELECT * FROM v_breakout_summary;            -- dirección, retest y % de rupturas fallidas
 SELECT * FROM v_ext1618_before_ret50;        -- % que llega a 1.618 antes de retroceder al 50 %
 
