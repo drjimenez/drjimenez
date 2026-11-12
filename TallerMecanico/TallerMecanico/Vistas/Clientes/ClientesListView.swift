@@ -7,13 +7,14 @@ struct ClientesListView: View {
 
     @State private var busqueda = ""
     @State private var mostrarNuevo = false
+    @State private var ruta = NavigationPath()
 
     private var filtrados: [Cliente] {
         busqueda.isEmpty ? clientes : clientes.filter { $0.textoBusqueda.localizedStandardContains(busqueda) }
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $ruta) {
             List {
                 ForEach(filtrados) { cliente in
                     NavigationLink(value: cliente) {
@@ -54,6 +55,11 @@ struct ClientesListView: View {
             .navigationDestination(for: Cliente.self) { ClienteDetalleView(cliente: $0) }
             .navigationDestination(for: Vehiculo.self) { VehiculoDetalleView(vehiculo: $0) }
             .navigationDestination(for: OrdenServicio.self) { OrdenDetalleView(orden: $0) }
+            .task {
+                guard ArranqueDemo.abrir == "cliente" else { return }
+                try? await Task.sleep(for: .seconds(1))
+                if let primero = clientes.first { ruta.append(primero) }
+            }
         }
     }
 }

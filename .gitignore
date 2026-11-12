@@ -2,3 +2,5 @@
 data/
 __pycache__/
 *.pyc
+TallerMecanico/build/
+TallerMecanico/build.log

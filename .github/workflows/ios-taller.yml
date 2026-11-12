@@ -4,28 +4,105 @@ on:
   push:
     paths:
       - "TallerMecanico/**"
+      - "!TallerMecanico/Capturas/**"
       - ".github/workflows/ios-taller.yml"
-  pull_request:
-    paths:
-      - "TallerMecanico/**"
   workflow_dispatch:
+
+concurrency:
+  group: ios-taller-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: macos-26
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Xcode
+
+      - name: Versión de Xcode
+        run: xcodebuild -version
+
+      - name: Elegir simulador de iPhone (iOS 26)
+        id: sim
         run: |
-          ls /Applications | grep Xcode || true
-          xcodebuild -version
-      - name: Compilar para el simulador
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devs = json.load(sys.stdin)["devices"]
+          cands = [(rt, d) for rt, ds in devs.items() if "iOS-26" in rt for d in ds if d["name"].startswith("iPhone")]
+          cands.sort(key=lambda c: ("Pro Max" in c[1]["name"], "Pro" not in c[1]["name"], c[0]), reverse=False)
+          pro = [c for c in cands if c[1]["name"].endswith(" Pro")]
+          print((pro or cands)[-1][1]["udid"])
+          ')
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices | grep "$UDID"
+
+      - name: Compilar
         working-directory: TallerMecanico
         run: |
           set -o pipefail
           xcodebuild build \
             -project TallerMecanico.xcodeproj \
             -scheme TallerMecanico \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO | tee build.log | grep -E "error:|warning:|BUILD" || true
+            -configuration Debug \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build.log | grep -E "error:|warning: .*\.swift|BUILD (SUCCEEDED|FAILED)" || true
           grep -q "BUILD SUCCEEDED" build.log
+
+      - name: Capturas de pantalla
+        working-directory: TallerMecanico
+        run: |
+          UDID=${{ steps.sim.outputs.udid }}
+          APP=build/Build/Products/Debug-iphonesimulator/TallerMecanico.app
+          ID=com.drjimenez.TallerMecanico
+          rm -rf Capturas && mkdir -p Capturas
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time "9:41" --dataNetwork wifi --wifiMode active \
+            --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+          xcrun simctl install "$UDID" "$APP"
+
+          captura () {  # nombre, apariencia, argumentos...
+            local nombre=$1 modo=$2; shift 2
+            xcrun simctl ui "$UDID" appearance "$modo"
+            xcrun simctl terminate "$UDID" "$ID" 2>/dev/null || true
+            xcrun simctl launch "$UDID" "$ID" -demo YES -nombreTaller "Taller Jiménez" "$@"
+            sleep 7
+            xcrun simctl io "$UDID" screenshot "Capturas/$nombre.png"
+          }
+
+          captura 01-inicio            light -tab inicio
+          captura 02-ordenes           light -tab ordenes
+          captura 03-detalle-orden     light -tab ordenes -abrir orden
+          captura 04-nueva-orden       light -tab inicio -abrir nuevaOrden
+          captura 05-clientes          light -tab clientes
+          captura 06-ficha-cliente     light -tab clientes -abrir cliente
+          captura 07-inventario        light -tab inventario
+          captura 08-agenda            light -tab agenda
+          captura 09-ajustes           light -tab inicio -abrir ajustes
+          captura 10-inicio-oscuro     dark  -tab inicio
+          captura 11-detalle-oscuro    dark  -tab ordenes -abrir orden
+          ls -la Capturas
+
+      - name: Guardar capturas como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capturas
+          path: |
+            TallerMecanico/Capturas
+            TallerMecanico/build.log
+          if-no-files-found: ignore
+
+      - name: Subir capturas al repositorio
+        if: success() && github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add TallerMecanico/Capturas
+          git diff --cached --quiet && exit 0
+          git commit -m "Update TallerMecanico screenshots [skip ci]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

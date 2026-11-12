@@ -57,6 +57,13 @@ struct PanelView: View {
             .sheet(isPresented: $mostrarAjustes) { AjustesView() }
             .sheet(isPresented: $mostrarNuevaOrden) { NuevaOrdenView() }
             .navigationDestination(for: OrdenServicio.self) { OrdenDetalleView(orden: $0) }
+            .task {
+                switch ArranqueDemo.abrir {
+                case "ajustes": mostrarAjustes = true
+                case "nuevaOrden": mostrarNuevaOrden = true
+                default: break
+                }
+            }
         }
     }
 

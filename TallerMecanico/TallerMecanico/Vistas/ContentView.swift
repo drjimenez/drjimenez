@@ -1,11 +1,23 @@
 import SwiftUI
+import SwiftData
 
-enum SeccionApp: Hashable {
+enum SeccionApp: String, Hashable {
     case inicio, ordenes, clientes, inventario, agenda
 }
 
+/// Argumentos de arranque para demostraciones y capturas de pantalla, p. ej.:
+/// `-demo YES -tab ordenes -abrir orden`
+enum ArranqueDemo {
+    static var activo: Bool { UserDefaults.standard.bool(forKey: "demo") }
+    static var pestana: SeccionApp {
+        SeccionApp(rawValue: UserDefaults.standard.string(forKey: "tab") ?? "") ?? .inicio
+    }
+    static var abrir: String { UserDefaults.standard.string(forKey: "abrir") ?? "" }
+}
+
 struct ContentView: View {
-    @State private var seleccion: SeccionApp = .inicio
+    @Environment(\.modelContext) private var context
+    @State private var seleccion: SeccionApp = ArranqueDemo.pestana
 
     var body: some View {
         TabView(selection: $seleccion) {
@@ -26,6 +38,13 @@ struct ContentView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
+        .onAppear(perform: cargarDemoSiHaceFalta)
+    }
+
+    private func cargarDemoSiHaceFalta() {
+        guard ArranqueDemo.activo,
+              (try? context.fetchCount(FetchDescriptor<Cliente>())) == 0 else { return }
+        DatosEjemplo.cargar(en: context)
     }
 }
 

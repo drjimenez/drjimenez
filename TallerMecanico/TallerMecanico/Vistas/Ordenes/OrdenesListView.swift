@@ -15,6 +15,7 @@ struct OrdenesListView: View {
     @State private var filtro: Filtro = .activas
     @State private var busqueda = ""
     @State private var mostrarNuevaOrden = false
+    @State private var ruta: [OrdenServicio] = []
 
     private var filtradas: [OrdenServicio] {
         ordenes.filter { orden in
@@ -30,7 +31,7 @@ struct OrdenesListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $ruta) {
             List {
                 ForEach(filtradas) { orden in
                     NavigationLink(value: orden) {
@@ -66,6 +67,11 @@ struct OrdenesListView: View {
             }
             .sheet(isPresented: $mostrarNuevaOrden) { NuevaOrdenView() }
             .navigationDestination(for: OrdenServicio.self) { OrdenDetalleView(orden: $0) }
+            .task {
+                guard ArranqueDemo.abrir == "orden" else { return }
+                try? await Task.sleep(for: .seconds(1))
+                if let primera = ordenes.min(by: { $0.folio < $1.folio }) { ruta = [primera] }
+            }
         }
     }
 
