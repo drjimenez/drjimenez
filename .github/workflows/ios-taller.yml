@@ -89,6 +89,8 @@ jobs:
           captura 12-facturas          light -tab ordenes -abrir facturas
           captura 13-factura           light -tab ordenes -abrir factura
           captura 14-factura-pdf       light -tab ordenes -abrir facturaPDF
+          captura 15-tipo-cambio       light -tab inicio -abrir tipoCambio
+          captura 16-registro-manual   light -tab inicio -abrir registroTC
 
           # PDF real generado por la app (hoja carta) y una imagen de su primera página
           DATA=$(xcrun simctl get_app_container "$UDID" "$ID" data)

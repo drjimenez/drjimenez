@@ -15,7 +15,7 @@ struct AjustesView: View {
 
     @State private var confirmarBorrado = false
 
-    @Bindable private var tipoCambio = TipoCambio.compartido
+    private let tipoCambio = TipoCambio.compartido
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -49,41 +49,24 @@ struct AjustesView: View {
                 }
 
                 Section {
-                    LabeledContent("Dólar hoy", value: tipoCambio.descripcion)
-                    LabeledContent("Fuente", value: tipoCambio.detalleFuente)
-                    Button {
-                        Task {
-                            await tipoCambio.actualizar()
-                            RevalorizacionDolares.aplicar(en: context)
+                    ForEach(Moneda.extranjeras) { moneda in
+                        LabeledContent {
+                            Text(tipoCambio.valor(moneda).comoMoneda).monospacedDigit()
+                        } label: {
+                            Label(moneda.nombre, systemImage: moneda.icono)
+                            Text(tipoCambio.esManual(moneda) ? "Manual" : "Automático")
                         }
+                    }
+                    NavigationLink {
+                        TipoCambioView()
                     } label: {
-                        HStack {
-                            Label("Actualizar ahora", systemImage: "arrow.clockwise")
-                            if tipoCambio.actualizando {
-                                Spacer()
-                                ProgressView()
-                            }
-                        }
-                    }
-                    .disabled(tipoCambio.actualizando || tipoCambio.usarManual)
-                    if let error = tipoCambio.error {
-                        Text(error).font(.footnote).foregroundStyle(.orange)
-                    }
-                    Toggle("Usar tipo de cambio manual", isOn: $tipoCambio.usarManual)
-                    if tipoCambio.usarManual {
-                        LabeledContent("₡ por US$1") {
-                            TextField("Tipo de cambio", value: $tipoCambio.valorManual,
-                                      format: .number.precision(.fractionLength(2)))
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.trailing)
-                        }
+                        Label("Registrar o consultar tipo de cambio", systemImage: "arrow.left.arrow.right.circle")
                     }
                 } header: {
-                    Text("Tipo de cambio del dólar")
+                    Text("Tipo de cambio (dólar y euro)")
                 } footer: {
-                    Text("Se consulta automáticamente cada día el tipo de cambio de venta de referencia del BCCR. Los repuestos comprados en dólares se recalculan en colones en las órdenes abiertas; las facturas conservan el tipo de cambio con que se emitieron.")
+                    Text("Se consulta automáticamente cada día; también puedes grabarlo manualmente para cada moneda.")
                 }
-                .onChange(of: tipoCambio.valor) { RevalorizacionDolares.aplicar(en: context) }
 
                 Section {
                     Stepper("Garantía: \(diasGarantia) días", value: $diasGarantia, in: 0...365, step: 15)

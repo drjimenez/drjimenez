@@ -121,7 +121,7 @@ struct OrdenDocumentoView: View {
                     Text(linea.descripcion)
                     Text(linea.tipo.titulo).foregroundStyle(.gray)
                     Text(linea.cantidad.formatted())
-                    Text(linea.precioUSD.map { $0.comoDolares } ?? linea.precioUnitario.comoMoneda)
+                    Text(linea.precioOriginalTexto)
                     Text(linea.importe.comoMoneda)
                 }
             }

@@ -43,7 +43,7 @@ struct ContentView: View {
         .task(id: fase) {
             guard fase == .active else { return }
             await TipoCambio.compartido.actualizarSiHaceFalta()
-            RevalorizacionDolares.aplicar(en: context)
+            RevalorizacionMonedas.aplicar(en: context)
         }
     }
 

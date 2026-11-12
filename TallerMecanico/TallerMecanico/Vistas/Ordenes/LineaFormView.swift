@@ -29,7 +29,7 @@ struct LineaFormView: View {
 
     /// Precio unitario en colones (moneda oficial).
     private var precioEnColones: Double {
-        moneda == .dolar ? (precio * tipoCambio.valor).redondeado : precio
+        (precio * tipoCambio.valor(moneda)).redondeado
     }
 
     var body: some View {
@@ -65,7 +65,7 @@ struct LineaFormView: View {
                     }
                     if tipo == .refaccion {
                         Picker("Moneda", selection: $moneda) {
-                            ForEach(Moneda.allCases) { Text($0.nombre).tag($0) }
+                            ForEach(Moneda.allCases) { Text($0.nombreCorto).tag($0) }
                         }
                         .pickerStyle(.segmented)
                     }
@@ -77,8 +77,8 @@ struct LineaFormView: View {
                 }
 
                 Section {
-                    if moneda == .dolar {
-                        LabeledContent("Tipo de cambio", value: tipoCambio.descripcion)
+                    if moneda != .colon {
+                        LabeledContent("Tipo de cambio", value: tipoCambio.descripcion(moneda))
                         LabeledContent("Precio unitario en colones", value: precioEnColones.comoMoneda)
                     }
                     LabeledContent {
@@ -87,8 +87,8 @@ struct LineaFormView: View {
                         Text("Importe")
                     }
                 } footer: {
-                    if moneda == .dolar {
-                        Text("Mientras la orden no se facture, el precio en colones se actualiza cada día con el tipo de cambio vigente (\(tipoCambio.detalleFuente)).")
+                    if moneda != .colon {
+                        Text("Mientras la orden no se facture, el precio en colones se actualiza con el tipo de cambio vigente (\(tipoCambio.detalleFuente(moneda))).")
                     }
                 }
             }
@@ -116,9 +116,8 @@ struct LineaFormView: View {
     private func guardar() {
         let linea = LineaOrden(tipo: tipo, descripcion: descripcion.limpio,
                                cantidad: cantidad, precioUnitario: precioEnColones)
-        if moneda == .dolar {
-            linea.precioUSD = precio
-            linea.tipoCambio = tipoCambio.valor
+        if moneda != .colon {
+            linea.fijarPrecioExtranjero(precio, en: moneda, tipoCambio: tipoCambio.valor(moneda))
         }
         context.insert(linea)
         linea.orden = orden

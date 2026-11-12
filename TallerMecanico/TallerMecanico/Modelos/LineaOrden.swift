@@ -11,9 +11,10 @@ final class LineaOrden {
     var orden: OrdenServicio?
     /// Refacción del inventario de la que se descontó existencia (si aplica).
     var refaccion: Refaccion?
-    /// Precio unitario en dólares cuando el repuesto se compró en US$.
-    /// `precioUnitario` guarda su equivalente en colones con `tipoCambio`.
-    var precioUSD: Double?
+    /// Precio unitario en la moneda extranjera (US$ o €) cuando el repuesto se compró en ella.
+    /// `precioUnitario` guarda su equivalente en colones calculado con `tipoCambio`.
+    var precioExtranjero: Double?
+    var monedaExtranjeraRaw: String?
     var tipoCambio: Double?
 
     init(tipo: TipoLinea, descripcion: String, cantidad: Double, precioUnitario: Double) {
@@ -31,14 +32,31 @@ final class LineaOrden {
 
     var importe: Double { (cantidad * precioUnitario).redondeado }
 
-    var esEnDolares: Bool { precioUSD != nil }
+    var monedaOrigen: Moneda {
+        monedaExtranjeraRaw.flatMap(Moneda.init(rawValue:)) ?? .colon
+    }
+
+    var esEnMonedaExtranjera: Bool { precioExtranjero != nil && monedaOrigen != .colon }
+
+    func fijarPrecioExtranjero(_ precio: Double, en moneda: Moneda, tipoCambio tc: Double) {
+        precioExtranjero = precio
+        monedaExtranjeraRaw = moneda.rawValue
+        tipoCambio = tc
+        precioUnitario = (precio * tc).redondeado
+    }
+
+    /// Precio unitario en su moneda original (ej. "US$60,00", "€45,00" o "₡6 000,00").
+    var precioOriginalTexto: String {
+        if esEnMonedaExtranjera, let precioExtranjero { return precioExtranjero.como(monedaOrigen) }
+        return precioUnitario.comoMoneda
+    }
 
     /// Ej.: "2 × ₡6 000,00" o "2 × US$60,00 (TC ₡505,12)"
     var detallePrecio: String {
         let cantidadTexto = tipo == .manoDeObra ? "\(cantidad.formatted()) h" : cantidad.formatted()
-        if let precioUSD {
+        if esEnMonedaExtranjera {
             let tc = tipoCambio.map { " (TC \($0.comoMoneda))" } ?? ""
-            return "\(cantidadTexto) × \(precioUSD.comoDolares)\(tc)"
+            return "\(cantidadTexto) × \(precioOriginalTexto)\(tc)"
         }
         return "\(cantidadTexto) × \(precioUnitario.comoMoneda)"
     }

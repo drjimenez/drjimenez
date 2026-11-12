@@ -86,8 +86,8 @@ struct FacturaDetalleView: View {
                     } label: {
                         Text("Total de la reparación").bold()
                     }
-                    if orden.tieneLineasEnDolares, factura.tipoCambio > 0 {
-                        LabeledContent("Tipo de cambio", value: "\(factura.tipoCambio.comoMoneda) por US$1")
+                    ForEach(orden.tiposDeCambioAplicados) { tc in
+                        LabeledContent("Tipo de cambio", value: "\(tc.valor.comoMoneda) por \(tc.moneda.simbolo)1")
                     }
                     if orden.anticipo > 0 {
                         LabeledContent("Anticipo recibido", value: "− \(orden.anticipo.comoMoneda)")

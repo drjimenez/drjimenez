@@ -160,10 +160,9 @@ struct OrdenDetalleView: View {
             } label: {
                 Text("Total").bold()
             }
-            if orden.tieneLineasEnDolares {
-                LabeledContent("Tipo de cambio aplicado",
-                               value: orden.factura.map { "\($0.tipoCambio.comoMoneda) (factura)" }
-                                   ?? TipoCambio.compartido.descripcion)
+            ForEach(orden.tiposDeCambioAplicados) { tc in
+                LabeledContent("Tipo de cambio \(tc.moneda.simbolo)",
+                               value: "\(tc.valor.comoMoneda)\(orden.factura == nil ? "" : " (facturado)")")
             }
             LabeledContent("Anticipo") {
                 TextField("Anticipo", value: $orden.anticipo, format: .currency(code: Preferencias.moneda))

@@ -68,8 +68,8 @@ struct FacturaDocumentoView: View {
                 Text("Fecha: \(factura.fechaEmision.formatted(date: .long, time: .omitted))")
                 if let orden { Text("Orden de servicio: \(orden.folioTexto)") }
                 Text("Forma de pago: \(factura.metodoPago.titulo)")
-                if orden?.tieneLineasEnDolares == true, factura.tipoCambio > 0 {
-                    Text("Tipo de cambio: \(factura.tipoCambio.comoMoneda) por US$1")
+                ForEach(orden?.tiposDeCambioAplicados ?? []) { tc in
+                    Text("Tipo de cambio: \(tc.valor.comoMoneda) por \(tc.moneda.simbolo)1")
                 }
             }
             .font(.system(size: 9))
@@ -155,8 +155,8 @@ struct FacturaDocumentoView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         Text(linea.cantidad.formatted())
                         VStack(alignment: .trailing, spacing: 0) {
-                            if let usd = linea.precioUSD {
-                                Text(usd.comoDolares)
+                            if linea.esEnMonedaExtranjera {
+                                Text(linea.precioOriginalTexto)
                                 Text("= \(linea.precioUnitario.comoMoneda)").font(.system(size: 7)).foregroundStyle(gris)
                             } else {
                                 Text(linea.precioUnitario.comoMoneda)
@@ -206,8 +206,8 @@ struct FacturaDocumentoView: View {
             if orden.anticipo > 0 {
                 fila("Anticipo recibido", "− \(orden.anticipo.comoMoneda)")
             }
-            if orden.tieneLineasEnDolares, factura.tipoCambio > 0 {
-                fila("Equivalente en dólares", (orden.total / factura.tipoCambio).comoDolares)
+            if let usd = orden.tiposDeCambioAplicados.first(where: { $0.moneda == .dolar }), usd.valor > 0 {
+                fila("Equivalente en dólares", (orden.total / usd.valor).comoDolares)
                     .foregroundStyle(gris)
             }
             HStack {
@@ -258,8 +258,10 @@ struct FacturaDocumentoView: View {
             if !taller.terminos.isEmpty {
                 Text(taller.terminos)
             }
-            if orden?.tieneLineasEnDolares == true, factura.tipoCambio > 0 {
-                Text("Repuestos cotizados en dólares convertidos a colones con el tipo de cambio de \(factura.tipoCambio.comoMoneda) por US$1 (\(factura.fuenteTipoCambio)).")
+            if let tipos = orden?.tiposDeCambioAplicados, !tipos.isEmpty {
+                Text("Repuestos cotizados en moneda extranjera convertidos a colones: " +
+                     tipos.map { "\($0.valor.comoMoneda) por \($0.moneda.simbolo)1" }.joined(separator: "; ") +
+                     (factura.fuenteTipoCambio.isEmpty ? "." : " (\(factura.fuenteTipoCambio))."))
             }
             Text("Montos en colones costarricenses (₡). Comprobante de servicio; no sustituye la factura electrónica de Hacienda.")
         }

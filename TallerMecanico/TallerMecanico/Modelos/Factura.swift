@@ -25,8 +25,7 @@ final class Factura {
     var metodoPagoRaw: String = MetodoPago.efectivo.rawValue
     var notas: String = ""
     var orden: OrdenServicio?
-    /// Tipo de cambio (₡ por US$) congelado al emitir la factura.
-    var tipoCambio: Double = 0
+    /// Origen de los tipos de cambio congelados al emitir la factura (cada línea guarda el suyo).
     var fuenteTipoCambio: String = ""
 
     init(folio: Int, diasGarantia: Int = 30, metodoPago: MetodoPago = .efectivo, notas: String = "") {

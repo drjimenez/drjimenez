@@ -19,7 +19,7 @@ struct InventarioView: View {
     }
 
     private var valorTotal: Double {
-        refacciones.reduce(0) { $0 + $1.valorInventario(tipoCambio: tipoCambio.valor) }
+        refacciones.reduce(0) { $0 + $1.valorInventario(con: tipoCambio) }
     }
 
     var body: some View {
@@ -30,15 +30,17 @@ struct InventarioView: View {
                         LabeledContent("Artículos", value: "\(refacciones.count)")
                         LabeledContent("Valor del inventario (costo)", value: valorTotal.comoMoneda)
                     } footer: {
-                        if refacciones.contains(where: { $0.moneda == .dolar }) {
-                            Text("Repuestos en dólares convertidos a \(tipoCambio.descripcion).")
+                        let monedas = Moneda.extranjeras.filter { m in refacciones.contains { $0.moneda == m } }
+                        if !monedas.isEmpty {
+                            Text("Repuestos en moneda extranjera convertidos a " +
+                                 monedas.map { tipoCambio.descripcion($0) }.joined(separator: " y ") + ".")
                         }
                     }
                 }
                 Section {
                     ForEach(filtradas) { refaccion in
                         Button { editando = refaccion } label: {
-                            FilaRefaccion(refaccion: refaccion, tipoCambio: tipoCambio.valor)
+                            FilaRefaccion(refaccion: refaccion, tipoCambio: tipoCambio)
                         }
                         .foregroundStyle(.primary)
                         .swipeActions(edge: .leading) {
@@ -90,7 +92,7 @@ struct InventarioView: View {
 
 struct FilaRefaccion: View {
     let refaccion: Refaccion
-    let tipoCambio: Double
+    let tipoCambio: TipoCambio
 
     var body: some View {
         HStack(spacing: 12) {
@@ -101,10 +103,10 @@ struct FilaRefaccion: View {
                         .joined(separator: " · "))
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                if refaccion.moneda == .dolar {
+                if refaccion.moneda != .colon {
                     HStack(spacing: 4) {
-                        Text(refaccion.precioVenta.comoDolares).font(.subheadline.bold())
-                        Text("≈ \(refaccion.enColones(refaccion.precioVenta, tipoCambio: tipoCambio).comoMoneda)")
+                        Text(refaccion.precioVenta.como(refaccion.moneda)).font(.subheadline.bold())
+                        Text("≈ \(refaccion.enColones(refaccion.precioVenta, con: tipoCambio).comoMoneda)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

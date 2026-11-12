@@ -68,7 +68,16 @@ final class OrdenServicio {
                                          to: cal.startOfDay(for: fin)).day ?? 0)
     }
 
-    var tieneLineasEnDolares: Bool { lineas.contains { $0.esEnDolares } }
+    var tieneLineasEnMonedaExtranjera: Bool { lineas.contains { $0.esEnMonedaExtranjera } }
+
+    /// Tipos de cambio aplicados en la orden, por moneda (ej. US$ → 505,12; € → 550,20).
+    var tiposDeCambioAplicados: [TipoCambioAplicado] {
+        Moneda.extranjeras.compactMap { moneda in
+            let valores = lineas.filter { $0.esEnMonedaExtranjera && $0.monedaOrigen == moneda }.compactMap(\.tipoCambio)
+            guard let valor = valores.first else { return nil }
+            return TipoCambioAplicado(moneda: moneda, valor: valor)
+        }
+    }
 
     var subtotal: Double { totalManoDeObra + totalRefacciones }
     var iva: Double { (subtotal * tasaIVA * 100).rounded() / 100 }
@@ -85,4 +94,10 @@ final class OrdenServicio {
          vehiculo?.cliente?.nombre ?? "", problemaReportado]
             .joined(separator: " ")
     }
+}
+
+struct TipoCambioAplicado: Identifiable, Hashable {
+    let moneda: Moneda
+    let valor: Double
+    var id: Moneda { moneda }
 }

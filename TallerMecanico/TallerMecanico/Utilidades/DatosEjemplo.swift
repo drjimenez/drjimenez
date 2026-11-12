@@ -21,7 +21,10 @@ enum DatosEjemplo {
         let sensor = Refaccion(nombre: "Sensor de temperatura", codigo: "ST-2210", marca: "Denso",
                                ubicacion: "Cajón C1", existencia: 3, existenciaMinima: 1, costo: 18, precioVenta: 29,
                                moneda: .dolar)
-        [aceite, filtroAceite, pastillas, bujia, anticongelante, sensor].forEach { context.insert($0) }
+        let filtroCabina = Refaccion(nombre: "Filtro de cabina con carbón activado", codigo: "FC-0451", marca: "Bosch",
+                                     ubicacion: "Estante A4", existencia: 6, existenciaMinima: 2, costo: 14, precioVenta: 22,
+                                     moneda: .euro)
+        [aceite, filtroAceite, pastillas, bujia, anticongelante, sensor, filtroCabina].forEach { context.insert($0) }
 
         // Clientes y vehículos
         let ana = Cliente(nombre: "Ana López", telefono: "8812 3456", correo: "ana@example.com")
@@ -39,15 +42,12 @@ enum DatosEjemplo {
         hilux.cliente = flotilla
 
         // Órdenes
-        let tc = TipoCambio.compartido.valor
+        let tc = TipoCambio.compartido
         func linea(_ tipo: TipoLinea, _ desc: String, _ cant: Double, _ precio: Double,
                    _ orden: OrdenServicio, _ ref: Refaccion? = nil) {
-            let enDolares = ref?.moneda == .dolar
-            let l = LineaOrden(tipo: tipo, descripcion: desc, cantidad: cant,
-                               precioUnitario: enDolares ? (precio * tc).redondeado : precio)
-            if enDolares {
-                l.precioUSD = precio
-                l.tipoCambio = tc
+            let l = LineaOrden(tipo: tipo, descripcion: desc, cantidad: cant, precioUnitario: precio)
+            if let moneda = ref?.moneda, moneda != .colon {
+                l.fijarPrecioExtranjero(precio, en: moneda, tipoCambio: tc.valor(moneda))
             }
             context.insert(l)
             l.orden = orden
@@ -65,6 +65,7 @@ enum DatosEjemplo {
         linea(.refaccion, aceite.nombre, 4, aceite.precioVenta, o1, aceite)
         linea(.refaccion, filtroAceite.nombre, 1, filtroAceite.precioVenta, o1, filtroAceite)
         linea(.refaccion, bujia.nombre, 4, bujia.precioVenta, o1, bujia)
+        linea(.refaccion, filtroCabina.nombre, 1, filtroCabina.precioVenta, o1, filtroCabina)
 
         let o2 = OrdenServicio(folio: 2, problemaReportado: "Rechinido al frenar.", kilometraje: 96_500,
                                nivelCombustible: 0.25, anticipo: 15_000)
@@ -88,8 +89,7 @@ enum DatosEjemplo {
         linea(.refaccion, anticongelante.nombre, 2, anticongelante.precioVenta, o3, anticongelante)
         o3.estado = .entregado
         let factura = Factura(folio: 1, diasGarantia: 30, metodoPago: .transferencia)
-        factura.tipoCambio = tc
-        factura.fuenteTipoCambio = TipoCambio.compartido.detalleFuente
+        factura.fuenteTipoCambio = "US$: \(tc.detalleFuente(.dolar))"
         context.insert(factura)
         factura.orden = o3
 

@@ -12,6 +12,7 @@ struct PanelView: View {
     private let tipoCambio = TipoCambio.compartido
     @State private var mostrarAjustes = false
     @State private var mostrarNuevaOrden = false
+    @State private var mostrarTipoCambio = false
 
     private var activas: [OrdenServicio] {
         ordenes.filter { $0.estado.esActiva }.sorted { $0.fechaIngreso < $1.fechaIngreso }
@@ -60,10 +61,12 @@ struct PanelView: View {
             .sheet(isPresented: $mostrarNuevaOrden) { NuevaOrdenView() }
             .navigationDestination(for: OrdenServicio.self) { OrdenDetalleView(orden: $0) }
             .navigationDestination(for: Factura.self) { FacturaDetalleView(factura: $0) }
+            .navigationDestination(isPresented: $mostrarTipoCambio) { TipoCambioView() }
             .task {
                 switch ArranqueDemo.abrir {
                 case "ajustes": mostrarAjustes = true
                 case "nuevaOrden": mostrarNuevaOrden = true
+                case "tipoCambio", "registroTC": mostrarTipoCambio = true
                 default: break
                 }
             }
@@ -94,23 +97,42 @@ struct PanelView: View {
     }
 
     private var dolarHoy: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "dollarsign.arrow.circlepath")
-                .font(.title2)
-                .foregroundStyle(.green)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Dólar hoy: \(tipoCambio.descripcion)")
-                    .font(.subheadline.bold())
-                    .contentTransition(.numericText())
-                Text(tipoCambio.detalleFuente)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+        NavigationLink {
+            TipoCambioView()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "arrow.left.arrow.right.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(.green)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Tipo de cambio de hoy").font(.subheadline.bold())
+                    HStack(spacing: 14) {
+                        ForEach(Moneda.extranjeras) { moneda in
+                            HStack(spacing: 4) {
+                                Text("\(moneda.simbolo)1 =").foregroundStyle(.secondary)
+                                Text(tipoCambio.valor(moneda).comoMoneda).bold().monospacedDigit()
+                                if tipoCambio.esManual(moneda) {
+                                    Image(systemName: "hand.raised.fill").foregroundStyle(.orange)
+                                }
+                            }
+                        }
+                    }
+                    .font(.footnote)
+                    Text(tipoCambio.detalleFuente(.dolar))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 0)
+                if tipoCambio.actualizando {
+                    ProgressView()
+                } else {
+                    Image(systemName: "chevron.right").foregroundStyle(.tertiary)
+                }
             }
-            Spacer()
-            if tipoCambio.actualizando { ProgressView() }
+            .padding()
+            .glassEffect(.regular.tint(Color.green.opacity(0.10)), in: .rect(cornerRadius: 24))
         }
-        .padding()
-        .glassEffect(.regular.tint(Color.green.opacity(0.10)), in: .rect(cornerRadius: 24))
+        .buttonStyle(.plain)
     }
 
     private var porEstado: some View {

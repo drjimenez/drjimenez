@@ -43,13 +43,13 @@ final class Refaccion {
         set { monedaRaw = newValue.rawValue }
     }
 
-    func enColones(_ monto: Double, tipoCambio: Double) -> Double {
-        moneda == .dolar ? (monto * tipoCambio).redondeado : monto
+    func enColones(_ monto: Double, con tipoCambio: TipoCambio) -> Double {
+        (monto * tipoCambio.valor(moneda)).redondeado
     }
 
     /// Valor del inventario en colones (a costo).
-    func valorInventario(tipoCambio: Double) -> Double {
-        Double(max(0, existencia)) * enColones(costo, tipoCambio: tipoCambio)
+    func valorInventario(con tipoCambio: TipoCambio) -> Double {
+        Double(max(0, existencia)) * enColones(costo, con: tipoCambio)
     }
 
     var textoBusqueda: String { "\(nombre) \(codigo) \(marca) \(ubicacion)" }

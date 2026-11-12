@@ -52,7 +52,7 @@ struct RefaccionFormView: View {
                 }
                 Section {
                     Picker("Moneda de compra", selection: $moneda) {
-                        ForEach(Moneda.allCases) { Text($0.nombre).tag($0) }
+                        ForEach(Moneda.allCases) { Text($0.nombreCorto).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     LabeledContent("Costo") {
@@ -67,14 +67,14 @@ struct RefaccionFormView: View {
                     }
                     LabeledContent("Margen", value: margen.formatted(.percent.precision(.fractionLength(0))))
                         .foregroundStyle(margen < 0 ? .red : .secondary)
-                    if moneda == .dolar {
-                        LabeledContent("Precio hoy en colones", value: (precioVenta * tipoCambio.valor).redondeado.comoMoneda)
+                    if moneda != .colon {
+                        LabeledContent("Precio hoy en colones", value: (precioVenta * tipoCambio.valor(moneda)).redondeado.comoMoneda)
                     }
                 } header: {
                     Text("Precios")
                 } footer: {
-                    if moneda == .dolar {
-                        Text("Se convierte a colones con el tipo de cambio del día (\(tipoCambio.descripcion)) al agregarlo a una orden.")
+                    if moneda != .colon {
+                        Text("Se convierte a colones con el tipo de cambio vigente (\(tipoCambio.descripcion(moneda))) al agregarlo a una orden.")
                     }
                 }
             }
