@@ -17,19 +17,19 @@ enum DatosEjemplo {
                               ubicacion: "Cajón C3", existencia: 16, existenciaMinima: 8, costo: 115, precioVenta: 190)
         let anticongelante = Refaccion(nombre: "Anticongelante (galón)", codigo: "ANT-G", marca: "Prestone",
                                        ubicacion: "Estante A3", existencia: 1, existenciaMinima: 4, costo: 260, precioVenta: 390)
-        [aceite, filtroAceite, balatas, bujia, anticongelante].forEach(context.insert)
+        [aceite, filtroAceite, balatas, bujia, anticongelante].forEach { context.insert($0) }
 
         // Clientes y vehículos
         let ana = Cliente(nombre: "Ana López", telefono: "55 1234 5678", correo: "ana@example.com")
         let carlos = Cliente(nombre: "Carlos Ramírez", telefono: "33 9876 5432")
         let flotilla = Cliente(nombre: "Transportes del Norte", telefono: "81 5555 0101",
                                correo: "flotilla@example.com", notas: "Facturar a nombre de la empresa.")
-        [ana, carlos, flotilla].forEach(context.insert)
+        [ana, carlos, flotilla].forEach { context.insert($0) }
 
         let versa = Vehiculo(marca: "Nissan", modelo: "Versa", anio: 2021, placa: "ABC-123-D", color: "Gris", kilometraje: 48_200)
         let jetta = Vehiculo(marca: "Volkswagen", modelo: "Jetta", anio: 2018, placa: "JKL-456-M", color: "Blanco", kilometraje: 96_500)
         let hilux = Vehiculo(marca: "Toyota", modelo: "Hilux", anio: 2022, placa: "NL-7788-X", color: "Rojo", kilometraje: 61_000)
-        [versa, jetta, hilux].forEach(context.insert)
+        [versa, jetta, hilux].forEach { context.insert($0) }
         versa.cliente = ana
         jetta.cliente = carlos
         hilux.cliente = flotilla
@@ -86,7 +86,7 @@ enum DatosEjemplo {
         let c2 = Cita(fecha: cal.date(byAdding: .hour, value: 16, to: inicioHoy) ?? ahora, duracionMinutos: 90,
                       motivo: "Diagnóstico de suspensión")
         let c3 = Cita(fecha: cal.date(byAdding: .hour, value: 33, to: inicioHoy) ?? ahora, motivo: "Servicio de frenos")
-        [c1, c2, c3].forEach(context.insert)
+        [c1, c2, c3].forEach { context.insert($0) }
         c1.cliente = ana; c1.vehiculo = versa
         c2.cliente = flotilla; c2.vehiculo = hilux
         c3.cliente = carlos; c3.vehiculo = jetta
