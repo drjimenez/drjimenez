@@ -95,7 +95,7 @@ orb(lonOR, lonHor, "Europe/London", colLon, "Londres", showLon)
 orb(nyOR, nyHor, "America/New_York", colNy, "NY", showNy)
 
 // Probabilidades medidas en el estudio (NAS100 + US500, 1 min, 2022-2026, OR 15 min).
-// Actualízalas con los valores de orb/results/REPORT.md si cambias datos o período.
+// Actualízalas con los valores de orb/results/dukascopy/REPORT.md si cambias datos o período.
 if showStats and barstate.islast
     var table t = table.new(position.top_right, 3, 6, bgcolor = color.new(color.gray, 90), border_width = 1)
     table.cell(t, 0, 0, "Tras la ruptura (OR 15m)", text_size = size.small)
