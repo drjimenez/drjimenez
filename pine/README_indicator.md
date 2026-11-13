@@ -49,13 +49,19 @@ pegar el código → *Add to chart* (recomendado: gráfico 15m con HTF 240, o 1H
 
 ### Velas HTF al estilo TTrades (versión visual)
 
-- Velas HTF compactas a la derecha del precio, con mecha y borde del color del cuerpo.
-- Encabezado con la temporalidad (p. ej. `4H`) y la cuenta regresiva de la vela en curso.
-- Hora de apertura de cada vela en hora de Nueva York y etiquetas C1 / C2 / C3.
-- Trazado punteado desde el high/low reales del gráfico hasta cada vela HTF, y trazado
-  discontinuo de la apertura de la vela actual.
-- Separadores verticales punteados en cada apertura HTF.
-- El sweep se marca también sobre las velas HTF (nivel de C1 barrido por la mecha de C2).
+Replica el aspecto de los gráficos de ttrades.com:
+
+- Velas HTF grandes y juntas a la derecha del precio: cuerpo verde suave (alcista) o gris
+  oscuro (bajista), con borde y mechas negras. En tema oscuro conviene cambiar el color de
+  "Borde y mechas" a un gris claro.
+- Hora de apertura bajo cada vela en formato "2:00 AM" (hora de Nueva York).
+- Línea negra del sweep: el extremo barrido de C1, extendido hasta la última vela.
+- Línea amarilla **PSP** entre los extremos de C1 y C2 cuando hay divergencia SMT con el
+  activo correlacionado (input "Activo correlacionado": p. ej. NQ ↔ ES, EURUSD ↔ GBPUSD).
+- Numeración C1, C2, C3, C4... a partir de la vela barrida.
+- En el gráfico: separador vertical azul en cada apertura HTF, caja sombreada con borde
+  discontinuo del rango apertura→mecha de la vela HTF en curso con su etiqueta (p. ej. "C4"),
+  línea gris de la apertura HTF y CISD como línea azul con un punto bajo la vela.
 - Alineación "Nueva York (TTrades)": el día abre a las 18:00 NY (4H: 18, 22, 02, 06, 10, 14),
   configurable a 17:00 (forex) o 00:00. Se respeta el horario de verano.
 - Modo Auto con los pares de TTrades: 1m→15m, 3m→30m, 5m→1H, 15m→4H, 1H→D, 4H→W, D→M.

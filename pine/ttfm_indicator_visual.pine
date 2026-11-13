@@ -6,11 +6,14 @@
 //  Qué hace:
 //   - Construye manualmente las velas HTF (sin request.security) acumulando O/H/L/C
 //     de las velas del gráfico (LTF) entre cada `timeframe.change(htf)`.
-//   - Dibuja las últimas N velas HTF a la derecha del precio al estilo TTrades:
-//     velas compactas con mecha del color del cuerpo, encabezado con la temporalidad
-//     y cuenta regresiva, hora de apertura (hora de Nueva York) bajo cada vela,
-//     líneas de trazado desde el high/low/open reales del gráfico hasta la vela HTF
-//     y separadores verticales en cada apertura HTF.
+//   - Dibuja las últimas N velas HTF a la derecha del precio con el estilo de TTrades
+//     (ttrades.com): velas grandes y juntas, cuerpo verde suave / gris oscuro con borde y
+//     mechas negras, hora de apertura "2:00 AM" bajo cada vela, línea negra del sweep desde
+//     el extremo barrido de C1, línea amarilla PSP (divergencia SMT con un activo
+//     correlacionado) y numeración C1, C2, C3, C4... a partir de la vela barrida.
+//   - En el gráfico (LTF): separador vertical azul en cada apertura HTF, caja sombreada
+//     del rango apertura→mecha de la vela HTF en curso con su etiqueta C#, línea de la
+//     apertura HTF y CISD como línea azul con un punto bajo la vela de confirmación.
 //   - Velas HTF alineadas a la hora de Nueva York (día que abre a las 18:00 NY, 4H a
 //     las 18/22/02/06/10/14) o a la sesión del símbolo, a elección.
 //   - Pares de temporalidades de TTrades en modo Auto: 1m→15m, 3m→30m, 5m→1H,
@@ -60,40 +63,51 @@ i_maxEntryBars  = input.int(12, "Máx. velas LTF en C3 para entrar (0 = sin lím
 i_cancelTarget  = input.bool(true, "Cancelar si el precio alcanza el objetivo antes del CISD", group = G_RULE)
 i_onlyConfirmed = input.bool(true, "Confirmar CISD solo con vela LTF cerrada (no repinta)", group = G_RULE)
 
+const string G_SMT = "PSP / SMT"
+
 i_nCandles      = input.int(4, "Nº de velas HTF a dibujar", minval = 2, maxval = 10, group = G_VIS)
-i_rightOffset   = input.int(10, "Desplazamiento a la derecha (barras)", minval = 2, maxval = 100, group = G_VIS)
-i_cWidth        = input.int(6, "Ancho de cada vela HTF (barras)", minval = 1, maxval = 20, group = G_VIS)
-i_cGap          = input.int(3, "Separación entre velas HTF (barras)", minval = 0, maxval = 10, group = G_VIS)
+i_rightOffset   = input.int(8, "Desplazamiento a la derecha (barras)", minval = 2, maxval = 100, group = G_VIS)
+i_cWidth        = input.int(5, "Ancho de cada vela HTF (barras, impar)", minval = 1, maxval = 21, step = 2, group = G_VIS)
+i_cGap          = input.int(0, "Separación extra entre velas HTF (barras)", minval = 0, maxval = 10, group = G_VIS)
 i_showCandles   = input.bool(true, "Mostrar velas HTF a la derecha", group = G_VIS)
-i_showHeader    = input.bool(true, "Encabezado: temporalidad + cuenta regresiva", group = G_VIS)
-i_showCNames    = input.bool(true, "Etiquetas C1 / C2 / C3 sobre las velas HTF", group = G_VIS)
 i_showOpenTime  = input.bool(true, "Hora de apertura bajo cada vela HTF", group = G_VIS)
-i_showTraceHL   = input.bool(true, "Trazado del high/low de cada vela HTF hasta el gráfico", group = G_VIS)
-i_showTraceO    = input.bool(true, "Trazado de la apertura de la vela HTF actual", group = G_VIS)
-i_showSweepHTF  = input.bool(true, "Marcar el sweep sobre las velas HTF", group = G_VIS)
+i_time12h       = input.bool(true, "Hora en formato 12h (2:00 AM)", group = G_VIS)
+i_showCNames    = input.bool(false, "Etiquetas C1 / C2 / C3... también sobre las velas HTF", group = G_VIS)
+i_showSweepHTF  = input.bool(true, "Línea del sweep sobre las velas HTF", group = G_VIS)
+i_showPO3Box    = input.bool(true, "Caja apertura→mecha de cada vela HTF en el gráfico (C#)", group = G_VIS)
+i_showTraceO    = input.bool(true, "Línea de la apertura de la vela HTF actual", group = G_VIS)
+i_showTraceHL   = input.bool(false, "Trazado del high/low de cada vela HTF hasta el gráfico", group = G_VIS)
 i_showSeps      = input.bool(true, "Separadores verticales en cada apertura HTF", group = G_VIS)
 i_nSeps         = input.int(30, "Nº máximo de separadores", minval = 1, maxval = 200, group = G_VIS)
-i_showC1Lines   = input.bool(true, "Mostrar high/low de C1", group = G_VIS)
-i_showC2Lines   = input.bool(true, "Mostrar high/low de C2", group = G_VIS)
-i_showSweep     = input.bool(true, "Mostrar etiquetas de sweep", group = G_VIS)
-i_showBg        = input.bool(true, "Sombrear fondo con el sesgo durante C3", group = G_VIS)
-i_showCISD      = input.bool(true, "Mostrar CISD (nivel pendiente y confirmación)", group = G_VIS)
+i_showHeader    = input.bool(false, "Encabezado: temporalidad + cuenta regresiva", group = G_VIS)
+i_showC1Lines   = input.bool(true, "Mostrar high/low de C1 en el gráfico", group = G_VIS)
+i_showC2Lines   = input.bool(true, "Mostrar high/low de C2 en el gráfico", group = G_VIS)
+i_showSweep     = input.bool(false, "Etiquetas de sweep en el gráfico", group = G_VIS)
+i_showBg        = input.bool(false, "Sombrear fondo con el sesgo durante C3", group = G_VIS)
+i_showCISD      = input.bool(true, "Mostrar CISD (línea + punto)", group = G_VIS)
 i_showTable     = input.bool(true, "Mostrar tabla de estado", group = G_VIS)
 i_tablePos      = input.string("Arriba derecha", "Posición tabla", options = ["Arriba derecha", "Arriba izquierda", "Abajo derecha", "Abajo izquierda"], group = G_VIS)
 
-i_colBull       = input.color(#26a69a, "Vela HTF alcista", group = G_COL)
-i_colBear       = input.color(#ef5350, "Vela HTF bajista", group = G_COL)
-i_wickBody      = input.bool(true, "Mecha y borde del mismo color que el cuerpo", group = G_COL)
-i_colWick       = input.color(#787b86, "Mechas HTF (si no usan el color del cuerpo)", group = G_COL)
-i_bodyTransp    = input.int(0, "Transparencia del cuerpo HTF", minval = 0, maxval = 100, group = G_COL)
-i_colTrace      = input.color(#787b86, "Líneas de trazado", group = G_COL)
-i_colSep        = input.color(#787b86, "Separadores HTF", group = G_COL)
-i_colText       = input.color(#b2b5be, "Texto velas HTF", group = G_COL)
-i_colC1         = input.color(#2962ff, "Líneas C1", group = G_COL)
-i_colC2         = input.color(#ff9800, "Líneas C2", group = G_COL)
+i_useSmt        = input.bool(true, "Detectar PSP (divergencia SMT)", group = G_SMT)
+i_smtSym        = input.symbol("", "Activo correlacionado", group = G_SMT,
+     tooltip = "Ej.: NQ ↔ ES, EURUSD ↔ GBPUSD, BTCUSDT ↔ ETHUSDT. Vacío = sin PSP. PSP: la vela C2 barre el extremo de C1 en este gráfico pero no en el activo correlacionado (o al revés).")
+
+i_colBull       = input.color(#8bb887, "Cuerpo vela HTF alcista", group = G_COL)
+i_colBear       = input.color(#444444, "Cuerpo vela HTF bajista", group = G_COL)
+i_colBorder     = input.color(#000000, "Borde y mechas HTF (en tema oscuro usa un gris claro)", group = G_COL)
+i_colTimeTxt    = input.color(#787b86, "Texto de horas HTF", group = G_COL)
+i_colSweepLine  = input.color(#000000, "Línea del sweep", group = G_COL)
+i_colPSP        = input.color(#f2c744, "Línea PSP", group = G_COL)
+i_colSep        = input.color(#9fb3e8, "Separadores HTF", group = G_COL)
+i_colBox        = input.color(#9fb3e8, "Caja apertura→mecha", group = G_COL)
+i_colOpenLine   = input.color(#9598a1, "Línea de apertura HTF", group = G_COL)
+i_colTrace      = input.color(#787b86, "Líneas de trazado high/low", group = G_COL)
+i_colText       = input.color(#787b86, "Texto general", group = G_COL)
+i_colC1         = input.color(#787b86, "Líneas C1", group = G_COL)
+i_colC2         = input.color(#787b86, "Líneas C2", group = G_COL)
 i_colBullBias   = input.color(#26a69a, "Sesgo alcista", group = G_COL)
 i_colBearBias   = input.color(#ef5350, "Sesgo bajista", group = G_COL)
-i_colCISD       = input.color(#e040fb, "CISD", group = G_COL)
+i_colCISD       = input.color(#3d5afe, "CISD", group = G_COL)
 i_bgTransp      = input.int(92, "Transparencia del fondo de sesgo", minval = 0, maxval = 100, group = G_COL)
 
 // =====================================================================================
@@ -178,6 +192,20 @@ f_htfCandle(bool isNew, int tfOpen) =>
             lb := bar_index
         c := close
     [closed, o, h, l, c, t, b, hb, lb, pO, pH, pL, pC, pT, pB, pHB, pLB]
+
+// Velas HTF del activo correlacionado (para PSP / SMT), con los mismos cortes que las propias.
+f_corrCandle(bool isNew, float sh, float sl) =>
+    var float h = na
+    var float l = na
+    float pH = h
+    float pL = l
+    if isNew
+        h := sh
+        l := sl
+    else
+        h := na(h) ? sh : na(sh) ? h : math.max(h, sh)
+        l := na(l) ? sl : na(sl) ? l : math.min(l, sl)
+    [h, l, pH, pL]
 
 // Sweep alcista (SPEC): C2 barre el low de C1 y cierra por encima de él.
 f_isBullSweep(float c1H, float c1L, float c2H, float c2L, float c2C) =>
@@ -372,6 +400,12 @@ int  htfCloseT = useNY ? nyOpenT + tfMs : tvCloseT
 // --- velas HTF ---
 [htfClosed, curO, curH, curL, curC, curT, curB, curHB, curLB, pO, pH, pL, pC, pT, pB, pHB, pLB] = f_htfCandle(isNewHTF, htfOpenT)
 
+// --- activo correlacionado (PSP) ---
+bool   smtOn     = i_useSmt and i_smtSym != ""
+string smtTicker = i_smtSym == "" ? syminfo.tickerid : i_smtSym
+[smtHi, smtLo]   = request.security(smtTicker, timeframe.period, [high, low], lookahead = barmerge.lookahead_off)
+[curSH, curSL, pSH, pSL] = f_corrCandle(isNewHTF and bar_index > 0, smtHi, smtLo)
+
 // Historial de velas HTF cerradas (la última = C2, la penúltima = C1)
 var array<float> hO = array.new<float>()
 var array<float> hH = array.new<float>()
@@ -381,6 +415,8 @@ var array<int>   hT = array.new<int>()
 var array<int>   hB = array.new<int>()
 var array<int>   hHB = array.new<int>()
 var array<int>   hLB = array.new<int>()
+var array<float> hSH = array.new<float>()
+var array<float> hSL = array.new<float>()
 int keepN = math.max(i_nCandles, 3) + 2
 if htfClosed
     array.push(hO, pO)
@@ -391,6 +427,8 @@ if htfClosed
     array.push(hB, pB)
     array.push(hHB, pHB)
     array.push(hLB, pLB)
+    array.push(hSH, pSH)
+    array.push(hSL, pSL)
     if array.size(hO) > keepN
         array.shift(hO)
         array.shift(hH)
@@ -400,6 +438,8 @@ if htfClosed
         array.shift(hB)
         array.shift(hHB)
         array.shift(hLB)
+        array.shift(hSH)
+        array.shift(hSL)
 
 int nClosed = array.size(hO)
 float c1H = na
@@ -445,11 +485,11 @@ if newHTF
     lnC2L := na
 if newHTF and nClosed >= 2
     if i_showC1Lines
-        lnC1H := line.new(c1B, c1H, bar_index, c1H, xloc = xloc.bar_index, color = i_colC1, width = 1)
-        lnC1L := line.new(c1B, c1L, bar_index, c1L, xloc = xloc.bar_index, color = i_colC1, width = 1)
+        lnC1H := line.new(c1B, c1H, bar_index, c1H, xloc = xloc.bar_index, color = i_colC1, style = line.style_dotted, width = 1)
+        lnC1L := line.new(c1B, c1L, bar_index, c1L, xloc = xloc.bar_index, color = i_colC1, style = line.style_dotted, width = 1)
     if i_showC2Lines
-        lnC2H := line.new(c2B, c2H, bar_index, c2H, xloc = xloc.bar_index, color = i_colC2, style = line.style_dashed, width = 1)
-        lnC2L := line.new(c2B, c2L, bar_index, c2L, xloc = xloc.bar_index, color = i_colC2, style = line.style_dashed, width = 1)
+        lnC2H := line.new(c2B, c2H, bar_index, c2H, xloc = xloc.bar_index, color = i_colC2, style = line.style_dotted, width = 1)
+        lnC2L := line.new(c2B, c2L, bar_index, c2L, xloc = xloc.bar_index, color = i_colC2, style = line.style_dotted, width = 1)
 else if not newHTF
     if not na(lnC1H)
         line.set_x2(lnC1H, bar_index)
@@ -472,26 +512,41 @@ if i_showSweep and invalidNow
          style = bias == 1 ? label.style_label_up : label.style_label_down,
          color = color.new(color.gray, 30), textcolor = color.white, size = size.tiny)
 
+// CISD como en TTrades: línea azul en el nivel (apertura de la serie) y un punto bajo/sobre la vela
 if i_showCISD and cisdLong
     line.new(na(barBull) ? bar_index - 1 : barBull, lvlBull, bar_index, lvlBull, xloc = xloc.bar_index, color = i_colCISD, width = 2)
-    label.new(bar_index, low, "CISD ▲", xloc = xloc.bar_index, yloc = yloc.belowbar,
-         style = label.style_label_up, color = i_colCISD, textcolor = color.white, size = size.small)
+    label.new(bar_index, low, "", xloc = xloc.bar_index, yloc = yloc.belowbar,
+         style = label.style_circle, color = i_colCISD, size = size.tiny)
 if i_showCISD and cisdShort
     line.new(na(barBear) ? bar_index - 1 : barBear, lvlBear, bar_index, lvlBear, xloc = xloc.bar_index, color = i_colCISD, width = 2)
-    label.new(bar_index, high, "CISD ▼", xloc = xloc.bar_index, yloc = yloc.abovebar,
-         style = label.style_label_down, color = i_colCISD, textcolor = color.white, size = size.small)
+    label.new(bar_index, high, "", xloc = xloc.bar_index, yloc = yloc.abovebar,
+         style = label.style_circle, color = i_colCISD, size = size.tiny)
 
 // Fondo con el sesgo durante C3 (mientras el setup no esté invalidado/expirado/cancelado)
 bgcolor(i_showBg and biasActive ? (bias == 1 ? color.new(i_colBullBias, i_bgTransp) : color.new(i_colBearBias, i_bgTransp)) : na,
      title = "Fondo de sesgo")
 
-// Separadores verticales en cada apertura HTF (como en el gráfico de TTrades)
+// Separadores verticales (línea azul continua) en cada apertura HTF, como en TTrades
 var array<line> sepLines = array.new<line>()
 if i_showSeps and isNewHTF and not htfInvalid and bar_index > 0
     array.push(sepLines, line.new(bar_index, high, bar_index, low, xloc = xloc.bar_index, extend = extend.both,
-         color = color.new(i_colSep, 60), style = line.style_dotted, width = 1))
+         color = i_colSep, style = line.style_solid, width = 1))
     if array.size(sepLines) > i_nSeps
         line.delete(array.shift(sepLines))
+
+// Caja sombreada del rango apertura→mecha de cada vela HTF (la "manipulación" del PO3):
+// vela alcista: de la apertura al mínimo; vela bajista: de la apertura al máximo.
+var array<box> po3Boxes = array.new<box>()
+if i_showPO3Box and isNewHTF and not htfInvalid and bar_index > 0
+    array.push(po3Boxes, box.new(bar_index, open, bar_index + 1, open, xloc = xloc.bar_index,
+         border_color = i_colBox, border_style = line.style_dashed, border_width = 1, bgcolor = color.new(i_colBox, 80)))
+    if array.size(po3Boxes) > i_nCandles
+        box.delete(array.shift(po3Boxes))
+if i_showPO3Box and array.size(po3Boxes) > 0 and not na(curO)
+    box bx = array.last(po3Boxes)
+    box.set_right(bx, bar_index + 1)
+    box.set_top(bx, curC >= curO ? curO : curH)
+    box.set_bottom(bx, curC >= curO ? curL : curO)
 
 // =====================================================================================
 // DIBUJO EN LA ÚLTIMA BARRA: velas HTF a la derecha + nivel CISD pendiente
@@ -516,75 +571,130 @@ if barstate.islast
         int    nPrev   = math.min(i_nCandles - 1, nClosed)
         int    total   = nPrev + 1
         int    half    = int(i_cWidth / 2)
-        string timeFmt = htfSec >= 86400 ? "EEE dd/MM" : "HH:mm"
-        float  grpHigh = curH
+        int    step    = i_cWidth + i_cGap
         int    x0      = bar_index + i_rightOffset
+        string timeFmt = htfSec >= 86400 ? "EEE\ndd/MM" : i_time12h ? "h:mm\na" : "HH:mm"
+        // velas a dibujar (la última es la que está en formación)
+        array<float> dO  = array.new<float>()
+        array<float> dH  = array.new<float>()
+        array<float> dL  = array.new<float>()
+        array<float> dC  = array.new<float>()
+        array<int>   dT  = array.new<int>()
+        array<int>   dHB = array.new<int>()
+        array<int>   dLB = array.new<int>()
+        array<float> dSH = array.new<float>()
+        array<float> dSL = array.new<float>()
         for i = 0 to total - 1
-            bool  forming = i == total - 1
-            int   idx     = nClosed - nPrev + i
-            float o  = curO
-            float h  = curH
-            float l  = curL
-            float c  = curC
-            int   t  = curT
-            int   hb = curHB
-            int   lb = curLB
-            if not forming
-                o  := array.get(hO, idx)
-                h  := array.get(hH, idx)
-                l  := array.get(hL, idx)
-                c  := array.get(hC, idx)
-                t  := array.get(hT, idx)
-                hb := array.get(hHB, idx)
-                lb := array.get(hLB, idx)
-            grpHigh := math.max(grpHigh, h)
-            int   x   = x0 + i * (i_cWidth + i_cGap)
-            int   xm  = x + half
+            if i == total - 1
+                array.push(dO, curO)
+                array.push(dH, curH)
+                array.push(dL, curL)
+                array.push(dC, curC)
+                array.push(dT, curT)
+                array.push(dHB, curHB)
+                array.push(dLB, curLB)
+                array.push(dSH, curSH)
+                array.push(dSL, curSL)
+            else
+                int idx = nClosed - nPrev + i
+                array.push(dO, array.get(hO, idx))
+                array.push(dH, array.get(hH, idx))
+                array.push(dL, array.get(hL, idx))
+                array.push(dC, array.get(hC, idx))
+                array.push(dT, array.get(hT, idx))
+                array.push(dHB, array.get(hHB, idx))
+                array.push(dLB, array.get(hLB, idx))
+                array.push(dSH, array.get(hSH, idx))
+                array.push(dSL, array.get(hSL, idx))
+
+        // secuencia del modelo: la vela barrida más reciente es C1, la que la barre es C2,
+        // y las siguientes C3, C4... (solo se consideran sweeps de velas ya cerradas)
+        int seqStart = -1
+        int seqDir   = 0
+        if total >= 3
+            for j = total - 2 to 1
+                int sb = f_sweepBias(array.get(dH, j - 1), array.get(dL, j - 1), array.get(dH, j), array.get(dL, j), array.get(dC, j))
+                if sb != 0
+                    seqStart := j - 1
+                    seqDir   := sb
+                    break
+
+        // PSP: en la vela que barre (C2), el activo correlacionado NO barre el mismo extremo de C1
+        bool pspNow = false
+        if smtOn and seqStart >= 0
+            int   j2  = seqStart + 1
+            float s1  = seqDir == 1 ? array.get(dSL, seqStart) : array.get(dSH, seqStart)
+            float s2  = seqDir == 1 ? array.get(dSL, j2) : array.get(dSH, j2)
+            if not na(s1) and not na(s2)
+                pspNow := seqDir == 1 ? s2 >= s1 : s2 <= s1
+
+        for i = 0 to total - 1
+            float o  = array.get(dO, i)
+            float h  = array.get(dH, i)
+            float l  = array.get(dL, i)
+            float c  = array.get(dC, i)
+            int   x  = x0 + i * step
+            int   xm = x + half
             color col = c >= o ? i_colBull : i_colBear
-            color wk  = i_wickBody ? col : i_colWick
-            // mechas y cuerpo
-            array.push(drawLines, line.new(xm, h, xm, math.max(o, c), xloc = xloc.bar_index, color = wk, width = 1))
-            array.push(drawLines, line.new(xm, math.min(o, c), xm, l, xloc = xloc.bar_index, color = wk, width = 1))
-            array.push(drawBoxes, box.new(x, math.max(o, c), x + i_cWidth - 1, math.min(o, c), border_color = i_wickBody ? col : wk,
-                 border_width = 1, xloc = xloc.bar_index, bgcolor = color.new(col, i_bodyTransp)))
-            // trazado del high/low reales del gráfico hasta la vela HTF
+            // mechas y cuerpo (borde y mechas negras, como en TTrades)
+            array.push(drawLines, line.new(xm, h, xm, math.max(o, c), xloc = xloc.bar_index, color = i_colBorder, width = 1))
+            array.push(drawLines, line.new(xm, math.min(o, c), xm, l, xloc = xloc.bar_index, color = i_colBorder, width = 1))
+            array.push(drawBoxes, box.new(x, math.max(o, c), x + i_cWidth - 1, math.min(o, c), border_color = i_colBorder,
+                 border_width = 1, xloc = xloc.bar_index, bgcolor = col))
+            // trazado opcional del high/low reales del gráfico hasta la vela HTF
+            int hb = array.get(dHB, i)
+            int lb = array.get(dLB, i)
             if i_showTraceHL and not na(hb) and not na(lb)
                 array.push(drawLines, line.new(hb, h, xm, h, xloc = xloc.bar_index, color = color.new(i_colTrace, 40),
                      style = line.style_dotted, width = 1))
                 array.push(drawLines, line.new(lb, l, xm, l, xloc = xloc.bar_index, color = color.new(i_colTrace, 40),
                      style = line.style_dotted, width = 1))
-            // trazado de la apertura de la vela HTF actual (nivel de apertura del PO3)
-            if forming and i_showTraceO and not na(curB)
-                array.push(drawLines, line.new(curB, o, x, o, xloc = xloc.bar_index, color = color.new(i_colTrace, 20),
-                     style = line.style_dashed, width = 1))
-            // nombres C1 / C2 / C3
-            int    k    = total - 1 - i     // 0 = vela en formación
-            string name = k == 0 ? "C3" : k == 1 ? "C2" : k == 2 ? "C1" : ""
-            if i_showCNames and name != ""
-                array.push(drawLabels, label.new(xm, h, name, xloc = xloc.bar_index, yloc = yloc.price,
-                     style = label.style_label_down, color = color.new(color.black, 100), textcolor = i_colText, size = size.small))
-            // hora de apertura (hora de Nueva York por defecto)
-            if i_showOpenTime
-                array.push(drawLabels, label.new(xm, l, str.format_time(t, timeFmt, i_tz), xloc = xloc.bar_index,
-                     yloc = yloc.price, style = label.style_label_up, color = color.new(color.black, 100), textcolor = i_colText, size = size.tiny))
+            // nombre C# según la secuencia del sweep
+            string cName = seqStart >= 0 and i >= seqStart ? "C" + str.tostring(i - seqStart + 1) : ""
+            if i_showCNames and cName != ""
+                array.push(drawLabels, label.new(xm, h, cName, xloc = xloc.bar_index, yloc = yloc.price,
+                     style = label.style_label_down, color = color.new(color.black, 100), textcolor = i_colTimeTxt, size = size.small))
+            // hora de apertura bajo la vela ("2:00 AM") y marca PSP
+            bool isPspCandle = pspNow and i == seqStart + 1
+            if i_showOpenTime or isPspCandle
+                string txt = (i_showOpenTime ? str.format_time(array.get(dT, i), timeFmt, i_tz) : "") + (isPspCandle ? "\nPSP" : "")
+                array.push(drawLabels, label.new(xm, l, txt, xloc = xloc.bar_index, yloc = yloc.price,
+                     style = label.style_label_up, color = color.new(color.black, 100), textcolor = i_colTimeTxt, size = size.small))
 
-        // sweep marcado sobre las velas HTF: nivel de C1 barrido por la mecha de C2
-        if i_showSweepHTF and bias != 0 and total >= 3 and not na(c1H)
-            float lvl = bias == 1 ? c1L : c1H
-            int   xa  = x0 + (total - 3) * (i_cWidth + i_cGap)
-            int   xb  = x0 + (total - 2) * (i_cWidth + i_cGap) + i_cWidth - 1
-            color sc  = bias == 1 ? i_colBullBias : i_colBearBias
-            array.push(drawLines, line.new(xa, lvl, xb, lvl, xloc = xloc.bar_index, color = sc, style = line.style_dashed, width = 1))
-            array.push(drawLabels, label.new(xb, lvl, "sweep", xloc = xloc.bar_index, yloc = yloc.price,
-                 style = bias == 1 ? label.style_label_up : label.style_label_down,
-                 color = color.new(color.black, 100), textcolor = sc, size = size.tiny))
+        // línea negra del sweep: extremo barrido de C1 extendido hasta la última vela
+        if i_showSweepHTF and seqStart >= 0
+            float lvl = seqDir == 1 ? array.get(dL, seqStart) : array.get(dH, seqStart)
+            array.push(drawLines, line.new(x0 + seqStart * step + half, lvl, x0 + (total - 1) * step + half, lvl,
+                 xloc = xloc.bar_index, color = i_colSweepLine, width = 1))
 
-        // encabezado: temporalidad + tiempo restante de la vela HTF en curso
+        // línea amarilla PSP: une el extremo de C1 con el de C2
+        if pspNow
+            int j2 = seqStart + 1
+            float y1 = seqDir == 1 ? array.get(dL, seqStart) : array.get(dH, seqStart)
+            float y2 = seqDir == 1 ? array.get(dL, j2) : array.get(dH, j2)
+            array.push(drawLines, line.new(x0 + seqStart * step + half, y1, x0 + j2 * step + half, y2,
+                 xloc = xloc.bar_index, color = i_colPSP, width = 2))
+
+        // línea de la apertura de la vela HTF actual: del open en el gráfico hasta su vela HTF
+        if i_showTraceO and not na(curB)
+            array.push(drawLines, line.new(curB, curO, x0 + (total - 1) * step + half, curO, xloc = xloc.bar_index,
+                 color = i_colOpenLine, width = 1))
+
+        // etiqueta C# bajo la caja apertura→mecha de la vela en curso
+        string curName = seqStart >= 0 ? "C" + str.tostring(total - 1 - seqStart + 1) : ""
+        if i_showPO3Box and curName != "" and array.size(po3Boxes) > 0
+            box   cb   = array.last(po3Boxes)
+            int   xMid = int((box.get_left(cb) + box.get_right(cb)) / 2)
+            array.push(drawLabels, label.new(xMid, box.get_bottom(cb), curName, xloc = xloc.bar_index, yloc = yloc.price,
+                 style = label.style_label_up, color = color.new(color.black, 100), textcolor = i_colText, size = size.small))
+
+        // encabezado opcional: temporalidad + tiempo restante de la vela HTF en curso
         if i_showHeader
-            int    xc  = x0 + int(((total - 1) * (i_cWidth + i_cGap) + i_cWidth) / 2)
-            string hdr = f_tfName(htfTF) + (na(htfCloseT) ? "" : "  (" + f_fmtTimer(htfCloseT - timenow) + ")")
-            array.push(drawLabels, label.new(xc, grpHigh, hdr + (i_showCNames ? "\n " : ""), xloc = xloc.bar_index, yloc = yloc.price,
-                 style = label.style_label_down, color = color.new(color.black, 100), textcolor = color.white, size = size.normal))
+            float grpHigh = array.max(dH)
+            int   xc      = x0 + int(((total - 1) * step + i_cWidth) / 2)
+            string hdr    = f_tfName(htfTF) + (na(htfCloseT) ? "" : "  (" + f_fmtTimer(htfCloseT - timenow) + ")")
+            array.push(drawLabels, label.new(xc, grpHigh, hdr, xloc = xloc.bar_index, yloc = yloc.price,
+                 style = label.style_label_down, color = color.new(color.black, 100), textcolor = i_colText, size = size.normal))
 
     // Etiquetas de las líneas C1/C2 en su extremo derecho
     if i_showC1Lines and not na(c1H)
