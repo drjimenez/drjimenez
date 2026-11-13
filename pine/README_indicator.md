@@ -46,3 +46,20 @@ Variante del mismo indicador analizado en el backtest, con idéntica lógica de 
 
 Úsala como herramienta de lectura del modelo fractal. Se añade igual: Pine Editor →
 pegar el código → *Add to chart* (recomendado: gráfico 15m con HTF 240, o 1H con HTF D).
+
+### Velas HTF al estilo TTrades (versión visual)
+
+- Velas HTF compactas a la derecha del precio, con mecha y borde del color del cuerpo.
+- Encabezado con la temporalidad (p. ej. `4H`) y la cuenta regresiva de la vela en curso.
+- Hora de apertura de cada vela en hora de Nueva York y etiquetas C1 / C2 / C3.
+- Trazado punteado desde el high/low reales del gráfico hasta cada vela HTF, y trazado
+  discontinuo de la apertura de la vela actual.
+- Separadores verticales punteados en cada apertura HTF.
+- El sweep se marca también sobre las velas HTF (nivel de C1 barrido por la mecha de C2).
+- Alineación "Nueva York (TTrades)": el día abre a las 18:00 NY (4H: 18, 22, 02, 06, 10, 14),
+  configurable a 17:00 (forex) o 00:00. Se respeta el horario de verano.
+- Modo Auto con los pares de TTrades: 1m→15m, 3m→30m, 5m→1H, 15m→4H, 1H→D, 4H→W, D→M.
+
+Nota: el backtest en Python usó velas 4H alineadas a 00:00 UTC; con la alineación de Nueva York
+los cortes de vela (y por tanto algunos setups) pueden diferir de los del backtest. Para
+reproducir exactamente el backtest, elige "Sesión del símbolo (TradingView)" en un símbolo cripto.
