@@ -208,8 +208,11 @@ Pega `orb/pine/orb_fib_indicator.pine` en el Pine Editor y úsalo en un gráfico
 Dibuja el OR de Londres y de Nueva York con sus retrocesos y extensiones y marca la ruptura y el
 retest. Tras la ruptura proyecta la **extensión 1,618** con la probabilidad de alcanzarla, que se
 actualiza en vivo según el tamaño del rango (frente al rango medio diario de NY de 20 días) y según
-si el precio ya retrocedió al 50 % o tocó el extremo opuesto. No se ha podido compilar desde este
-entorno.
+si el precio ya retrocedió al 50 % o tocó el extremo opuesto. Incluye además una **tabla de
+registro (backtesting)**: para la última apertura de Londres y de Nueva York muestra, por etapas
+(apertura → tamaño del rango → ruptura), la probabilidad histórica de cada condición y si se cumplió
+(✓/✗), y para todas las aperturas cargadas en el gráfico compara la probabilidad media pronosticada
+con la frecuencia real. No se ha podido compilar desde este entorno.
 
 ## Limitaciones
 
