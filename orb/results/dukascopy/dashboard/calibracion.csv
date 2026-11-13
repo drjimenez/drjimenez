@@ -1,0 +1,42 @@
+clave,evento,evento_txt,sesion,tramo,n,prob_media,frecuencia_real
+alcista|London|30-40,alcista,Primera ruptura alcista,London,30-40,118,38.9,50.8
+alcista|London|40-50,alcista,Primera ruptura alcista,London,40-50,889,46.0,55.1
+alcista|London|50-60,alcista,Primera ruptura alcista,London,50-60,3531,53.1,52.8
+alcista|NewYork|40-50,alcista,Primera ruptura alcista,NewYork,40-50,1362,48.0,53.5
+alcista|NewYork|50-60,alcista,Primera ruptura alcista,NewYork,50-60,2945,51.7,51.4
+vuelve|London|80-90,vuelve,Vuelve al nivel roto,London,80-90,209,87.5,95.2
+vuelve|London|90-100,vuelve,Vuelve al nivel roto,London,90-100,4335,94.1,95.0
+vuelve|NewYork|90-100,vuelve,Vuelve al nivel roto,NewYork,90-100,4305,95.3,94.7
+toca50|London|50-60,toca50,Toca el 50 % del rango,London,50-60,200,58.5,65.0
+toca50|London|60-70,toca50,Toca el 50 % del rango,London,60-70,2033,65.9,68.9
+toca50|London|70-80,toca50,Toca el 50 % del rango,London,70-80,2313,73.7,74.7
+toca50|NewYork|50-60,toca50,Toca el 50 % del rango,NewYork,50-60,627,58.6,60.0
+toca50|NewYork|60-70,toca50,Toca el 50 % del rango,NewYork,60-70,1305,66.4,66.7
+toca50|NewYork|70-80,toca50,Toca el 50 % del rango,NewYork,70-80,2031,74.5,72.1
+toca50|NewYork|80-90,toca50,Toca el 50 % del rango,NewYork,80-90,346,81.3,76.6
+opuesto|London|30-40,opuesto,Toca el extremo opuesto,London,30-40,758,37.9,42.3
+opuesto|London|40-50,opuesto,Toca el extremo opuesto,London,40-50,1737,45.9,46.1
+opuesto|London|50-60,opuesto,Toca el extremo opuesto,London,50-60,1540,55.0,58.2
+opuesto|London|60-70,opuesto,Toca el extremo opuesto,London,60-70,511,62.7,67.3
+opuesto|NewYork|30-40,opuesto,Toca el extremo opuesto,NewYork,30-40,478,38.5,37.4
+opuesto|NewYork|40-50,opuesto,Toca el extremo opuesto,NewYork,40-50,1446,45.7,43.4
+opuesto|NewYork|50-60,opuesto,Toca el extremo opuesto,NewYork,50-60,1430,55.7,53.8
+opuesto|NewYork|60-70,opuesto,Toca el extremo opuesto,NewYork,60-70,937,63.4,59.3
+ext1618|London|50-60,ext1618,Llega a la extensión 1.618,London,50-60,716,56.7,61.3
+ext1618|London|60-70,ext1618,Llega a la extensión 1.618,London,60-70,1133,66.3,68.5
+ext1618|London|70-80,ext1618,Llega a la extensión 1.618,London,70-80,1304,73.5,73.0
+ext1618|London|80-90,ext1618,Llega a la extensión 1.618,London,80-90,1393,82.1,81.8
+ext1618|NewYork|50-60,ext1618,Llega a la extensión 1.618,NewYork,50-60,93,57.2,63.4
+ext1618|NewYork|60-70,ext1618,Llega a la extensión 1.618,NewYork,60-70,1130,66.3,68.2
+ext1618|NewYork|70-80,ext1618,Llega a la extensión 1.618,NewYork,70-80,1751,74.8,75.4
+ext1618|NewYork|80-90,ext1618,Llega a la extensión 1.618,NewYork,80-90,1335,83.3,82.4
+continua|London|50-60,continua,Vuelve y continúa en la 1.ª dirección,London,50-60,49,57.6,67.3
+continua|London|60-70,continua,Vuelve y continúa en la 1.ª dirección,London,60-70,2882,67.6,69.7
+continua|London|70-80,continua,Vuelve y continúa en la 1.ª dirección,London,70-80,1615,72.4,71.5
+continua|NewYork|60-70,continua,Vuelve y continúa en la 1.ª dirección,NewYork,60-70,691,66.8,70.5
+continua|NewYork|70-80,continua,Vuelve y continúa en la 1.ª dirección,NewYork,70-80,3612,72.8,72.3
+giro|London|0-10,giro,Rompe el otro extremo y continúa,London,0-10,22,9.1,13.6
+giro|London|10-20,giro,Rompe el otro extremo y continúa,London,10-20,2080,16.9,19.4
+giro|London|20-30,giro,Rompe el otro extremo y continúa,London,20-30,2444,22.1,20.3
+giro|NewYork|10-20,giro,Rompe el otro extremo y continúa,NewYork,10-20,2548,17.7,17.4
+giro|NewYork|20-30,giro,Rompe el otro extremo y continúa,NewYork,20-30,1751,22.0,18.7

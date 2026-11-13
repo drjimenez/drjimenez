@@ -36,6 +36,13 @@
   .orb .pos { color: var(--color-ok); } .orb .neg { color: var(--color-bad); }
   .orb details summary { cursor: pointer; color: var(--color-fg-muted); }
   .orb details { display: grid; gap: var(--cds-gap-sm); }
+  .orb td.ok::after { content: " ✓"; color: var(--color-ok); }
+  .orb td.no::after { content: " ✗"; color: var(--color-fg-muted); }
+  .orb td.no { color: var(--color-fg-muted); }
+  .orb th.stage { text-align: center; border-bottom: 2px solid var(--color-border-line); color: var(--color-fg); }
+  .orb .reg-tablewrap { overflow-x: auto; max-height: 560px; overflow-y: auto; }
+  .orb .reg-tablewrap thead th { position: sticky; top: 0; background: var(--color-panel); z-index: 1; }
+  .orb .reg-tablewrap thead tr:nth-child(2) th { top: 29px; }
   .orb [data-dash-source-state=refreshing] { opacity: .5; }
 </style>
 
@@ -91,6 +98,33 @@
     </div>
     <p id="gap-resumen">Cierra el gap el <b data-draw="g-cierra">—</b> de los días y retrocede al menos al 50 % el <b data-draw="g-50">—</b>. <span class="muted" data-draw="g-n">—</span></p>
     <div class="card"><div class="chart" data-draw="gap-escalera" data-source="gap_niveles" style="min-height:300px"></div></div>
+  </section>
+
+  <section id="registro">
+    <h2>Registro de aperturas: probabilidades en el momento de cada apertura</h2>
+    <p class="muted">Cada fila es una apertura de Londres o de Nueva York. Las probabilidades se calcularon con los días anteriores a esa fecha, sin mirar el futuro, así que reproducen lo que se habría sabido en ese momento. La fila se completa por etapas: al abrir (contexto previo y probabilidad de ruptura alcista), al cerrar el rango (su tamaño) y al romper (probabilidad de cada condición). ✓ = la condición se cumplió, ✗ = no se cumplió. Usa los filtros de sesión, rango e índice de arriba.</p>
+    <p id="registro-resumen">Frente a la probabilidad base, condicionar por el tamaño del rango reduce el error del pronóstico de «llega a 1.618» un <b data-draw="b-ext">—</b> y el de «toca el extremo opuesto» un <b data-draw="b-opu">—</b>. En la primera ruptura alcista no mejora: <b data-draw="b-up">—</b>.</p>
+    <div class="filters">
+      <label>Mes<select class="dash-select" data-draw="f-mes" aria-label="Mes del registro"></select></label>
+    </div>
+    <div class="card">
+      <div class="reg-tablewrap">
+        <table data-source="aperturas" data-row-key="id">
+          <thead>
+            <tr><th class="stage" colspan="2"></th><th class="stage" colspan="3">1 · Apertura</th><th class="stage">2 · Rango</th><th class="stage" colspan="7">3 · Ruptura: probabilidad histórica</th><th class="stage">Resultado</th></tr>
+            <tr><th data-field="fecha">Fecha</th><th data-field="simbolo">Índice</th><th data-field="contexto_previo">Antes</th><th data-field="tendencia_diaria">Tendencia</th><th class="r" data-field="p_alcista">Rompe al alza %</th><th data-field="tam_rango">Tamaño</th><th data-field="ruptura">Ruptura</th><th class="r" data-field="p_vuelve">Vuelve %</th><th class="r" data-field="p_toca50">50 % %</th><th class="r" data-field="p_opuesto">Extremo opuesto %</th><th class="r" data-field="p_ext1618">1.618 %</th><th class="r" data-field="p_continua">Vuelve y continúa %</th><th class="r" data-field="p_giro">Gira y continúa %</th><th data-field="escenario_real">Escenario real</th></tr>
+          </thead>
+          <tbody data-draw="t-registro"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:var(--cds-font-size-body)">¿Se cumplen las probabilidades? (calibración 2022-2026)</h2>
+      <p class="muted">Si el punto cae sobre la diagonal, lo que se pronosticó con un X % ocurrió un X % de las veces. Sin los primeros 120 días, que se usan para acumular historial.</p>
+      <div class="filters"><label>Condición<select class="dash-select" id="f-calev" aria-label="Condición a calibrar"><option value="ext1618">Llega a 1.618</option><option value="opuesto">Toca el extremo opuesto</option><option value="toca50">Toca el 50 %</option><option value="vuelve">Vuelve al nivel roto</option><option value="continua">Vuelve y continúa</option><option value="giro">Rompe el otro extremo y continúa</option><option value="alcista">Primera ruptura alcista</option></select></label></div>
+      <div class="legend"><span><i data-draw="sw-lon"></i>Londres</span><span><i data-draw="sw-ny"></i>Nueva York</span></div>
+      <div class="chart" data-draw="calibracion" data-source="calibracion" style="min-height:280px"></div>
+    </div>
   </section>
 
   <section id="hallazgos">
@@ -408,6 +442,109 @@
         tr.append(td);
       });
       tb.append(tr);
+    });
+  });
+})();
+</script>
+
+<script>
+(function () {
+  const {P} = window.ORB;
+  const lastMonth = () => {
+    const d = dash.data('aperturas');
+    if (d.status !== 'ok' || !d.data.length) return '';
+    return d.data.reduce((m, r) => (r.mes > m ? r.mes : m), '');
+  };
+  document.querySelectorAll('#f-calev').forEach((sel) => sel.addEventListener('change', () => dash.setParams({calev: sel.value})));
+  dash.onData(() => {
+    document.querySelectorAll('#f-calev').forEach((s) => { if (document.activeElement !== s) s.value = P().calev || 'ext1618'; });
+  });
+
+  dash.draw('f-mes', (sel) => {
+    const d = dash.data('aperturas');
+    const meses = d.status === 'ok' ? Array.from(new Set(d.data.map((r) => r.mes))).sort().reverse() : [];
+    sel.replaceChildren(...meses.map((m) => new Option(m, m)));
+    sel.value = P().mes || lastMonth();
+    sel.onchange = () => dash.setParams({mes: sel.value});
+  });
+
+  const PCOLS = [['p_vuelve', 'r_vuelve'], ['p_toca50', 'r_toca50'], ['p_opuesto', 'r_opuesto'], ['p_ext1618', 'r_ext1618'],
+    ['p_continua', 'r_continua'], ['p_giro', 'r_giro']];
+  dash.draw('t-registro', (tb) => {
+    const d = dash.data('aperturas');
+    tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    const p = P();
+    const mes = p.mes || lastMonth();
+    const rows = d.data.filter((r) => r.mes === mes && r.sesion === p.sesion && String(r.or_min) === String(p.or_min)
+      && (p.simbolo === 'todos' || r.simbolo === p.simbolo)).sort((a, b) => (a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : a.simbolo < b.simbolo ? -1 : 1));
+    if (!rows.length) {
+      const tr = document.createElement('tr'); const td = document.createElement('td');
+      td.colSpan = 14; td.className = 'muted'; td.textContent = 'Sin aperturas con ruptura en este mes con estos filtros.';
+      tr.append(td); tb.append(tr); return;
+    }
+    rows.forEach((r) => {
+      const tr = document.createElement('tr'); tr.setAttribute('data-key', r.id);
+      const td = (txt, cls) => { const c = document.createElement('td'); c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+      td(r.fecha); td(r.simbolo); td(r.contexto_previo); td(r.tendencia_diaria);
+      td((+r.p_alcista).toFixed(0), 'r ' + (+r.r_alcista ? 'ok' : 'no'));
+      td(r.tam_rango);
+      td(`${r.ruptura} ${r.hora_ruptura}`);
+      PCOLS.forEach(([pc, rc]) => td((+r[pc]).toFixed(0), 'r ' + (+r[rc] ? 'ok' : 'no')));
+      td(r.escenario_real);
+      tb.append(tr);
+    });
+  });
+
+  const brier = (ev) => (el) => {
+    const d = dash.data('brier');
+    el.setAttribute('data-source', 'brier'); el.setAttribute('data-field', 'mejora_pct'); el.setAttribute('data-where', 'evento=' + ev);
+    if (d.status !== 'ok') { el.textContent = '—'; return; }
+    const r = d.data.find((x) => x.evento === ev);
+    el.textContent = r ? `${(+r.mejora_pct).toFixed(1)} %` : '—';
+  };
+  dash.draw('b-ext', brier('ext1618'));
+  dash.draw('b-opu', brier('opuesto'));
+  dash.draw('b-up', brier('alcista'));
+  dash.draw('sw-lon', (el) => { el.style.background = dash.colors[0]; });
+  dash.draw('sw-ny', (el) => { el.style.background = dash.colors[1 % dash.colors.length]; });
+
+  dash.draw('calibracion', (el) => {
+    const d = dash.data('calibracion');
+    el.replaceChildren();
+    if (d.status === 'loading') { el.classList.add('dash-skeleton'); return; }
+    el.classList.remove('dash-skeleton');
+    if (d.status !== 'ok') { el.textContent = 'No se pudieron cargar los datos.'; return; }
+    const ev = P().calev || 'ext1618';
+    const rows = d.data.filter((r) => r.evento === ev);
+    const W = Math.max(280, el.clientWidth), H = Math.min(360, Math.max(240, W * 0.55));
+    const m = {l: 44, r: 12, t: 10, b: 36};
+    const x = d3.scaleLinear().domain([0, 100]).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([0, 100]).range([H - m.b, m.t]);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Probabilidad pronosticada frente a frecuencia real');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickFormat((v) => v + ' %'));
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat((v) => v + ' %'));
+    svg.selectAll('.domain, .tick line').style('stroke', 'var(--cds-chart-axis)');
+    svg.append('line').attr('x1', x(0)).attr('y1', y(0)).attr('x2', x(100)).attr('y2', y(100))
+      .style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '4 4');
+    svg.append('text').attr('x', x(50)).attr('y', H - 4).attr('text-anchor', 'middle').text('Probabilidad pronosticada');
+    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
+    [['London', 0, 'Londres'], ['NewYork', 1, 'Nueva York']].forEach(([ses, ci, txt]) => {
+      const pts = rows.filter((r) => r.sesion === ses).map((r) => ({...r, px: +r.prob_media, py: +r.frecuencia_real}))
+        .sort((a, b) => a.px - b.px);
+      const col = dash.colors[ci % dash.colors.length];
+      svg.append('path').datum(pts).attr('fill', 'none').style('stroke', col).attr('stroke-width', 2)
+        .attr('d', d3.line().x((p) => x(p.px)).y((p) => y(p.py)));
+      svg.selectAll(null).data(pts).enter().append('circle').attr('cx', (p) => x(p.px)).attr('cy', (p) => y(p.py)).attr('r', 5)
+        .style('fill', col).style('stroke', 'var(--color-panel)').attr('stroke-width', 2)
+        .attr('data-source', 'calibracion').attr('data-field', 'frecuencia_real').attr('data-where', (p) => 'clave=' + window.ORB.enc(p.clave))
+        .on('pointerenter pointermove', (e, p) => {
+          const [mx, my] = d3.pointer(e, el);
+          tip.style('display', null).style('left', `${Math.min(mx + 10, el.clientWidth - 230)}px`).style('top', `${my - 40}px`)
+            .text(`${txt} · tramo ${p.tramo} %: pronóstico ${p.px.toFixed(0)} %, real ${p.py.toFixed(0)} % (n=${p.n})`);
+        })
+        .on('pointerleave', () => tip.style('display', 'none'));
     });
   });
 })();

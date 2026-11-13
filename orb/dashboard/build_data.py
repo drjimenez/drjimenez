@@ -10,6 +10,8 @@ cada número del dashboard sale de una celda (sin cálculos en el navegador):
                    clave = simbolo|gap_dir|gap_size|gap_vs_tendencia|anio
   hallazgos.csv    hallazgos estables del agente analista
   patrones.csv     mejor variante de cada patrón del agente de estrategia (IS y OOS)
+  aperturas.csv    registro de aperturas con las probabilidades conocidas en cada momento (walk-forward)
+  calibracion.csv  probabilidad pronosticada frente a frecuencia real; brier.csv: error del pronóstico
 
 Uso: python3 orb/dashboard/build_data.py [--source dukascopy]
 """
@@ -143,7 +145,13 @@ def main():
                  "OOS_exp_R", "anios_positivos"]].round(3)
     best.insert(0, "id", [f"{a}-{i}" for i, a in enumerate(best.pattern)])
     best.to_csv(os.path.join(out, "patrones.csv"), index=False)
-    for name in ["escenarios", "gap_niveles", "hallazgos", "patrones"]:
+    # Registro de aperturas del agente de pronóstico (walk-forward)
+    fc = os.path.join(res, "forecast")
+    ap = pd.read_csv(os.path.join(fc, "aperturas.csv"))
+    ap.drop(columns=["calentamiento"]).to_csv(os.path.join(out, "aperturas.csv"), index=False)
+    pd.read_csv(os.path.join(fc, "calibracion.csv")).to_csv(os.path.join(out, "calibracion.csv"), index=False)
+    pd.read_csv(os.path.join(fc, "brier.csv")).to_csv(os.path.join(out, "brier.csv"), index=False)
+    for name in ["escenarios", "gap_niveles", "hallazgos", "patrones", "aperturas", "calibracion", "brier"]:
         size = os.path.getsize(os.path.join(out, f"{name}.csv"))
         print(f"[dashboard] {name}.csv {size / 1024:.0f} KB")
 
