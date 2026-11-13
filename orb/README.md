@@ -206,7 +206,10 @@ Acepta exportaciones de 1 minuto de MT5 o de TradingView (ver `database.import_c
 
 Pega `orb/pine/orb_fib_indicator.pine` en el Pine Editor y úsalo en un gráfico de 1 a 5 minutos.
 Dibuja el OR de Londres y de Nueva York con sus retrocesos y extensiones y marca la ruptura y el
-retest. No se ha podido compilar desde este entorno.
+retest. Tras la ruptura proyecta la **extensión 1,618** con la probabilidad de alcanzarla, que se
+actualiza en vivo según el tamaño del rango (frente al rango medio diario de NY de 20 días) y según
+si el precio ya retrocedió al 50 % o tocó el extremo opuesto. No se ha podido compilar desde este
+entorno.
 
 ## Limitaciones
 

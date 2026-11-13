@@ -1,38 +1,81 @@
 // This Pine Script® code is subject to the terms of the Mozilla Public License 2.0
-// ORB Londres / Nueva York + Fibonacci
+// ORB Londres / Nueva York + Fibonacci + proyección 1.618
 // Dibuja el rango de apertura (15 o 20 min) de Londres y Nueva York, los retrocesos Fibonacci
 // dentro del rango y las extensiones fuera de él, y marca la primera ruptura por cierre y el
-// primer retest del nivel roto. Mismas definiciones que el estudio en Python (orb/engine.py).
+// primer retest del nivel roto. Tras la ruptura proyecta la extensión 1.618 en la dirección de la
+// ruptura con la probabilidad de alcanzarla, que se actualiza en vivo según el tamaño del rango y
+// lo que haga el precio (si retrocede al 50 % o toca el extremo opuesto antes de llegar).
+// Probabilidades medidas en el estudio en Python (orb/), NAS100 + US500, 1 min, 2022-2026.
 // Úsalo en gráficos de 1 a 5 minutos.
 //@version=6
 indicator("ORB Londres/NY + Fibonacci", overlay = true, max_lines_count = 500, max_labels_count = 500)
 
+orMin = input.int(15, "Minutos del rango de apertura", options = [15, 20])
+
 grpL = "Londres"
 showLon = input.bool(true, "Mostrar Londres", group = grpL)
-lonOR   = input.session("0800-0815", "Rango de apertura (hora de Londres)", group = grpL, tooltip = "Pon 0800-0820 para el rango de 20 minutos")
-lonHor  = input.session("0800-1200", "Horizonte (hasta cuándo se dibujan los niveles)", group = grpL)
+lonHor  = input.session("0800-1200", "Horizonte (hasta cuándo se siguen los niveles)", group = grpL)
 colLon  = input.color(#2a78d6, "Color", group = grpL)
 
 grpN = "Nueva York"
 showNy = input.bool(true, "Mostrar Nueva York", group = grpN)
-nyOR   = input.session("0930-0945", "Rango de apertura (hora de Nueva York)", group = grpN, tooltip = "Pon 0930-0950 para el rango de 20 minutos")
-nyHor  = input.session("0930-1600", "Horizonte (hasta cuándo se dibujan los niveles)", group = grpN)
+nyHor  = input.session("0930-1600", "Horizonte (hasta cuándo se siguen los niveles)", group = grpN)
 colNy  = input.color(#eb6834, "Color", group = grpN)
 
 grpF = "Fibonacci"
 showRet   = input.bool(true, "Retrocesos dentro del rango (23.6 / 38.2 / 50 / 61.8 / 78.6)", group = grpF)
 showExt   = input.bool(true, "Extensiones fuera del rango (1.272 / 1.618 / 2.0 / 2.618)", group = grpF)
 showMarks = input.bool(true, "Marcar ruptura y retest", group = grpF)
+showProj  = input.bool(true, "Proyección 1.618 con probabilidad", group = grpF)
+colProj   = input.color(#1baf7a, "Color de la proyección", group = grpF)
 showStats = input.bool(true, "Tabla de probabilidades del estudio", group = grpF)
+
+lonOR = orMin == 15 ? "0800-0815" : "0800-0820"
+nyOR  = orMin == 15 ? "0930-0945" : "0930-0950"
 
 var RET = array.from(0.236, 0.382, 0.5, 0.618, 0.786)
 var EXT = array.from(0.272, 0.618, 1.0, 1.618)
+
+// --- Probabilidad (%) de alcanzar la extensión 1.618 tras la ruptura -------------------------
+// Índice = (combo * 4 + tamaño) * 3 + estado
+//   combo:  0 Londres OR15 · 1 Londres OR20 · 2 NY OR15 · 3 NY OR20
+//   tamaño: 0 rango pequeño · 1 medio · 2 grande (terciles de rango OR / rango medio diario NY) · 3 sin dato
+//   estado: 0 recién roto · 1 ya retrocedió al 50 % sin llegar · 2 ya tocó el extremo opuesto sin llegar
+var PROB = array.from(
+     83.2, 61.4, 46.1,  77.8, 53.8, 34.7,  64.0, 32.0, 14.3,  75.0, 48.5, 31.5,
+     82.2, 59.3, 43.6,  71.9, 43.5, 25.2,  59.0, 24.9, 12.7,  71.0, 42.1, 27.5,
+     84.5, 67.4, 52.8,  78.5, 52.9, 32.1,  68.9, 36.2, 21.1,  77.3, 52.2, 35.7,
+     80.9, 61.3, 43.0,  75.2, 45.6, 22.9,  65.2, 27.5, 14.9,  73.8, 45.6, 28.1)
+// Cortes de los terciles (rango OR / rango medio de la sesión NY de los 20 días previos)
+var CUTS = array.from(0.0848, 0.1303, 0.0957, 0.1481, 0.2332, 0.3378, 0.2650, 0.3830)
+var SIZE_TXT = array.from("rango pequeño", "rango medio", "rango grande", "")
+var STATE_TXT = array.from("", " · tras tocar el 50%", " · tras tocar el extremo opuesto")
+
+prob(int c, int ter, int st) =>
+    array.get(PROB, (c * 4 + ter) * 3 + st)
+
+// --- Rango medio diario de la sesión de contado de NY (09:30-16:00), 20 días ------------------
+nyCash = not na(time(timeframe.period, "0930-1600", "America/New_York"))
+var float dH = na
+var float dL = na
+var array<float> rngs = array.new<float>()
+if nyCash and not nyCash[1]
+    dH := high
+    dL := low
+else if nyCash
+    dH := na(dH) ? high : math.max(dH, high)
+    dL := na(dL) ? low : math.min(dL, low)
+if nyCash[1] and not nyCash and not na(dH)
+    array.push(rngs, dH - dL)
+    if array.size(rngs) > 20
+        array.shift(rngs)
+adr = array.size(rngs) >= 20 ? array.avg(rngs) : na
 
 newLine(int x1, float y, color col, string sty, int w) =>
     line.new(x1, y, bar_index, y, color = col, style = sty, width = w)
 
 // Una llamada por sesión: las variables 'var' de cada llamada son independientes.
-orb(string sessOR, string sessHor, string tz, color col, string name, bool enabled) =>
+orb(string sessOR, string sessHor, string tz, color col, string name, bool enabled, int combo, float adrNow) =>
     inOR  = enabled and not na(time(timeframe.period, sessOR, tz))
     inHor = enabled and not na(time(timeframe.period, sessHor, tz))
     var float hi = na
@@ -42,6 +85,14 @@ orb(string sessOR, string sessHor, string tz, color col, string name, bool enabl
     var int dir = 0
     var bool retested = false
     var array<line> lines = array.new<line>()
+    // proyección 1.618
+    var int ter = 3
+    var int brkBar = na
+    var float tgt = na
+    var int state = 0
+    var bool hit = false
+    var line projLine = na
+    var label projLbl = na
 
     if inOR and not inOR[1]
         hi := high
@@ -51,6 +102,13 @@ orb(string sessOR, string sessHor, string tz, color col, string name, bool enabl
         dir := 0
         retested := false
         array.clear(lines)
+        ter := 3
+        brkBar := na
+        tgt := na
+        state := 0
+        hit := false
+        projLine := na
+        projLbl := na
     else if inOR
         hi := na(hi) ? high : math.max(hi, high)
         lo := na(lo) ? low : math.min(lo, low)
@@ -70,49 +128,94 @@ orb(string sessOR, string sessHor, string tz, color col, string name, bool enabl
                 array.push(lines, newLine(startBar, hi + r * e, lightCol, line.style_dashed, 1))
                 array.push(lines, newLine(startBar, lo - r * e, lightCol, line.style_dashed, 1))
         label.new(startBar, hi, name + " OR", style = label.style_label_lower_left, color = color.new(col, 85), textcolor = col, size = size.small)
+        // tamaño del rango frente al rango medio diario -> tercil
+        rel = na(adrNow) or adrNow <= 0 ? na : r / adrNow
+        ter := na(rel) ? 3 : rel < array.get(CUTS, combo * 2) ? 0 : rel < array.get(CUTS, combo * 2 + 1) ? 1 : 2
 
     if active and inHor
+        r = hi - lo
+        mid = lo + 0.5 * r
         for l in lines
             l.set_x2(bar_index)
         // Ruptura: primer CIERRE fuera del rango
         if dir == 0 and close > hi
             dir := 1
+            brkBar := bar_index
+            tgt := hi + 0.618 * r
             if showMarks
                 label.new(bar_index, high, "▲ ruptura " + name, style = label.style_label_down, color = col, textcolor = color.white, size = size.small)
         else if dir == 0 and close < lo
             dir := -1
+            brkBar := bar_index
+            tgt := lo - 0.618 * r
             if showMarks
                 label.new(bar_index, low, "▼ ruptura " + name, style = label.style_label_up, color = col, textcolor = color.white, size = size.small)
         else if dir != 0 and not retested and ((dir == 1 and low <= hi) or (dir == -1 and high >= lo))
             retested := true
             if showMarks
                 label.new(bar_index, dir == 1 ? hi : lo, "retest", style = label.style_label_left, color = color.new(col, 80), textcolor = col, size = size.tiny)
+
+        // Proyección 1.618: estado y probabilidad en vivo (desde la vela siguiente a la ruptura)
+        if dir != 0 and showProj
+            if bar_index > brkBar and not hit
+                if (dir == 1 and high >= tgt) or (dir == -1 and low <= tgt)
+                    hit := true
+                else
+                    if (dir == 1 and low <= lo) or (dir == -1 and high >= hi)
+                        state := 2
+                    else if state == 0 and ((dir == 1 and low <= mid) or (dir == -1 and high >= mid))
+                        state := 1
+            if na(projLine)
+                projLine := line.new(brkBar, tgt, bar_index, tgt, color = colProj, style = line.style_solid, width = 2)
+                projLbl := label.new(bar_index, tgt, "", style = label.style_label_left, color = color.new(colProj, 85), textcolor = colProj, size = size.small)
+            projLine.set_x2(bar_index)
+            projLbl.set_xy(bar_index, tgt)
+            if hit
+                projLbl.set_text("1.618 alcanzado ✓")
+            else
+                p = prob(combo, ter, state)
+                sz = array.get(SIZE_TXT, ter)
+                projLbl.set_text("Proyección 1.618: " + str.tostring(p, "#") + "%" + (sz == "" ? "" : " (" + sz + ")") + array.get(STATE_TXT, state))
     else if active and not inHor
         active := false
+        if showProj and not na(projLbl) and not hit
+            projLbl.set_text("1.618 no alcanzado")
+            projLbl.set_textcolor(color.gray)
     dir
 
-orb(lonOR, lonHor, "Europe/London", colLon, "Londres", showLon)
-orb(nyOR, nyHor, "America/New_York", colNy, "NY", showNy)
+orb(lonOR, lonHor, "Europe/London", colLon, "Londres", showLon, orMin == 15 ? 0 : 1, adr)
+orb(nyOR, nyHor, "America/New_York", colNy, "NY", showNy, orMin == 15 ? 2 : 3, adr)
 
-// Probabilidades medidas en el estudio (NAS100 + US500, 1 min, 2022-2026, OR 15 min).
+// Probabilidades medidas en el estudio (NAS100 + US500, 1 min, 2022-2026).
 // Actualízalas con los valores de orb/results/dukascopy/REPORT.md si cambias datos o período.
 if showStats and barstate.islast
-    var table t = table.new(position.top_right, 3, 6, bgcolor = color.new(color.gray, 90), border_width = 1)
-    table.cell(t, 0, 0, "Tras la ruptura (OR 15m)", text_size = size.small)
+    c0 = orMin == 15 ? 0 : 1
+    c1 = orMin == 15 ? 2 : 3
+    var table t = table.new(position.top_right, 3, 9, bgcolor = color.new(color.gray, 90), border_width = 1)
+    table.cell(t, 0, 0, "Tras la ruptura (OR " + str.tostring(orMin) + "m)", text_size = size.small)
     table.cell(t, 1, 0, "Londres", text_size = size.small)
     table.cell(t, 2, 0, "NY", text_size = size.small)
     table.cell(t, 0, 1, "Retest del nivel roto", text_size = size.small)
-    table.cell(t, 1, 1, "95%", text_size = size.small)
-    table.cell(t, 2, 1, "95%", text_size = size.small)
+    table.cell(t, 1, 1, orMin == 15 ? "95%" : "95%", text_size = size.small)
+    table.cell(t, 2, 1, orMin == 15 ? "95%" : "95%", text_size = size.small)
     table.cell(t, 0, 2, "Retrocede al 50%", text_size = size.small)
-    table.cell(t, 1, 2, "73%", text_size = size.small)
-    table.cell(t, 2, 2, "72%", text_size = size.small)
+    table.cell(t, 1, 2, orMin == 15 ? "73%" : "69%", text_size = size.small)
+    table.cell(t, 2, 2, orMin == 15 ? "72%" : "67%", text_size = size.small)
     table.cell(t, 0, 3, "Toca el extremo opuesto", text_size = size.small)
-    table.cell(t, 1, 3, "54%", text_size = size.small)
-    table.cell(t, 2, 3, "54%", text_size = size.small)
+    table.cell(t, 1, 3, orMin == 15 ? "54%" : "48%", text_size = size.small)
+    table.cell(t, 2, 3, orMin == 15 ? "54%" : "48%", text_size = size.small)
     table.cell(t, 0, 4, "Llega a 1.618", text_size = size.small)
-    table.cell(t, 1, 4, "75%", text_size = size.small)
-    table.cell(t, 2, 4, "77%", text_size = size.small)
-    table.cell(t, 0, 5, "1.618 antes que 50%", text_size = size.small)
-    table.cell(t, 1, 5, "53%", text_size = size.small)
-    table.cell(t, 2, 5, "53%", text_size = size.small)
+    table.cell(t, 1, 4, str.tostring(prob(c0, 3, 0), "#") + "%", text_size = size.small)
+    table.cell(t, 2, 4, str.tostring(prob(c1, 3, 0), "#") + "%", text_size = size.small)
+    table.cell(t, 0, 5, "  con rango pequeño / grande", text_size = size.small)
+    table.cell(t, 1, 5, str.tostring(prob(c0, 0, 0), "#") + "% / " + str.tostring(prob(c0, 2, 0), "#") + "%", text_size = size.small)
+    table.cell(t, 2, 5, str.tostring(prob(c1, 0, 0), "#") + "% / " + str.tostring(prob(c1, 2, 0), "#") + "%", text_size = size.small)
+    table.cell(t, 0, 6, "  si ya tocó el 50%", text_size = size.small)
+    table.cell(t, 1, 6, str.tostring(prob(c0, 3, 1), "#") + "%", text_size = size.small)
+    table.cell(t, 2, 6, str.tostring(prob(c1, 3, 1), "#") + "%", text_size = size.small)
+    table.cell(t, 0, 7, "  si ya tocó el extremo opuesto", text_size = size.small)
+    table.cell(t, 1, 7, str.tostring(prob(c0, 3, 2), "#") + "%", text_size = size.small)
+    table.cell(t, 2, 7, str.tostring(prob(c1, 3, 2), "#") + "%", text_size = size.small)
+    table.cell(t, 0, 8, "1.618 antes que 50%", text_size = size.small)
+    table.cell(t, 1, 8, orMin == 15 ? "53%" : "52%", text_size = size.small)
+    table.cell(t, 2, 8, orMin == 15 ? "53%" : "53%", text_size = size.small)
