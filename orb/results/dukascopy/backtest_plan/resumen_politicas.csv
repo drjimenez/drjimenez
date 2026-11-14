@@ -1,0 +1,37 @@
+unidad,politica,indice,sesion,operaciones,aciertos_%,beneficio_total_$,beneficio_medio_$,ganancia_media_$,perdida_media_$,factor_beneficio,max_drawdown_$,peor_dia_$,dias_que_superan_400$,racha_perdedora_max,R_medio_neto
+"micro lotes CFD (0,01 lote)",2 % por operación (lo pedido),NAS100,todas,1362,39.5,-68059.0,-50.0,1332.9,-952.9,0.91,-87442.0,-2000.0,592,12,-0.06
+"micro lotes CFD (0,01 lote)",2 % por operación (lo pedido),NAS100,London,715,38.7,-75067.0,-105.0,1237.9,-954.2,0.82,-92589.0,-1000.0,423,11,-0.123
+"micro lotes CFD (0,01 lote)",2 % por operación (lo pedido),NAS100,NewYork,647,40.3,7008.0,10.8,1433.8,-951.3,1.02,-35149.0,-1000.0,312,11,0.011
+"micro lotes CFD (0,01 lote)",2 % por operación (lo pedido),US500,todas,1283,39.8,-98775.0,-77.0,1263.6,-964.4,0.87,-105326.0,-2000.0,567,12,-0.087
+"micro lotes CFD (0,01 lote)",2 % por operación (lo pedido),US500,London,660,38.6,-86679.0,-131.3,1176.3,-954.7,0.78,-90810.0,-1000.0,387,9,-0.15
+"micro lotes CFD (0,01 lote)",2 % por operación (lo pedido),US500,NewYork,623,41.1,-12096.0,-19.4,1350.6,-975.1,0.97,-39543.0,-1000.0,313,11,-0.021
+"micro lotes CFD (0,01 lote)",2 % recortado al límite diario de 400 $,NAS100,todas,1154,39.7,-35137.0,-30.4,596.0,-442.7,0.89,-39393.0,-400.0,0,11,-0.062
+"micro lotes CFD (0,01 lote)",2 % recortado al límite diario de 400 $,NAS100,London,715,38.7,-30028.0,-42.0,495.0,-381.6,0.82,-37034.0,-400.0,0,11,-0.123
+"micro lotes CFD (0,01 lote)",2 % recortado al límite diario de 400 $,NAS100,NewYork,439,41.2,-5109.0,-11.6,750.6,-546.4,0.96,-20262.0,-1000.0,0,9,0.038
+"micro lotes CFD (0,01 lote)",2 % recortado al límite diario de 400 $,US500,todas,1084,39.6,-41248.0,-38.1,571.2,-437.1,0.86,-51471.0,-400.0,0,10,-0.104
+"micro lotes CFD (0,01 lote)",2 % recortado al límite diario de 400 $,US500,London,660,38.6,-34670.0,-52.5,470.5,-381.9,0.78,-36323.0,-400.0,0,9,-0.15
+"micro lotes CFD (0,01 lote)",2 % recortado al límite diario de 400 $,US500,NewYork,424,41.0,-6578.0,-15.5,718.8,-526.6,0.95,-17661.0,-1000.0,0,12,-0.032
+"micro lotes CFD (0,01 lote)","200 $ por operación (0,4 %) con límite diario",NAS100,todas,1362,39.5,-13607.0,-10.0,266.4,-190.4,0.91,-17475.0,-400.0,0,12,-0.06
+"micro lotes CFD (0,01 lote)","200 $ por operación (0,4 %) con límite diario",NAS100,London,715,38.7,-15011.0,-21.0,247.4,-190.8,0.82,-18513.0,-200.0,0,11,-0.123
+"micro lotes CFD (0,01 lote)","200 $ por operación (0,4 %) con límite diario",NAS100,NewYork,647,40.3,1404.0,2.2,286.4,-190.0,1.02,-7022.0,-200.0,0,11,0.011
+"micro lotes CFD (0,01 lote)","200 $ por operación (0,4 %) con límite diario",US500,todas,1283,39.8,-19753.0,-15.4,252.7,-192.8,0.87,-21063.0,-400.0,0,12,-0.087
+"micro lotes CFD (0,01 lote)","200 $ por operación (0,4 %) con límite diario",US500,London,660,38.6,-17335.0,-26.3,235.2,-190.9,0.78,-18161.0,-200.0,0,9,-0.15
+"micro lotes CFD (0,01 lote)","200 $ por operación (0,4 %) con límite diario",US500,NewYork,623,41.1,-2417.0,-3.9,270.1,-195.0,0.97,-7907.0,-200.0,0,11,-0.021
+contratos micro de futuros (MNQ / MES),2 % por operación (lo pedido),NAS100,todas,1362,39.5,-66693.0,-49.0,1277.5,-915.0,0.91,-85317.0,-1997.0,592,12,-0.06
+contratos micro de futuros (MNQ / MES),2 % por operación (lo pedido),NAS100,London,715,38.7,-73978.0,-103.5,1208.6,-933.2,0.82,-90968.0,-1000.0,423,11,-0.123
+contratos micro de futuros (MNQ / MES),2 % por operación (lo pedido),NAS100,NewYork,647,40.3,7285.0,11.3,1350.7,-894.4,1.02,-33430.0,-1000.0,313,11,0.011
+contratos micro de futuros (MNQ / MES),2 % por operación (lo pedido),US500,todas,1283,39.8,-97387.0,-75.9,1237.7,-945.4,0.87,-103729.0,-1996.0,565,12,-0.087
+contratos micro de futuros (MNQ / MES),2 % por operación (lo pedido),US500,London,660,38.6,-85884.0,-130.1,1161.4,-943.3,0.78,-89931.0,-1000.0,387,9,-0.15
+contratos micro de futuros (MNQ / MES),2 % por operación (lo pedido),US500,NewYork,623,41.1,-11503.0,-18.5,1313.8,-947.8,0.97,-38627.0,-1000.0,311,11,-0.021
+contratos micro de futuros (MNQ / MES),2 % recortado al límite diario de 400 $,NAS100,todas,1151,39.5,-35052.0,-30.5,545.9,-407.2,0.88,-37511.0,-400.0,0,11,-0.065
+contratos micro de futuros (MNQ / MES),2 % recortado al límite diario de 400 $,NAS100,London,714,38.7,-29139.0,-40.8,467.2,-360.9,0.82,-35686.0,-400.0,0,11,-0.124
+contratos micro de futuros (MNQ / MES),2 % recortado al límite diario de 400 $,NAS100,NewYork,437,41.0,-5913.0,-13.5,667.2,-485.8,0.95,-18728.0,-1000.0,0,9,0.029
+contratos micro de futuros (MNQ / MES),2 % recortado al límite diario de 400 $,US500,todas,1084,39.6,-39679.0,-36.6,548.5,-419.8,0.86,-49775.0,-400.0,0,10,-0.104
+contratos micro de futuros (MNQ / MES),2 % recortado al límite diario de 400 $,US500,London,660,38.6,-33681.0,-51.0,456.8,-370.8,0.78,-35379.0,-400.0,0,9,-0.15
+contratos micro de futuros (MNQ / MES),2 % recortado al límite diario de 400 $,US500,NewYork,424,41.0,-5998.0,-14.1,682.8,-499.2,0.95,-16992.0,-998.0,0,12,-0.032
+contratos micro de futuros (MNQ / MES),"200 $ por operación (0,4 %) con límite diario",NAS100,todas,1292,39.2,-11305.0,-8.8,223.3,-158.7,0.91,-16192.0,-391.0,0,11,-0.064
+contratos micro de futuros (MNQ / MES),"200 $ por operación (0,4 %) con límite diario",NAS100,London,714,38.7,-13880.0,-19.4,218.4,-169.3,0.81,-17170.0,-200.0,0,11,-0.124
+contratos micro de futuros (MNQ / MES),"200 $ por operación (0,4 %) con límite diario",NAS100,NewYork,578,40.0,2574.0,4.5,229.2,-145.2,1.05,-5215.0,-200.0,0,11,0.008
+contratos micro de futuros (MNQ / MES),"200 $ por operación (0,4 %) con límite diario",US500,todas,1281,39.8,-18560.0,-14.5,227.5,-174.6,0.86,-19869.0,-394.0,0,12,-0.088
+contratos micro de futuros (MNQ / MES),"200 $ por operación (0,4 %) con límite diario",US500,London,660,38.6,-16435.0,-24.9,220.9,-179.6,0.77,-17180.0,-200.0,0,9,-0.15
+contratos micro de futuros (MNQ / MES),"200 $ por operación (0,4 %) con límite diario",US500,NewYork,621,41.1,-2125.0,-3.4,234.2,-169.0,0.97,-7051.0,-200.0,0,11,-0.023

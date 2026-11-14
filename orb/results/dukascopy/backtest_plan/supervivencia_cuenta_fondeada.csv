@@ -1,0 +1,13 @@
+politica,indice,sesiones,inicios,aprueba_%,suspende_%,sin_resolver_%,operaciones_medianas_hasta_aprobar,operaciones,beneficio_total_$,max_drawdown_$
+2 % por operación (lo pedido),NAS100,Londres + NY,993,12.4,87.5,0.1,2.0,1362,-68059.0,-87442.0
+2 % por operación (lo pedido),NAS100,solo NY,647,12.1,87.9,0.0,2.0,647,7008.0,-35149.0
+2 % por operación (lo pedido),US500,Londres + NY,944,9.7,90.3,0.0,2.0,1283,-98775.0,-105326.0
+2 % por operación (lo pedido),US500,solo NY,623,11.9,88.1,0.0,2.0,623,-12096.0,-39543.0
+2 % recortado al límite diario de 400 $,NAS100,Londres + NY,993,30.2,66.2,3.6,26.5,1154,-35137.0,-39393.0
+2 % recortado al límite diario de 400 $,NAS100,solo NY,647,49.3,42.5,8.2,32.0,647,2813.0,-14052.0
+2 % recortado al límite diario de 400 $,US500,Londres + NY,944,30.8,66.8,2.3,18.0,1084,-41248.0,-51471.0
+2 % recortado al límite diario de 400 $,US500,solo NY,623,46.4,47.5,6.1,29.0,623,-4839.0,-15816.0
+"200 $ por operación (0,4 %) con límite diario",NAS100,Londres + NY,993,14.5,74.1,11.4,77.5,1362,-13607.0,-17475.0
+"200 $ por operación (0,4 %) con límite diario",NAS100,solo NY,647,34.9,48.7,16.4,71.0,647,1404.0,-7022.0
+"200 $ por operación (0,4 %) con límite diario",US500,Londres + NY,944,3.1,86.0,10.9,66.0,1283,-19753.0,-21063.0
+"200 $ por operación (0,4 %) con límite diario",US500,solo NY,623,24.1,25.0,50.9,62.5,623,-2417.0,-7907.0

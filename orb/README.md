@@ -154,6 +154,18 @@ Detalle en [`results/dukascopy/strategy/EXTENSION_2.md`](results/dukascopy/strat
 
 ![De 1,618 a 2,0](results/dukascopy/strategy/ext2_probabilidad.png)
 
+### Agente de estrategia: pautas de backtest para una cuenta fondeada de 50K
+
+`python3 orb/agents/backtest_plan.py` genera
+[`results/dukascopy/backtest_plan/Pautas_Backtest_50K.pdf`](results/dukascopy/backtest_plan/Pautas_Backtest_50K.pdf)
+y una hoja de registro imprimible. El plan: tras la ruptura, esperar el toque del 50 % y entrar al volver al
+0,382; stop en el extremo opuesto; mitad en 1,618 y mitad en 2,0. Incluye el cálculo de micro lotes (CFD y
+MNQ/MES), tres operaciones reales paso a paso, las pautas del backtest manual y el backtest automático 2022-2026
+con tres políticas de riesgo y una prueba de supervivencia de la cuenta (límite diario de 400 $).
+
+Resultado: el 2 % por operación es incompatible con el límite diario de 400 $; el plan queda en torno a 0 R
+tras costes (NY con NAS100 +0,01 R; Londres negativo).
+
 ### Reglas ORB puras (continuación / reversión)
 
 Ninguna de las 448 reglas de entrada, stop y objetivo sobre el rango de apertura es positiva a la
