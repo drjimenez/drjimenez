@@ -16,8 +16,8 @@ strategy("ORB 50% → 0,382 · Backtest", overlay = true, initial_capital = 5000
 // Ajustes
 // ------------------------------------------------------------------------------------------------
 gP = "Periodo del backtest"
-fromT = input.time(timestamp("UTC", 2026, 1, 1, 0, 0), "Desde", group = gP)
-toT   = input.time(timestamp("UTC", 2026, 12, 31, 23, 59), "Hasta", group = gP)
+fromT = input.time(timestamp("01 Jan 2026 00:00 +0000"), "Desde", group = gP)
+toT   = input.time(timestamp("31 Dec 2026 23:59 +0000"), "Hasta", group = gP)
 
 gS = "Sesiones"
 useLon = input.bool(true, "Operar Londres (08:00 hora de Londres)", group = gS)
