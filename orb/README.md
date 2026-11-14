@@ -154,6 +154,13 @@ Detalle en [`results/dukascopy/strategy/EXTENSION_2.md`](results/dukascopy/strat
 
 ![De 1,618 a 2,0](results/dukascopy/strategy/ext2_probabilidad.png)
 
+### Estrategia de TradingView para el backtest (`orb/pine/orb_backtest_strategy.pine`)
+
+Script `strategy()` de Pine v6 con el plan «50 % → entrada en 0,382» para el Probador de estrategias:
+periodo (por defecto 2026), sesiones, rango de 15/20 min, niveles de entrada, stop (nivel del rango o puntos)
+y objetivos (extensiones Fibonacci o múltiplos de R, con % en TP1), tamaño en lotes fijos, riesgo % o
+riesgo $, tipo de lote (estándar, mini, micro, nano), unidades por lote y pérdida máxima diaria.
+
 ### Agente de estrategia: pautas de backtest para una cuenta fondeada de 50K
 
 `python3 orb/agents/backtest_plan.py` genera

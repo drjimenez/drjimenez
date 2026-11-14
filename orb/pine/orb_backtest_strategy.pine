@@ -1,0 +1,301 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0
+// ORB 50 % -> 0,382 · Backtest configurable (Londres y Nueva York)
+// Plan: tras la ruptura del rango de apertura (primer CIERRE fuera), esperar a que el precio toque el
+// 50 % del rango y entrar con orden stop cuando vuelve al 0,382 a favor de la ruptura. Stop en el
+// extremo opuesto (o en puntos fijos). Una parte en TP1 (1,618) y el resto en TP2 (2,0), o en
+// múltiplos de R. Cierre al final de la sesión. Tamaño en lotes fijos o por riesgo, con lotes
+// estándar / mini / micro / nano, y límite de pérdida diaria para cuentas fondeadas.
+// Mismas reglas que orb/agents/backtest_plan.py. Úsalo en gráficos de 1 a 5 minutos.
+//@version=6
+strategy("ORB 50% → 0,382 · Backtest", overlay = true, initial_capital = 50000, currency = currency.USD,
+     default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 0,
+     commission_type = strategy.commission.cash_per_contract, commission_value = 0, slippage = 1,
+     max_lines_count = 500, max_labels_count = 500)
+
+// ------------------------------------------------------------------------------------------------
+// Ajustes
+// ------------------------------------------------------------------------------------------------
+gP = "Periodo del backtest"
+fromT = input.time(timestamp("UTC", 2026, 1, 1, 0, 0), "Desde", group = gP)
+toT   = input.time(timestamp("UTC", 2026, 12, 31, 23, 59), "Hasta", group = gP)
+
+gS = "Sesiones"
+useLon = input.bool(true, "Operar Londres (08:00 hora de Londres)", group = gS)
+useNy  = input.bool(true, "Operar Nueva York (09:30 hora de NY)", group = gS)
+orMin  = input.int(15, "Minutos del rango de apertura", options = [15, 20], group = gS)
+lonHor = input.session("0800-1200", "Horizonte Londres (cierre forzado al final)", group = gS)
+nyHor  = input.session("0930-1600", "Horizonte Nueva York (cierre forzado al final)", group = gS)
+
+gE = "Entrada"
+trig   = input.float(0.5, "Retroceso que hay que tocar primero", minval = 0, maxval = 1, step = 0.001, group = gE, tooltip = "En fracción del rango contada desde el nivel roto. 0,5 = mitad del rango.")
+entLvl = input.float(0.382, "Nivel de entrada (orden stop al volver)", minval = 0, maxval = 1, step = 0.001, group = gE, tooltip = "Debe ser menor que el retroceso anterior. 0,382 contado desde el nivel roto.")
+cancelOpp = input.bool(true, "Cancelar si toca el extremo opuesto antes de entrar", group = gE)
+
+gSL = "Stop loss"
+slMode = input.string("Nivel del rango", "Tipo de stop", options = ["Nivel del rango", "Puntos fijos"], group = gSL)
+slLvl  = input.float(1.0, "Nivel del rango para el stop", minval = 0, step = 0.001, group = gSL, tooltip = "1 = extremo opuesto del rango. 0,786 = más cerca. Mayor que el nivel de entrada.")
+slPts  = input.float(50, "Stop en puntos (si es fijo)", minval = 0, group = gSL)
+moveBE = input.bool(false, "Mover el stop a la entrada tras el TP1", group = gSL)
+
+gTP = "Take profit"
+tpMode = input.string("Extensiones Fibonacci", "Tipo de objetivo", options = ["Extensiones Fibonacci", "Múltiplo de riesgo (R)"], group = gTP)
+tp1Ext = input.float(1.618, "TP1: extensión", minval = 1, step = 0.001, group = gTP)
+tp2Ext = input.float(2.0, "TP2: extensión", minval = 1, step = 0.001, group = gTP)
+tp1R   = input.float(1.0, "TP1: múltiplo de R (si es por R)", minval = 0.1, step = 0.1, group = gTP)
+tp2R   = input.float(2.0, "TP2: múltiplo de R (si es por R)", minval = 0.1, step = 0.1, group = gTP)
+tp1Pct = input.int(50, "% de la posición que se cierra en TP1", minval = 0, maxval = 100, group = gTP, tooltip = "100 = todo en TP1. 0 = todo en TP2.")
+
+gZ = "Tamaño de la posición"
+sizeMode = input.string("Riesgo $ fijo", "Cómo calcular el tamaño", options = ["Lotes fijos", "Riesgo % de la cuenta", "Riesgo $ fijo"], group = gZ)
+lotType  = input.string("Micro (0,01)", "Tipo de lote", options = ["Estándar (1)", "Mini (0,1)", "Micro (0,01)", "Nano (0,001)"], group = gZ)
+nLots    = input.int(100, "Número de lotes (si son fijos)", minval = 1, group = gZ, tooltip = "En el tipo de lote elegido. Ej.: 100 micro lotes = 1 lote estándar.")
+account  = input.float(50000, "Capital de la cuenta ($)", minval = 1, group = gZ)
+riskPct  = input.float(0.4, "Riesgo por operación (% de la cuenta)", minval = 0.01, step = 0.05, group = gZ)
+riskUsd  = input.float(200, "Riesgo por operación ($)", minval = 1, group = gZ)
+contract = input.float(1.0, "Unidades del símbolo por lote estándar", minval = 0.0001, group = gZ, tooltip = "Cuántas unidades del símbolo de TradingView equivalen a 1 lote estándar de tu bróker. Con OANDA/Pepperstone NAS100 y US500, 1 unidad = 1 $ por punto: si tu lote estándar vale 1 $/punto pon 1; si vale 10 $/punto pon 10.")
+costPts  = input.float(1.0, "Spread + comisión por lado (puntos, para el tamaño)", minval = 0, step = 0.05, group = gZ)
+
+gF = "Cuenta fondeada"
+useDaily = input.bool(true, "Aplicar pérdida máxima diaria", group = gF)
+maxDaily = input.float(400, "Pérdida máxima diaria ($)", minval = 1, group = gF)
+
+gV = "Visual"
+showLv  = input.bool(true, "Dibujar rango, entrada, stop y objetivos", group = gV)
+showTbl = input.bool(true, "Tabla de resumen", group = gV)
+
+// ------------------------------------------------------------------------------------------------
+// Cálculos comunes
+// ------------------------------------------------------------------------------------------------
+lonOR = orMin == 15 ? "0800-0815" : "0800-0820"
+nyOR  = orMin == 15 ? "0930-0945" : "0930-0950"
+inWindow = time >= fromT and time <= toT
+
+lotStep = lotType == "Estándar (1)" ? 1.0 : lotType == "Mini (0,1)" ? 0.1 : lotType == "Micro (0,01)" ? 0.01 : 0.001
+lotName = lotType == "Estándar (1)" ? "lotes" : lotType == "Mini (0,1)" ? "mini lotes" : lotType == "Micro (0,01)" ? "micro lotes" : "nano lotes"
+unitsPerLot = lotStep * contract
+
+// Día de Nueva York para el límite diario
+nyDay = dayofmonth(time, "America/New_York")
+newNyDay = nyDay != nyDay[1]
+var float dayStart = 0.0
+var bool dayBlocked = false
+var float worstDay = 0.0
+var int daysOverLimit = 0
+if newNyDay
+    prevDay = strategy.netprofit[1] - dayStart
+    worstDay := math.min(worstDay, prevDay)
+    daysOverLimit += prevDay < -maxDaily - 0.01 ? 1 : 0
+    dayStart := strategy.netprofit
+    dayBlocked := false
+dayPL = strategy.netprofit - dayStart + strategy.openprofit
+if useDaily and dayPL <= -maxDaily and not dayBlocked
+    dayBlocked := true
+    strategy.cancel_all()
+    strategy.close_all(comment = "límite diario")
+remaining = useDaily ? maxDaily + math.min(0.0, strategy.netprofit - dayStart) : 1e12
+
+// Número de lotes (del tipo elegido) para una entrada y un stop
+calcLots(float entryPx, float slPx, float remain) =>
+    riskPts = math.abs(entryPx - slPx) + 2 * costPts
+    lossPerLot = riskPts * syminfo.pointvalue * unitsPerLot
+    budget = sizeMode == "Riesgo % de la cuenta" ? account * riskPct / 100 : riskUsd
+    float nl = sizeMode == "Lotes fijos" ? nLots : math.floor(budget / lossPerLot)
+    if useDaily
+        nl := math.min(nl, math.floor(remain / lossPerLot))
+    [math.max(nl, 0), lossPerLot]
+
+// Niveles de la operación a partir del rango
+levels(float hi, float lo, int dir) =>
+    r = hi - lo
+    entryPx = dir == 1 ? hi - entLvl * r : lo + entLvl * r
+    slPx = slMode == "Nivel del rango" ? (dir == 1 ? hi - slLvl * r : lo + slLvl * r) : entryPx - dir * slPts
+    risk = math.abs(entryPx - slPx)
+    tp1 = tpMode == "Extensiones Fibonacci" ? (dir == 1 ? hi + (tp1Ext - 1) * r : lo - (tp1Ext - 1) * r) : entryPx + dir * tp1R * risk
+    tp2 = tpMode == "Extensiones Fibonacci" ? (dir == 1 ? hi + (tp2Ext - 1) * r : lo - (tp2Ext - 1) * r) : entryPx + dir * tp2R * risk
+    [entryPx, slPx, tp1, tp2]
+
+// Estado del rango de apertura de una sesión: ruptura por cierre, toque del retroceso, extremo opuesto
+orbState(string sessOR, string sessHor, string tz, bool enabled) =>
+    inOR  = enabled and not na(time(timeframe.period, sessOR, tz))
+    inHor = enabled and not na(time(timeframe.period, sessHor, tz))
+    var float hi = na
+    var float lo = na
+    var bool ready = false
+    var int dir = 0
+    var bool tTrig = false
+    var int trigBar = na
+    var bool opp = false
+    newDay = inOR and not inOR[1]
+    if newDay
+        hi := high
+        lo := low
+        ready := false
+        dir := 0
+        tTrig := false
+        trigBar := na
+        opp := false
+    else if inOR
+        hi := na(hi) ? high : math.max(hi, high)
+        lo := na(lo) ? low : math.min(lo, low)
+    if inOR[1] and not inOR and inHor and not na(hi)
+        ready := true
+    brkNow = false
+    if ready and inHor and dir == 0
+        if close > hi
+            dir := 1
+            brkNow := true
+        else if close < lo
+            dir := -1
+            brkNow := true
+    if ready and inHor and dir != 0 and not brkNow
+        r = hi - lo
+        trigPx = dir == 1 ? hi - trig * r : lo + trig * r
+        if not tTrig and ((dir == 1 and low <= trigPx) or (dir == -1 and high >= trigPx))
+            tTrig := true
+            trigBar := bar_index
+        if (dir == 1 and low <= lo) or (dir == -1 and high >= hi)
+            opp := true
+    endNow = ready and not inHor
+    if endNow
+        ready := false
+    [hi, lo, dir, tTrig, trigBar, opp, ready and inHor, endNow, newDay]
+
+[lHi, lLo, lDir, lTrig, lTrigBar, lOpp, lAct, lEnd, lNew] = orbState(lonOR, lonHor, "Europe/London", useLon)
+[nHi, nLo, nDir, nTrig, nTrigBar, nOpp, nAct, nEnd, nNew] = orbState(nyOR, nyHor, "America/New_York", useNy)
+
+openId = strategy.position_size != 0 ? strategy.opentrades.entry_id(0) : ""
+
+// ------------------------------------------------------------------------------------------------
+// Londres
+// ------------------------------------------------------------------------------------------------
+var bool lDone = false
+var bool lPend = false
+var float lE = na
+var float lSL = na
+var float lT1 = na
+var float lT2 = na
+var float lQty = na
+if lNew
+    lDone := false
+    lPend := false
+if lAct and inWindow and lDir != 0 and lTrig and bar_index >= lTrigBar and not lDone and not (cancelOpp and lOpp) and not dayBlocked and strategy.position_size == 0
+    [e, sl, t1, t2] = levels(lHi, lLo, lDir)
+    [nl, lossPerLot] = calcLots(e, sl, remaining)
+    if nl > 0
+        lE := e
+        lSL := sl
+        lT1 := t1
+        lT2 := t2
+        lQty := nl * unitsPerLot
+        strategy.entry("L", lDir == 1 ? strategy.long : strategy.short, qty = lQty, stop = e,
+             comment = "L " + (lDir == 1 ? "▲ " : "▼ ") + str.tostring(nl) + " " + lotName + " · riesgo " + str.tostring(nl * lossPerLot, "#") + " $")
+        lPend := true
+    else
+        lDone := true
+if lPend and openId == "L"
+    lPend := false
+    lDone := true
+if lPend and (lEnd or (cancelOpp and lOpp) or dayBlocked or not inWindow)
+    strategy.cancel("L")
+    lPend := false
+    lDone := true
+if lPend or openId == "L"
+    lStop = moveBE and openId == "L" and math.abs(strategy.position_size) < lQty - lQty * 0.001 ? lE : lSL
+    if tp1Pct > 0
+        strategy.exit("L TP1", "L", qty_percent = tp1Pct, limit = lT1, stop = lStop, comment_profit = "TP1", comment_loss = "SL")
+    if tp1Pct < 100
+        strategy.exit("L TP2", "L", limit = lT2, stop = lStop, comment_profit = "TP2", comment_loss = "SL")
+if lEnd and openId == "L"
+    strategy.close("L", comment = "cierre sesión")
+
+// ------------------------------------------------------------------------------------------------
+// Nueva York
+// ------------------------------------------------------------------------------------------------
+var bool nDone = false
+var bool nPend = false
+var float nE = na
+var float nSL = na
+var float nT1 = na
+var float nT2 = na
+var float nQty = na
+if nNew
+    nDone := false
+    nPend := false
+if nAct and inWindow and nDir != 0 and nTrig and bar_index >= nTrigBar and not nDone and not (cancelOpp and nOpp) and not dayBlocked and strategy.position_size == 0
+    [e, sl, t1, t2] = levels(nHi, nLo, nDir)
+    [nl, lossPerLot] = calcLots(e, sl, remaining)
+    if nl > 0
+        nE := e
+        nSL := sl
+        nT1 := t1
+        nT2 := t2
+        nQty := nl * unitsPerLot
+        strategy.entry("NY", nDir == 1 ? strategy.long : strategy.short, qty = nQty, stop = e,
+             comment = "NY " + (nDir == 1 ? "▲ " : "▼ ") + str.tostring(nl) + " " + lotName + " · riesgo " + str.tostring(nl * lossPerLot, "#") + " $")
+        nPend := true
+    else
+        nDone := true
+if nPend and openId == "NY"
+    nPend := false
+    nDone := true
+if nPend and (nEnd or (cancelOpp and nOpp) or dayBlocked or not inWindow)
+    strategy.cancel("NY")
+    nPend := false
+    nDone := true
+if nPend or openId == "NY"
+    nStop = moveBE and openId == "NY" and math.abs(strategy.position_size) < nQty - nQty * 0.001 ? nE : nSL
+    if tp1Pct > 0
+        strategy.exit("NY TP1", "NY", qty_percent = tp1Pct, limit = nT1, stop = nStop, comment_profit = "TP1", comment_loss = "SL")
+    if tp1Pct < 100
+        strategy.exit("NY TP2", "NY", limit = nT2, stop = nStop, comment_profit = "TP2", comment_loss = "SL")
+if nEnd and openId == "NY"
+    strategy.close("NY", comment = "cierre sesión")
+
+// Fin del periodo: cerrar lo que quede abierto
+if not inWindow and inWindow[1]
+    strategy.cancel_all()
+    strategy.close_all(comment = "fin del periodo")
+
+// ------------------------------------------------------------------------------------------------
+// Dibujo
+// ------------------------------------------------------------------------------------------------
+lShow = showLv and (lPend or openId == "L")
+nShow = showLv and (nPend or openId == "NY")
+plot(showLv and lAct ? lHi : na, "Londres máximo", color.new(#2a78d6, 0), 1, plot.style_linebr)
+plot(showLv and lAct ? lLo : na, "Londres mínimo", color.new(#2a78d6, 0), 1, plot.style_linebr)
+plot(showLv and nAct ? nHi : na, "NY máximo", color.new(#eb6834, 0), 1, plot.style_linebr)
+plot(showLv and nAct ? nLo : na, "NY mínimo", color.new(#eb6834, 0), 1, plot.style_linebr)
+plot(lShow ? lE : nShow ? nE : na, "Entrada", color.new(color.gray, 0), 2, plot.style_linebr)
+plot(lShow ? lSL : nShow ? nSL : na, "Stop", color.new(#c2441a, 0), 2, plot.style_linebr)
+plot(lShow and tp1Pct > 0 ? lT1 : nShow and tp1Pct > 0 ? nT1 : na, "TP1", color.new(#1baf7a, 0), 2, plot.style_linebr)
+plot(lShow and tp1Pct < 100 ? lT2 : nShow and tp1Pct < 100 ? nT2 : na, "TP2", color.new(#6250d6, 0), 2, plot.style_linebr)
+bgcolor(dayBlocked ? color.new(#c2441a, 92) : na, title = "Día bloqueado por el límite diario")
+
+// ------------------------------------------------------------------------------------------------
+// Tabla de resumen
+// ------------------------------------------------------------------------------------------------
+if showTbl and barstate.islast
+    var table t = table.new(position.top_right, 2, 12, bgcolor = color.new(color.gray, 88), border_width = 1)
+    closed = strategy.closedtrades
+    wr = closed > 0 ? 100.0 * strategy.wintrades / closed : 0.0
+    pf = strategy.grossloss > 0 ? strategy.grossprofit / strategy.grossloss : na
+    sizeTxt = sizeMode == "Lotes fijos" ? str.tostring(nLots) + " " + lotName : sizeMode == "Riesgo % de la cuenta" ? str.tostring(riskPct) + " % (" + str.tostring(account * riskPct / 100, "#") + " $)" : str.tostring(riskUsd, "#") + " $"
+    tpTxt = tpMode == "Extensiones Fibonacci" ? str.tostring(tp1Ext) + " / " + str.tostring(tp2Ext) : str.tostring(tp1R) + " R / " + str.tostring(tp2R) + " R"
+    slTxt = slMode == "Nivel del rango" ? "nivel " + str.tostring(slLvl) : str.tostring(slPts) + " pts"
+    rows = array.from("Plan", "Tamaño", "Stop · objetivos", "Límite diario", "Operaciones", "Ganadoras", "Beneficio neto", "Factor de beneficio", "Máx. drawdown", "Peor día", "Días sobre el límite", "Tipo de lote")
+    vals = array.from(
+         "50 % → entrada " + str.tostring(entLvl) + " · OR " + str.tostring(orMin) + "m",
+         sizeTxt,
+         slTxt + " · " + tpTxt + " (" + str.tostring(tp1Pct) + " % en TP1)",
+         useDaily ? str.tostring(maxDaily, "#") + " $" : "no",
+         str.tostring(closed),
+         str.tostring(wr, "#.#") + " %",
+         str.tostring(strategy.netprofit, "#,###.##") + " $",
+         na(pf) ? "—" : str.tostring(pf, "#.##"),
+         str.tostring(-strategy.max_drawdown, "#,###") + " $",
+         str.tostring(math.min(worstDay, strategy.netprofit - dayStart), "#,###") + " $",
+         str.tostring(daysOverLimit),
+         lotType + " = " + str.tostring(unitsPerLot) + " unid. · " + str.tostring(unitsPerLot * syminfo.pointvalue) + " $/punto")
+    for i = 0 to 11
+        table.cell(t, 0, i, array.get(rows, i), text_size = size.small, text_halign = text.align_left)
+        table.cell(t, 1, i, array.get(vals, i), text_size = size.small, text_halign = text.align_left)
