@@ -1,0 +1,9 @@
+session,or_min,retest_antes,n,llega_2,llega_2618,vuelve_1.272_antes_de_2,2_tras_volver_1.272,vuelve_nivel roto_antes_de_2,2_tras_volver_nivel roto,vuelve_mitad del rango_antes_de_2,2_tras_volver_mitad del rango,mediana_min_1618_a_2
+London,15,False,481.0,79.8,57.0,51.1,61.0,36.6,46.0,26.2,31.0,7.0
+London,15,True,1343.0,80.1,52.9,48.6,60.3,35.2,49.0,21.3,32.2,9.0
+London,20,False,453.0,78.1,53.4,51.9,58.3,38.4,43.7,25.6,24.1,8.0
+London,20,True,1269.0,75.3,45.9,50.1,53.5,35.5,40.9,21.1,24.6,11.0
+NewYork,15,False,415.0,81.9,59.5,49.4,62.9,38.1,51.9,25.1,35.6,10.0
+NewYork,15,True,1373.0,80.3,56.4,47.9,63.5,34.0,52.7,22.3,36.6,15.0
+NewYork,20,False,339.0,82.3,56.6,46.0,62.8,33.9,50.4,21.5,34.2,14.0
+NewYork,20,True,1353.0,76.2,48.6,47.3,56.1,33.6,44.2,20.8,29.4,20.0

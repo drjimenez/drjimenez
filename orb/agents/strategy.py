@@ -21,6 +21,8 @@ El agente:
    de la tendencia diaria). Se elige con in-sample (2022-2024) y se valida out-of-sample (2025-2026).
 3. Genera gráficos de los patrones (escalera de probabilidades Fibonacci, trayectoria media,
    ejemplos reales y curvas de resultados) y el informe ESTRATEGIA.md.
+4. Estudia la extensión del rango de apertura más allá de 1.618: probabilidad de llegar a 2.0,
+   retrocesos previos y operaciones hacia 2.0 (agents/extension.py -> EXTENSION_2.md).
 """
 from __future__ import annotations
 
@@ -450,6 +452,16 @@ def main():
     out = os.path.join(db.results_dir(), "strategy")
     r = StrategyAgent(bars, gaps, out).run()
     print(f"[estrategia] {len(r['results'])} variantes·filtro, {len(r['robust'])} positivas en IS y OOS -> {out}")
+
+    # Estudio de extensión: de 1.618 a 2.0 (necesita la trayectoria de cada ruptura)
+    from agents.extension import ExtensionStudy
+    evs, paths = [], {}
+    for sym, b in bars.items():
+        e_, p_ = E.extract_events(sym, b, E.ny_daily(b))
+        evs.append(e_)
+        paths.update(p_)
+    x = ExtensionStudy(pd.concat(evs, ignore_index=True), paths, out).run()
+    print(f"[estrategia] extensión 1.618 -> 2.0: {len(x['events'])} días tocaron 1.618 -> {out}/EXTENSION_2.md")
 
 
 if __name__ == "__main__":

@@ -383,13 +383,44 @@ def build():
             "«R» = resultado medio por operación en unidades de riesgo):"),
           table([["Entrada", "Stop", "Objetivo", "Operac.", "Llega al objetivo", "Necesita",
                   "R bruto", "R neto"]] + be_rows,
-                [4.6 * cm, 1.3 * cm, 1.6 * cm, 1.6 * cm, 2.4 * cm, 1.9 * cm, 1.8 * cm, 1.8 * cm]),
+                [4.4 * cm, 1.2 * cm, 1.8 * cm, 1.6 * cm, 2.4 * cm, 1.9 * cm, 1.8 * cm, 1.9 * cm]),
           P("Ninguna combinación supera con claridad su punto de equilibrio. Por eso esta guía no da una regla "
             "automática: las probabilidades sirven para <b>filtrar</b> (solo operar cuando hay ventaja adicional), "
             "<b>colocar</b> stop y objetivo con sentido, y <b>salir</b> cuando la probabilidad cae.", "small")]
 
+    # 5b. De 1.618 a 2.0 (agente de estrategia)
+    ext = os.path.join(RES, "strategy")
+    pt = pd.read_csv(os.path.join(ext, "ext2_prob_tam_rango.csv"))
+    pg = pd.read_csv(os.path.join(ext, "ext2_prob_general.csv"))
+    mg = pd.read_csv(os.path.join(ext, "ext2_gestion.csv"))
+    e2 = []
+    for t in ["pequeño", "medio", "grande", "todos"]:
+        r = [t.capitalize()]
+        for ses in ["London", "NewYork"]:
+            q = (pg[(pg.session == ses) & (pg.or_min == 15)] if t == "todos" else
+                 pt[(pt.session == ses) & (pt.or_min == 15) & (pt.tam_rango == t)]).iloc[0]
+            r += [f"{q['llega_2']:.0f} %", f"{q['2_tras_volver_1.272']:.0f} %", f"{q['2_tras_volver_nivel roto']:.0f} %"]
+        e2.append(r)
+    g15 = pg[pg.or_min == 15]
+    nr = 100 - g15["vuelve_nivel roto_antes_de_2"].mean()
+    mgl = mg[mg.or_min == 15]["stop en 1.272"].mean()
+    S += [P("5b. Más allá del 1,618: ¿llega a 2,0?", "h2"),
+          P("Una vez que el precio toca 1,618, el indicador proyecta 2,0 (línea morada) con esta probabilidad, que "
+            "baja si antes vuelve a 1,272 o al nivel roto (OR 15 min, 2022-2026):"),
+          table([["Tamaño", "Londres: llega a 2,0", "Londres si volvió a 1,272", "Londres si volvió al nivel roto",
+                  "NY: llega a 2,0", "NY si volvió a 1,272", "NY si volvió al nivel roto"]] + e2,
+                [2 * cm] + [2.5 * cm] * 6),
+          P(f"<b>Ojo con la lectura.</b> «Llega a 2,0» cuenta también los días que antes retroceden hasta el nivel roto. "
+            f"Llegar a 2,0 <b>antes</b> de volver al nivel roto ocurre ≈ {nr:.0f} % de las veces, casi exactamente el "
+            "62 % que necesita esa operación (entrar en 1,618, stop en el nivel roto, objetivo 2,0). Como entrada nueva "
+            "en 1,618 no hay ventaja: ninguna de las variantes probadas fue positiva tras costes.", "small"),
+          P(f"<b>Como gestión</b> de una operación que ya llevas desde el retest: al tocar 1,618, dejar correr hasta 2,0 "
+            f"con el stop subido a 1,272 termina de media en ≈ {1 + (mgl - 1):.2f} frente a 1,618 si cobras ahí. Es "
+            "prácticamente lo mismo; dejar correr solo añade variación. Una opción razonable: cerrar la mitad en 1,618 "
+            "y dejar la otra mitad hacia 2,0 con el stop en 1,272.", "small")]
+
     # 6. Lógica de entrada
-    S += [P("6. Lógica a seguir antes de entrar", "h2"),
+    S += [PageBreak(), P("6. Lógica a seguir antes de entrar", "h2"),
           table([["Momento", "Qué miras", "Decisión"],
                  ["Antes de la apertura", "Noticias del día (CPI, FOMC, NFP), contexto previo, rango medio diario",
                   "Con noticias fuertes en la primera hora, no operes el ORB. El contexto previo solo es informativo."],
@@ -408,11 +439,12 @@ def build():
                   "La idea de continuación queda invalidada: cierra o no entres. Una ruptura del otro lado con "
                   "cierre fuera es el escenario «gira y continúa» (≈ 1 de cada 5 días)."],
                  ["En la operación", "Objetivo 1,272 / 1,618 y hora",
-                  "Si llega a 1,272 puedes mover el stop a entrada. Cierra antes del fin del horizonte (12:00 / 16:00)."]],
+                  "Si llega a 1,272 puedes mover el stop a entrada. Al tocar 1,618: cobra, o cierra la mitad y deja el resto "
+                  "hacia 2,0 con el stop en 1,272 (sección 5b). Cierra antes del fin del horizonte (12:00 / 16:00)."]],
                 [3.6 * cm, 5.2 * cm, 8.2 * cm])]
 
     # 7. Gap y riesgo
-    S += [PageBreak(), P("7. Patrón candidato: el gap de Nueva York (P5)", "h2"),
+    S += [P("7. Patrón candidato: el gap de Nueva York (P5)", "h2"),
           P("Fibonacci trazado entre el <b>cierre de las 16:00 del día anterior</b> (nivel 1) y la <b>apertura de las "
             "09:30</b> (nivel 0). Con un <b>gap grande</b> (más de la mitad del rango diario medio), cuando el precio "
             "llega al cierre anterior se entra en esa misma dirección, con stop en 0,618 y objetivo en 1,618 del gap."),

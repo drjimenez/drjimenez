@@ -138,6 +138,22 @@ de los años. Detalle en [`results/dukascopy/analyst/ANALISTA.md`](results/dukas
 
 ![Ejemplos de patrones](results/dukascopy/strategy/ejemplos_patrones.png)
 
+### Agente de estrategia: de 1,618 a 2,0
+
+Detalle en [`results/dukascopy/strategy/EXTENSION_2.md`](results/dukascopy/strategy/EXTENSION_2.md).
+
+- Una vez tocado 1,618, el precio llega a **2,0 el 76-81 %** de los días (86 % con rango pequeño, 64-74 %
+  con rango grande; 60-67 % si tardó más de 90 minutos en llegar a 1,618). Llega a 2,618 el 48-57 %.
+- La mitad de esos días antes retrocede hasta 1,272, y un tercio hasta el nivel roto. Tras volver a 1,272,
+  2,0 se alcanza el 55-63 %; tras volver al nivel roto, el 42-53 %.
+- **Como entrada nueva no hay ventaja.** Llegar a 2,0 *antes* de volver al nivel roto ocurre ≈ 64-66 %,
+  casi el 62 % que necesita esa operación. Ninguna de las variantes (entrada al tocar 1,618 o en el
+  retroceso a 1,272, con distintos stops) fue positiva tras costes, ni con filtro de tamaño de rango.
+- **Como gestión** de una operación ya abierta: dejar correr de 1,618 a 2,0 con el stop en 1,272 termina
+  de media en ≈ 1,64 frente a 1,618 si se cobra. Prácticamente igual; dejar correr solo añade variación.
+
+![De 1,618 a 2,0](results/dukascopy/strategy/ext2_probabilidad.png)
+
 ### Reglas ORB puras (continuación / reversión)
 
 Ninguna de las 448 reglas de entrada, stop y objetivo sobre el rango de apertura es positiva a la
@@ -208,7 +224,8 @@ Pega `orb/pine/orb_fib_indicator.pine` en el Pine Editor y úsalo en un gráfico
 Dibuja el OR de Londres y de Nueva York con sus retrocesos y extensiones y marca la ruptura y el
 retest. Tras la ruptura proyecta la **extensión 1,618** con la probabilidad de alcanzarla, que se
 actualiza en vivo según el tamaño del rango (frente al rango medio diario de NY de 20 días) y según
-si el precio ya retrocedió al 50 % o tocó el extremo opuesto. Incluye además una **tabla de
+si el precio ya retrocedió al 50 % o tocó el extremo opuesto. Al tocar 1,618 proyecta **2,0** con su
+probabilidad (que baja si el precio vuelve a 1,272 o al nivel roto). Incluye además una **tabla de
 registro (backtesting)**: para la última apertura de Londres y de Nueva York muestra, por etapas
 (apertura → tamaño del rango → ruptura), la probabilidad histórica de cada condición y si se cumplió
 (✓/✗), y para todas las aperturas cargadas en el gráfico compara la probabilidad media pronosticada

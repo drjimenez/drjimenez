@@ -5,6 +5,8 @@
 // primer retest del nivel roto. Tras la ruptura proyecta la extensión 1.618 en la dirección de la
 // ruptura con la probabilidad de alcanzarla, que se actualiza en vivo según el tamaño del rango y
 // lo que haga el precio (si retrocede al 50 % o toca el extremo opuesto antes de llegar).
+// Al tocar 1.618 proyecta la extensión 2.0 con su probabilidad, que baja si el precio vuelve a
+// 1.272 o al nivel roto antes de llegar.
 // Tabla de registro (backtesting): para la última apertura de cada bolsa muestra, por etapas
 // (apertura -> cierre del rango -> ruptura), la probabilidad histórica de cada condición y si se
 // cumplió (✓ / ✗). Las columnas "en el gráfico" suman todas las aperturas cargadas en el gráfico:
@@ -32,6 +34,8 @@ showExt   = input.bool(true, "Extensiones fuera del rango (1.272 / 1.618 / 2.0 /
 showMarks = input.bool(true, "Marcar ruptura y retest", group = grpF)
 showProj  = input.bool(true, "Proyección 1.618 con probabilidad", group = grpF)
 colProj   = input.color(#1baf7a, "Color de la proyección", group = grpF)
+showProj2 = input.bool(true, "Proyección 2.0 al tocar 1.618", group = grpF)
+colProj2  = input.color(#6250d6, "Color de la proyección 2.0", group = grpF)
 showStats = input.bool(false, "Tabla de probabilidades del estudio", group = grpF)
 showReg   = input.bool(true, "Tabla de registro por apertura (backtesting)", group = grpF)
 regPos    = input.string("Abajo derecha", "Posición del registro", options = ["Abajo derecha", "Arriba derecha", "Abajo izquierda", "Arriba izquierda"], group = grpF)
@@ -54,6 +58,14 @@ var PROB = array.from(
      80.9, 61.3, 43.0,  75.2, 45.6, 22.9,  65.2, 27.5, 14.9,  73.8, 45.6, 28.1)
 // Cortes de los terciles (rango OR / rango medio de la sesión NY de los 20 días previos)
 var CUTS = array.from(0.0848, 0.1303, 0.0957, 0.1481, 0.2332, 0.3378, 0.2650, 0.3830)
+// Probabilidad (%) de llegar a 2.0 una vez tocado 1.618. Índice = (combo * 4 + tamaño) * 3 + estado
+//   estado: 0 recién tocado 1.618 · 1 ya volvió a 1.272 sin llegar · 2 ya volvió al nivel roto sin llegar
+var PROB2 = array.from(
+     86.3, 71.8, 61.6,  81.5, 61.9, 48.4,  70.7, 47.2, 36.2,  80.0, 60.5, 48.2,
+     82.8, 65.5, 54.8,  78.6, 59.1, 44.3,  64.3, 37.0, 25.2,  76.0, 54.8, 41.7,
+     86.3, 73.2, 64.9,  81.2, 64.8, 53.2,  74.3, 51.3, 35.1,  80.6, 63.3, 52.5,
+     83.6, 69.0, 57.0,  77.5, 55.4, 43.4,  70.7, 47.0, 33.6,  77.4, 57.4, 45.4)
+var STATE2_TXT = array.from("", " · tras volver a 1.272", " · tras volver al nivel roto")
 var SIZE_TXT = array.from("rango pequeño", "rango medio", "rango grande", "")
 var STATE_TXT = array.from("", " · tras tocar el 50%", " · tras tocar el extremo opuesto")
 
@@ -77,6 +89,9 @@ pev(int c, int ter, int ev) =>
 
 prob(int c, int ter, int st) =>
     array.get(PROB, (c * 4 + ter) * 3 + st)
+
+prob2(int c, int ter, int st) =>
+    array.get(PROB2, (c * 4 + ter) * 3 + st)
 
 // --- Rango medio diario de la sesión de contado de NY (09:30-16:00), 20 días ------------------
 nyCash = not na(time(timeframe.period, "0930-1600", "America/New_York"))
@@ -148,6 +163,16 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
     var array<float> sumP = array.new<float>(7, 0.0)
     var array<float> hits = array.new<float>(7, 0.0)
     var int nDays = 0
+    // de 1.618 a 2.0
+    var int bar1618 = na
+    var bool hit2 = false
+    var int st2 = 0
+    var float p2at = na
+    var line proj2Line = na
+    var label proj2Lbl = na
+    var float sum2 = 0.0
+    var float hits2 = 0.0
+    var int n2 = 0
 
     if inOR and not inOR[1]
         hi := high
@@ -180,6 +205,12 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
         retBar := na
         done := false
         scenTxt := ""
+        bar1618 := na
+        hit2 := false
+        st2 := 0
+        p2at := na
+        proj2Line := na
+        proj2Lbl := na
     else if inOR
         hi := na(hi) ? high : math.max(hi, high)
         lo := na(lo) ? low : math.min(lo, low)
@@ -249,6 +280,26 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
                     fCont := true
             if oppFirst and adv <= -1.272
                 fGiro := true
+            // de 1.618 a 2.0: estado medido desde la vela siguiente a la que toca 1.618
+            if fExt and na(bar1618)
+                bar1618 := bar_index
+                p2at := prob2(combo, ter, 0)
+            if not na(bar1618) and not hit2
+                if fav >= 1.0
+                    hit2 := true
+                else if bar_index > bar1618
+                    if adv <= 0
+                        st2 := 2
+                    else if st2 == 0 and adv <= 0.272
+                        st2 := 1
+            if showProj2 and not na(bar1618)
+                tgt2 = dir == 1 ? hi + r : lo - r
+                if na(proj2Line)
+                    proj2Line := line.new(bar1618, tgt2, bar_index, tgt2, color = colProj2, style = line.style_solid, width = 2)
+                    proj2Lbl := label.new(bar_index, tgt2, "", style = label.style_label_left, color = color.new(colProj2, 85), textcolor = colProj2, size = size.small)
+                proj2Line.set_x2(bar_index)
+                proj2Lbl.set_xy(bar_index, tgt2)
+                proj2Lbl.set_text(hit2 ? "2.0 alcanzado ✓" : "Proyección 2.0: " + str.tostring(prob2(combo, ter, st2), "#") + "%" + array.get(STATE2_TXT, st2))
 
         // Proyección 1.618: estado y probabilidad en vivo (desde la vela siguiente a la ruptura)
         if dir != 0 and showProj
@@ -276,6 +327,9 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
         if showProj and not na(projLbl) and not hit
             projLbl.set_text("1.618 no alcanzado")
             projLbl.set_textcolor(color.gray)
+        if showProj2 and not na(proj2Lbl) and not hit2
+            proj2Lbl.set_text("2.0 no alcanzado")
+            proj2Lbl.set_textcolor(color.gray)
         // cierre de la sesión: resultado final y acumulado del gráfico
         if dir != 0
             done := true
@@ -286,12 +340,16 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
                 array.set(sumP, i, array.get(sumP, i) + pI)
                 array.set(hits, i, array.get(hits, i) + (array.get(flags, i) ? 1.0 : 0.0))
             nDays += 1
-    [dir, preT, ter, brkTxt, array.from(dir == 1, fV, f50, fOpp, fExt, fCont, fGiro), done, scenTxt, sumP, hits, nDays]
+            if not na(bar1618)
+                sum2 += p2at
+                hits2 += hit2 ? 1.0 : 0.0
+                n2 += 1
+    [dir, preT, ter, brkTxt, array.from(dir == 1, fV, f50, fOpp, fExt, fCont, fGiro), done, scenTxt, sumP, hits, nDays, st2, hit2, sum2, hits2, n2]
 
 cLon = orMin == 15 ? 0 : 1
 cNy  = orMin == 15 ? 2 : 3
-[dL0, preL0, terL0, brkL0, flgL0, doneL0, scL0, spL0, htL0, nL0] = orb(lonOR, lonHor, "0000-0800", "Europe/London", colLon, "Londres", showLon, cLon, adr)
-[dN0, preN0, terN0, brkN0, flgN0, doneN0, scN0, spN0, htN0, nN0] = orb(nyOR, nyHor, "0400-0930", "America/New_York", colNy, "NY", showNy, cNy, adr)
+[dL0, preL0, terL0, brkL0, flgL0, doneL0, scL0, spL0, htL0, nL0, st2L, hit2L, s2L, h2L, n2L] = orb(lonOR, lonHor, "0000-0800", "Europe/London", colLon, "Londres", showLon, cLon, adr)
+[dN0, preN0, terN0, brkN0, flgN0, doneN0, scN0, spN0, htN0, nN0, st2N, hit2N, s2N, h2N, n2N] = orb(nyOR, nyHor, "0400-0930", "America/New_York", colNy, "NY", showNy, cNy, adr)
 
 // --- Tabla de registro (backtesting) -----------------------------------------------------------
 // Texto de "hoy": probabilidad + ✓ si se cumplió, ✗ si la sesión terminó sin cumplirse, … si está en curso
@@ -301,10 +359,16 @@ cellHoy(float p, bool ok, bool known, bool fin) =>
 cellGraf(array<float> sp, array<float> ht, int n, int i) =>
     n == 0 ? "—" : "pron. " + str.tostring(array.get(sp, i) / n, "#") + "% · real " + str.tostring(100 * array.get(ht, i) / n, "#") + "%"
 
+cell2Hoy(int c, int ter, bool hit1618, int st, bool ok, bool fin) =>
+    not hit1618 ? (fin ? "no tocó 1.618" : "—") : str.tostring(prob2(c, ter, st), "#") + "% " + (ok ? "✓" : fin ? "✗" : "…")
+
+cell2Graf(float s2, float h2, int n) =>
+    n == 0 ? "—" : "pron. " + str.tostring(s2 / n, "#") + "% · real " + str.tostring(100 * h2 / n, "#") + "% (n=" + str.tostring(n) + ")"
+
 regPosition = regPos == "Abajo derecha" ? position.bottom_right : regPos == "Arriba derecha" ? position.top_right : regPos == "Abajo izquierda" ? position.bottom_left : position.top_left
 
 if showReg and barstate.islast
-    var table reg = table.new(regPosition, 5, 12, bgcolor = color.new(color.gray, 88), border_width = 1)
+    var table reg = table.new(regPosition, 5, 13, bgcolor = color.new(color.gray, 88), border_width = 1)
     ts = size.small
     table.cell(reg, 0, 0, "Registro (OR " + str.tostring(orMin) + "m)", text_size = ts)
     table.cell(reg, 1, 0, "Londres hoy", text_size = ts, text_color = colLon)
@@ -340,11 +404,16 @@ if showReg and barstate.islast
         table.cell(reg, 2, 4 + i, dN0 == 0 ? "—" : cellHoy(pev(cNy, terN0, i - 1), array.get(flgN0, i), true, doneN0), text_size = ts)
         table.cell(reg, 3, 4 + i, cellGraf(spL0, htL0, nL0, i), text_size = ts)
         table.cell(reg, 4, 4 + i, cellGraf(spN0, htN0, nN0, i), text_size = ts)
-    table.cell(reg, 0, 11, "Escenario", text_size = ts)
-    table.cell(reg, 1, 11, doneL0 ? scL0 : dL0 == 0 ? "—" : "en curso", text_size = ts)
-    table.cell(reg, 2, 11, doneN0 ? scN0 : dN0 == 0 ? "—" : "en curso", text_size = ts)
-    table.cell(reg, 3, 11, "", text_size = ts)
-    table.cell(reg, 4, 11, "", text_size = ts)
+    table.cell(reg, 0, 11, "   Llega a 2.0 (si tocó 1.618)", text_size = ts)
+    table.cell(reg, 1, 11, dL0 == 0 ? "—" : cell2Hoy(cLon, terL0, array.get(flgL0, 4), st2L, hit2L, doneL0), text_size = ts)
+    table.cell(reg, 2, 11, dN0 == 0 ? "—" : cell2Hoy(cNy, terN0, array.get(flgN0, 4), st2N, hit2N, doneN0), text_size = ts)
+    table.cell(reg, 3, 11, cell2Graf(s2L, h2L, n2L), text_size = ts)
+    table.cell(reg, 4, 11, cell2Graf(s2N, h2N, n2N), text_size = ts)
+    table.cell(reg, 0, 12, "Escenario", text_size = ts)
+    table.cell(reg, 1, 12, doneL0 ? scL0 : dL0 == 0 ? "—" : "en curso", text_size = ts)
+    table.cell(reg, 2, 12, doneN0 ? scN0 : dN0 == 0 ? "—" : "en curso", text_size = ts)
+    table.cell(reg, 3, 12, "", text_size = ts)
+    table.cell(reg, 4, 12, "", text_size = ts)
 
 // Probabilidades medidas en el estudio (NAS100 + US500, 1 min, 2022-2026).
 // Actualízalas con los valores de orb/results/dukascopy/REPORT.md si cambias datos o período.
