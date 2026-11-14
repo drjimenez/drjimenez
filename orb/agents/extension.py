@@ -241,7 +241,8 @@ class ExtensionStudy:
             ax.set_title(f"{'Londres' if ses == 'London' else 'Nueva York'} · OR 15 min", loc="left", fontsize=10)
             ax.grid(axis="x", visible=False)
         axes[0].set_ylabel("% de días que ya tocaron 1.618")
-        axes[0].legend(fontsize=8, loc="lower left")
+        h, l = axes[0].get_legend_handles_labels()
+        fig.legend(h, l, loc="lower center", ncol=3, fontsize=8, bbox_to_anchor=(0.5, -0.06))
         fig.suptitle("Una vez tocado el 1.618: probabilidad de llegar a 2.0 (y cómo baja si antes retrocede)",
                      x=0.01, ha="left", fontsize=10.5)
         fig.tight_layout()
