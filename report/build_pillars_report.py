@@ -39,6 +39,7 @@ def pv(p):
 def build():
     S = json.loads((RES / "summary.json").read_text())
     d, p1, p2, p3 = S["data"], S["pillar1"], S["pillar2"], S["pillar3"]
+    fc = S["fvg_classes"]
     W = A4[0] - 4 * cm
     t1 = pd.read_csv(RES / "pillar1_trades.csv")
     t1["y"] = t1["date"].str[:4]
@@ -89,6 +90,11 @@ def build():
               ["Silver Bullet: primer FVG de las 10:00",
                f"{sb['n']} operaciones, {num(sb['R_net'])} R netos (IC {ci(sb['R_net_ci'])}). Igual que "
                "la misma regla en otras horas.", "Sin ventaja; la hora no aporta"],
+              ["El FVG \"con desplazamiento\" y el \"reflection\" mandan más que un FVG cualquiera",
+               f"FPD {num(fc['groups']['FP con desplazamiento (FPD)']['R_net'])} R, FPR "
+               f"{num(fc['groups']['First presented reflection (FPR)']['R_net'])} R, resto de FVG "
+               f"{num(fc['groups']['Resto de FVG (control)']['R_net'])} R (netos).",
+               "No se confirma"],
           ], [5.0 * cm, 8.0 * cm, W - 13.0 * cm]),
           Spacer(1, 6),
           P("<b>Conclusión.</b> Ninguno de los fenómenos concretos que ICT presenta como "
@@ -223,11 +229,48 @@ def build():
                     "desplazamiento, draw on liquidity), pero en la parte 5 reconoce que esos filtros se "
                     "deciden caso a caso, así que no se pueden probar sin reglas escritas."])]
 
+    # FVG clasificados
+    G = fc["groups"]
+    s += [PageBreak(), P("5. First presented, con desplazamiento y reflection", H1),
+          P("En el vídeo <i>NQ Futures Review &amp; 1st Presented Reflection FVG</i> (8 de septiembre de 2026) "
+            "Michael precisa tres PD arrays y afirma que un FVG con desplazamiento \"tiene mucha más "
+            "importancia en el precio futuro\". Se midieron con sus definiciones:"),
+          *bullets(["<b>First presented FVG (FP)</b>: el primer FVG de 1 minuto después de las 09:30.",
+                    "<b>FP con desplazamiento (FPD)</b>: el primero cuyo tramo rompe un máximo (alcista) o "
+                    "mínimo (bajista) previo; aquí, el último swing fractal desde las 07:00. Variante "
+                    "estricta: romper el extremo de los 30 minutos anteriores.",
+                    "<b>First presented reflection (FPR)</b>: el primer FVG de sentido contrario al FP. Según "
+                    "él, es más fuerte si se forma en una macro (xx:50–xx:10).",
+                    "<b>Control</b>: todos los demás FVG del día (09:30–15:00), con y sin desplazamiento. "
+                    "Misma operación en todos: entrada en el CE si el precio vuelve en ≤ 60 minutos, stop "
+                    "tras las dos primeras velas, objetivo en el extremo de corto plazo."]),
+          Image(str(RES / "fvg_classes.png"), width=W, height=W * 3.4 / 7.5),
+          table([["Grupo", "n", "Acierto", "R bruto", "R neto", "IC 95 % (neto)"]] +
+                [[k, v["n"], pct(v["win_pct"]), num(v["R_gross"]), num(v["R_net"]), ci(v["R_net_ci"])]
+                 for k, v in G.items()],
+                [6.2 * cm, 1.6 * cm, 1.8 * cm, 1.8 * cm, 1.8 * cm, W - 13.2 * cm]),
+          Spacer(1, 4),
+          *bullets([f"En 1 minuto hay una mediana de {fc['fvgs_per_day_median']:.0f} FVG por sesión, y el "
+                    f"{pct(fc['pct_with_displacement'])} cumple la condición de desplazamiento. Por eso el "
+                    "FPD coincide con el FP la mayoría de los días (85 %) y se forma hacia las "
+                    f"{fc['fpd_median_time'][:5]}; el FPR, hacia las {fc['fpr_median_time'][:5]}.",
+                    "Ninguno de los tres se distingue del resto de FVG: todos rondan cero en bruto y quedan "
+                    "negativos tras costes. La variante estricta del FPD da lo mismo (−0,10 R netos).",
+                    "Entre los FVG de control, los que tienen desplazamiento aciertan algo <i>menos</i> que "
+                    f"los que no (p = {pv(fc['p_disp_vs_nodisp_win'])}), al contrario de lo que afirma.",
+                    "El FPR formado en una macro sale ligeramente mejor, pero con pocos casos y un intervalo "
+                    "que incluye de sobra el cero.",
+                    "No se midió su uso en días posteriores (p. ej., el FPR del viernes como resistencia el "
+                    "martes): no hay una regla que diga cuándo deja de ser válido."]),
+          P("Conclusión: con sus propias definiciones, ni el desplazamiento ni el \"reflection\" aportan "
+            "información útil para operar el FVG. Encaja con lo visto en el Silver Bullet: el FVG de 1 "
+            "minuto es un patrón muy frecuente y, por sí solo, no da ventaja.", BOX)]
+
     # Conclusiones
-    s += [P("5. Conclusiones y siguientes pasos", H1),
+    s += [P("6. Conclusiones y siguientes pasos", H1),
           *bullets(["<b>Las afirmaciones cuantitativas no se sostienen.</b> El 70 % del hueco, las "
-                    "proyecciones \"al tick\", el poder de los niveles iguales y la ventaja horaria del "
-                    "Silver Bullet desaparecen al compararlos con un control. Encajan con lo que se "
+                    "proyecciones \"al tick\", el poder de los niveles iguales, la ventaja horaria del "
+                    "Silver Bullet y la importancia del FVG con desplazamiento o \"reflection\" desaparecen al compararlos con un control. Encajan con lo que se "
                     "esperaría de la volatilidad normal y del sesgo retrospectivo (sección 11 del informe "
                     "de metodología).",
                     "<b>Lo que sí es útil:</b> los tres pilares son una forma ordenada de mirar el mercado "

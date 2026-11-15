@@ -318,6 +318,88 @@ def pillar3(days):
     return out
 
 
+# --------------------------------------------------------------------------- FVG clasificados
+def last_swing(vals: np.ndarray, upto: int, high: bool, k: int = 2):
+    """Último máximo (high=True) o mínimo fractal confirmado antes de la vela 'upto'."""
+    for c in range(upto - k - 1, k - 1, -1):
+        w = vals[c - k:c + k + 1]
+        if (high and vals[c] == w.max()) or (not high and vals[c] == w.min()):
+            return vals[c]
+    return None
+
+
+def fvg_trade_at(b: pd.DataFrame, i: int, max_wait: int = 60):
+    """Operación sobre el FVG con vela central i (misma regla que el Silver Bullet): entrada en el
+    CE si el precio vuelve en <= max_wait minutos, stop tras las dos primeras velas, objetivo en el
+    extremo alcanzado entre la formación y el retorno, salida a las 15:59."""
+    hh, ll = b["high"].to_numpy(), b["low"].to_numpy()
+    bull = ll[i + 1] - hh[i - 1] >= TICK
+    side = 1 if bull else -1
+    lo_g, hi_g = (hh[i - 1], ll[i + 1]) if bull else (hh[i + 1], ll[i - 1])
+    ce = (lo_g + hi_g) / 2
+    stop = (min(ll[i - 1], ll[i]) - TICK) if bull else (max(hh[i - 1], hh[i]) + TICK)
+    ext = hh[i + 1] if bull else ll[i + 1]
+    for j in range(i + 2, min(len(b), i + 2 + max_wait)):
+        if (ll[j] <= ce) if bull else (hh[j] >= ce):
+            if (ext - ce) * side <= 0:
+                return None
+            R, why, _ = simulate(b.iloc[j:], side, ce, stop, ext, True)
+            risk = abs(ce - stop)
+            return {"R_gross": R, "R_net": R - COST_PTS / risk, "exit": why, "risk_pts": risk,
+                    "planned_rr": abs(ext - ce) / risk}
+        ext = max(ext, hh[j]) if bull else min(ext, ll[j])
+    return None
+
+
+def classified_fvgs(days):
+    """Todos los FVG de 1 minuto de 09:30 a 15:00 con su clasificación según ICT:
+    first presented (FP), FP con desplazamiento (FPD) y first presented reflection (FPR)."""
+    rows = []
+    for d in days:
+        g = d["bars"].between_time("07:00", "15:59")
+        if len(g) < 400:
+            continue
+        idx = g.index
+        hh, ll = g["high"].to_numpy(), g["low"].to_numpy()
+        t930 = pd.Timestamp("09:30").time()
+        t15 = pd.Timestamp("15:00").time()
+        first = None
+        fpd_done = refl_done = False
+        n = 0
+        for i in range(1, len(g) - 1):
+            if idx[i - 1].time() < t930:
+                continue
+            if idx[i].time() >= t15:
+                break
+            bull = ll[i + 1] - hh[i - 1] >= TICK
+            bear = ll[i - 1] - hh[i + 1] >= TICK
+            if not (bull or bear):
+                continue
+            # desplazamiento: el tramo rompe el último máximo (alcista) o mínimo (bajista) fractal previo
+            if bull:
+                ref = last_swing(hh, i - 1, True)
+                disp = ref is not None and max(hh[i], hh[i + 1]) > ref
+            else:
+                ref = last_swing(ll, i - 1, False)
+                disp = ref is not None and min(ll[i], ll[i + 1]) < ref
+            is_fp = first is None
+            if is_fp:
+                first = "bull" if bull else "bear"
+            is_fpd = disp and not fpd_done
+            fpd_done |= is_fpd
+            is_refl = (not is_fp) and (not refl_done) and (("bull" if bull else "bear") != first)
+            refl_done |= is_refl
+            t = idx[i].time()
+            macro = (t.minute >= 50 or t.minute < 10)
+            tr = fvg_trade_at(g, i)
+            rows.append({"date": d["date"], "time": idx[i], "order": n, "side": "long" if bull else "short",
+                         "displacement": disp, "FP": is_fp, "FPD": is_fpd, "FPR": is_refl,
+                         "macro": macro, "gap_pts": (ll[i + 1] - hh[i - 1]) if bull else (ll[i - 1] - hh[i + 1]),
+                         "traded": tr is not None, **(tr or {})})
+            n += 1
+    return pd.DataFrame(rows)
+
+
 # --------------------------------------------------------------------------- resumen
 def trade_stats(t: pd.DataFrame) -> dict:
     t = t[t.get("traded", True) == True] if "traded" in t else t  # noqa: E712
@@ -442,8 +524,31 @@ def main():
                               "long": trade_stats(tr[tr.side == "long"]),
                               "short": trade_stats(tr[tr.side == "short"])}
 
+    # ---------------- FVG clasificados (first presented / desplazamiento / reflection)
+    fv = classified_fvgs(days)
+    fv.to_csv(OUT / "fvg_classified.csv", index=False)
+    tr = fv[fv.traded]
+    other = tr[~tr.FP & ~tr.FPD & ~tr.FPR]
+    groups = {"First presented (FP)": tr[tr.FP], "FP con desplazamiento (FPD)": tr[tr.FPD],
+              "First presented reflection (FPR)": tr[tr.FPR],
+              "FPR en macro (xx:50–xx:10)": tr[tr.FPR & tr.macro],
+              "Resto de FVG (control)": other,
+              "Resto con desplazamiento": other[other.displacement],
+              "Resto sin desplazamiento": other[~other.displacement]}
+    S["fvg_classes"] = {
+        "fvgs_total": int(len(fv)), "fvgs_per_day_median": float(fv.groupby("date").size().median()),
+        "pct_with_displacement": round(100 * float(fv.displacement.mean()), 1),
+        "fpd_median_order": float(fv[fv.FPD].order.median()),
+        "fpd_median_time": str(pd.to_datetime(fv[fv.FPD].time.astype(str).str[11:16], format="%H:%M").median().time()),
+        "fpr_median_time": str(pd.to_datetime(fv[fv.FPR].time.astype(str).str[11:16], format="%H:%M").median().time()),
+        "groups": {k: trade_stats(v) for k, v in groups.items()},
+        "p_disp_vs_nodisp_win": two_prop_p(int((other[other.displacement].R_gross > 0).sum()), int(other.displacement.sum()),
+                                           int((other[~other.displacement].R_gross > 0).sum()), int((~other.displacement).sum())),
+    }
+
     # ---------------- gráficos
     figs(p1, p2, u, p3)
+    fig_fvg(groups)
     (OUT / "summary.json").write_text(json.dumps(S, indent=1, default=str, ensure_ascii=False))
     print(json.dumps(S, indent=1, default=str, ensure_ascii=False)[:6000])
 
@@ -509,6 +614,23 @@ def figs(p1, p2, u, p3):
     ax.set_xlim(0, 100); ax.set_xlabel("% de días")
     ax.legend(frameon=False, fontsize=8, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.0))
     fig.tight_layout(); fig.savefig(OUT / "p1_states.png"); plt.close(fig)
+
+
+def fig_fvg(groups):
+    names = list(groups)
+    m, lo, hi, ns = [], [], [], []
+    for k in names:
+        mc = mean_ci(groups[k].R_net.to_numpy())
+        m.append(mc[0]); lo.append(mc[0] - mc[1]); hi.append(mc[2] - mc[0]); ns.append(len(groups[k]))
+    fig, ax = plt.subplots(figsize=(7.5, 3.4), dpi=170)
+    cols = ["#1f4e79" if "control" not in k and "Resto" not in k else "#9aa5b1" for k in names]
+    ax.barh(range(len(names))[::-1], m, color=cols, xerr=[lo, hi], capsize=3, ecolor="#444")
+    ax.axvline(0, color="#333", lw=0.8)
+    ax.set_yticks(range(len(names))[::-1], [f"{k} (n={n})" for k, n in zip(names, ns)], fontsize=7.5)
+    ax.set_xlabel("R medio por operación (neto), IC 95 %")
+    for s_ in ("top", "right"):
+        ax.spines[s_].set_visible(False)
+    fig.tight_layout(); fig.savefig(OUT / "fvg_classes.png"); plt.close(fig)
 
 
 if __name__ == "__main__":

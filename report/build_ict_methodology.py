@@ -316,6 +316,10 @@ def build():
                "Compra solo en descuento y vende solo en premium."],
               ["OTE", "<i>Optimal Trade Entry</i>: retroceso de Fibonacci del 62–79 % del tramo que "
                "hizo el MSS; el nivel clave es el 70,5 %.", "Refina la entrada dentro del PD array."],
+              ["First presented FVG (y variantes)", "Primer FVG después de las 09:30. <b>Con "
+               "desplazamiento</b>: el primero cuyo tramo rompe un máximo o mínimo. <b>Reflection</b>: el "
+               "primer FVG de sentido contrario al primero.", "Zonas de referencia para ese día y los "
+               "siguientes (ver 11.7)."],
               ["Turtle Soup", "Barrido falso de un máximo o mínimo antiguo que se revierte.",
                "Entrada contra la ruptura."],
           ], [3.3 * cm, 7.5 * cm, W - 10.8 * cm]),
@@ -952,6 +956,33 @@ def build():
                     "reglas, por ejemplo la del first presented FVG con desplazamiento.",
                     "La IA \"nunca podrá\" leer una vela mientras se forma; el ser humano sí. Compara "
                     "el backtesting con los diagramas que estudia un cirujano antes de operar."]),
+          P("11.7 Ampliación: <i>NQ Futures Review &amp; 1st Presented Reflection FVG</i> (08/09/2026)", H2),
+          P("Al día siguiente de la parte 5 (martes tras el Labor Day) aclara las reglas que, según él, "
+            "faltan a quienes prueban sus conceptos. Distingue <b>tres PD arrays</b>:"),
+          table([
+              ["PD array", "Definición", "Uso que le da"],
+              ["First presented FVG", "El primer FVG después de las 09:30, tenga o no desplazamiento.",
+               "Útil, pero con menos peso."],
+              ["FP con desplazamiento", "El primer FVG después de las 09:30 que forma parte de un tramo "
+               "que <b>rompe un máximo o mínimo</b>.", "\"Mucha más importancia\" que el primero. Si hay "
+               "un FVG antes, se clasifica igualmente el primero."],
+              ["First presented reflection", "Si el primer FVG es alcista (BISI), el primer FVG bajista "
+               "(SIBI) que se forma después, y viceversa: su \"imagen en el espejo\".", "Más fuerte si "
+               "se forma en una macro (su ejemplo, a las 10:01). Lo usa días después: el del viernes 4 "
+               "le sirvió el martes 8 para vender el máximo del día."],
+          ], [3.4 * cm, 6.4 * cm, W - 9.8 * cm]),
+          Spacer(1, 4),
+          *bullets(["Su operación del martes: el precio abre, sube con una mecha por encima del FPR del "
+                    "viernes y cierra por debajo (\"uno de los patrones de giro más fuertes\"). Vende "
+                    "dentro de un FVG bajista pequeño, stop sobre la mecha, y sale en el CE del "
+                    "<i>suspension block</i> del premarket: un objetivo \"fácil\" (<i>low hanging fruit</i>).",
+                    "<b>Tras un festivo con horario reducido</b>, opera con 1 contrato en lugar de 6 y "
+                    "busca objetivos cercanos: el volumen es raro y \"nadie sabe qué hará el mercado\".",
+                    "Con el FPD bajista, exige que cualquier retroceso no toque la mitad superior; si un "
+                    "cuerpo cierra sobre su 50 %, espera vuelta a la apertura de las 09:30.",
+                    "Dice tener \"81\" PD arrays y que no hace falta conocerlos todos."]),
+          P("Medido con estas definiciones en 755 sesiones (informe de medición, sección 5), ni el FPD "
+            "ni el FPR se distinguen de cualquier otro FVG de 1 minuto.", NOTE),
           P("11.6 Valoración de su método de backtesting", H2),
           table([
               ["Aspecto", "Lo útil", "El problema"],
@@ -1088,6 +1119,7 @@ def build():
               "Lección en directo de ICT, 01/09/2026 (NQ): How New Students Should Start Part 2: youtube.com/watch?v=djabvhihIM8",
               "Lección grabada de ICT, 02/09/2026: How New Students Should Start Part 3: youtube.com/watch?v=MB7clEZvF7s",
               "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 4 \\ Pillars Of Daily Log Entries: youtube.com/watch?v=L81eMQhmXmc",
+              "Revisión de ICT, 08/09/2026: NQ Futures Review & 1st Presented Reflection FVG: youtube.com/watch?v=9W4YpyAg5RY",
               "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 5 \\ Back Testing Properly: youtube.com/watch?v=xnbtp_j81lI",
               "Backtest TTFM de este repositorio: report/TTFM_Report.pdf y results/summary.json.",
           ]]]

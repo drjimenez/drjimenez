@@ -768,5 +768,159 @@
     }
    }
   }
+ },
+ "fvg_classes": {
+  "fvgs_total": 53498,
+  "fvgs_per_day_median": 71.0,
+  "pct_with_displacement": 65.6,
+  "fpd_median_order": 0.0,
+  "fpd_median_time": "09:34:00",
+  "fpr_median_time": "09:45:00",
+  "groups": {
+   "First presented (FP)": {
+    "n": 619,
+    "win_pct": 41.2,
+    "R_gross": -0.061,
+    "R_gross_ci": [
+     -0.163,
+     0.04
+    ],
+    "R_net": -0.105,
+    "R_net_ci": [
+     -0.2,
+     -0.004
+    ],
+    "planned_rr_median": 1.21,
+    "risk_pts_median": 26.2,
+    "exits": {
+     "SL": 364,
+     "TP": 255
+    }
+   },
+   "FP con desplazamiento (FPD)": {
+    "n": 618,
+    "win_pct": 42.9,
+    "R_gross": -0.009,
+    "R_gross_ci": [
+     -0.107,
+     0.094
+    ],
+    "R_net": -0.051,
+    "R_net_ci": [
+     -0.15,
+     0.054
+    ],
+    "planned_rr_median": 1.22,
+    "risk_pts_median": 26.2,
+    "exits": {
+     "SL": 353,
+     "TP": 265
+    }
+   },
+   "First presented reflection (FPR)": {
+    "n": 640,
+    "win_pct": 40.2,
+    "R_gross": -0.032,
+    "R_gross_ci": [
+     -0.132,
+     0.072
+    ],
+    "R_net": -0.088,
+    "R_net_ci": [
+     -0.191,
+     0.013
+    ],
+    "planned_rr_median": 1.3,
+    "risk_pts_median": 19.9,
+    "exits": {
+     "SL": 383,
+     "TP": 257
+    }
+   },
+   "FPR en macro (xx:50–xx:10)": {
+    "n": 177,
+    "win_pct": 45.2,
+    "R_gross": 0.056,
+    "R_gross_ci": [
+     -0.127,
+     0.244
+    ],
+    "R_net": -0.008,
+    "R_net_ci": [
+     -0.193,
+     0.178
+    ],
+    "planned_rr_median": 1.3,
+    "risk_pts_median": 17.0,
+    "exits": {
+     "SL": 97,
+     "TP": 80
+    }
+   },
+   "Resto de FVG (control)": {
+    "n": 44633,
+    "win_pct": 41.2,
+    "R_gross": -0.023,
+    "R_gross_ci": [
+     -0.035,
+     -0.011
+    ],
+    "R_net": -0.11,
+    "R_net_ci": [
+     -0.123,
+     -0.098
+    ],
+    "planned_rr_median": 1.32,
+    "risk_pts_median": 13.2,
+    "exits": {
+     "SL": 26235,
+     "TP": 18307,
+     "EOD": 91
+    }
+   },
+   "Resto con desplazamiento": {
+    "n": 29178,
+    "win_pct": 40.8,
+    "R_gross": -0.022,
+    "R_gross_ci": [
+     -0.037,
+     -0.007
+    ],
+    "R_net": -0.107,
+    "R_net_ci": [
+     -0.123,
+     -0.092
+    ],
+    "planned_rr_median": 1.35,
+    "risk_pts_median": 13.6,
+    "exits": {
+     "SL": 17268,
+     "TP": 11843,
+     "EOD": 67
+    }
+   },
+   "Resto sin desplazamiento": {
+    "n": 15455,
+    "win_pct": 42.0,
+    "R_gross": -0.024,
+    "R_gross_ci": [
+     -0.045,
+     -0.004
+    ],
+    "R_net": -0.116,
+    "R_net_ci": [
+     -0.136,
+     -0.096
+    ],
+    "planned_rr_median": 1.25,
+    "risk_pts_median": 12.4,
+    "exits": {
+     "SL": 8967,
+     "TP": 6464,
+     "EOD": 24
+    }
+   }
+  },
+  "p_disp_vs_nodisp_win": 0.016011993312199754
  }
 }
