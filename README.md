@@ -140,6 +140,17 @@ python3 backtest/ict_pillars.py           # descarga NSXUSD de histdata.com a da
 python3 report/build_pillars_report.py    # genera el PDF
 ```
 
+- `report/ICT_Premarket_Setup_OOS.pdf`: prueba **fuera de muestra** (ene 2021 – sep 2023, datos nunca
+  usados en el desarrollo) del setup "barrido del premarket → extremo opuesto", con las reglas congeladas
+  de `pillar1()`. Resultado: 505 operaciones, −0,13 R netos por operación (IC 95 % −0,32 a +0,09); la
+  ligera ventaja del periodo de desarrollo no se replica. De finales de febrero a julio de 2023 histdata
+  tiene huecos masivos y esos meses se excluyen.
+
+```bash
+python3 backtest/premarket_oos.py               # escribe results/premarket_oos/
+python3 report/build_premarket_oos_report.py    # genera el PDF
+```
+
 Datos: NSXUSD de histdata.com (idéntico a USATECHIDXUSD de Dukascopy; `backtest/dukascopy_loader.py`
 queda como alternativa, pero Dukascopy limita las descargas). Ojo: las horas de histdata son UTC−5 con el
 horario de verano europeo; `backtest/histdata_loader.py` las convierte a hora de Nueva York.
