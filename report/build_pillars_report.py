@@ -41,7 +41,7 @@ def build():
     d, p1, p2, p3 = S["data"], S["pillar1"], S["pillar2"], S["pillar3"]
     fc = S["fvg_classes"]
     X = json.loads((RES / "extra_summary.json").read_text())
-    lm, th, pre = X["lunch_macro"], X["thursday"], X["pre830"]
+    lm, th, pre, pr = X["lunch_macro"], X["thursday"], X["pre830"], X["premarket_rule"]
     W = A4[0] - 4 * cm
     t1 = pd.read_csv(RES / "pillar1_trades.csv")
     t1["y"] = t1["date"].str[:4]
@@ -64,7 +64,7 @@ def build():
     sb = p3["10:00 (Silver Bullet)"]["stats"]
     st = p1["setup_sweep_opposite"]
     s += [P("Resumen", H1),
-          P("Se midieron las afirmaciones concretas de las partes 1–5 de la serie y de dos vídeos más de ICT con reglas fijadas de antemano y, "
+          P("Se midieron las afirmaciones concretas de las partes 1–5 de la serie y de tres vídeos más de ICT con reglas fijadas de antemano y, "
             "siempre que fue posible, frente a un <b>control</b>: el mismo cálculo en un nivel u hora "
             "donde ICT no espera nada especial. Si la idea de ICT es correcta, su nivel u hora debería "
             "salir claramente mejor que el control."),
@@ -83,6 +83,11 @@ def build():
                f"tras consolidación, el {pct(p1['p_am_consol_given_pm_consol'][0])}. "
                f"Correlación {str(p1['corr_pm_er_am_er']).replace('.', ',')}.",
                "Relación muy débil y en sentido contrario"],
+              ["Si el premarket consolida, a las 09:30 llega un gran movimiento en una dirección "
+               "(<i>PreMarket Session Rules Revisited</i>)",
+               f"Ese movimiento ocurre el {pct(pr['v2_pos']['big30']['consol'][0])} de los días tras "
+               f"consolidación y el {pct(pr['v2_pos']['big30']['trend'][0])} tras tendencia; igual con tres "
+               "definiciones de consolidación.", "No se confirma"],
               ["Los máximos/mínimos \"relativamente iguales\" atraen al precio",
                "Se toman con la misma frecuencia que los swings simples a igual distancia.",
                "No se confirma"],
@@ -164,6 +169,31 @@ def build():
                 [4.0 * cm, 2.3 * cm, 2.3 * cm, 2.3 * cm, 2.3 * cm, W - 13.2 * cm]),
           P("No hay diferencia en las distancias cortas y medias. En las lejanas, los iguales se toman "
             "<i>menos</i>.", NOTE),
+          P("Regla revisada: consolidación en el premarket → movimiento grande a las 09:30", H2),
+          P("En <i>Monday Review On NQ &amp; PreMarket Session Rules Revisited</i> (24/08/2026) Michael "
+            "concreta: si de 07:00 a 09:00 el precio \"no puede extenderse\" y gira alrededor de la mitad "
+            "del rango (un empujón inicial que solo barre liquidez no cuenta como tendencia), a las 09:30 "
+            "llega \"un gran movimiento en una sola dirección\". Ese día se cumplió: premarket con "
+            "eficiencia 0,18 y cierre a mitad de rango, y caída de 291 puntos en la primera media hora."),
+          P("<b>Medición.</b> Tres definiciones de consolidación: V1 eficiencia &lt; 0,5; V2 cierre de las "
+            "08:59 en la mitad central del rango (25–75 %); V3 estricta, ambas cosas (eficiencia &lt; 0,35), "
+            "frente a tendencia estricta. Resultado en la apertura: rango (frente a su mediana de 20 días), "
+            "eficiencia direccional y \"movimiento grande\" (eficiencia ≥ 0,6 y rango por encima de lo "
+            "normal en 09:30–09:59)."),
+          table([["Definición", "n (cons./tend.)", "Rango 09:30–10:00 (cons. / tend.)",
+                  "Eficiencia (cons. / tend.)", "Movimiento grande (cons. / tend.)", "p"]] +
+                [[name, f"{v['n_consol']} / {v['n_trend']}",
+                  f"{num(v['or30_range_rel']['consol'] - 1)} / {num(v['or30_range_rel']['trend'] - 1)}",
+                  f"{str(v['or30_er']['consol']).replace('.', ',')} / {str(v['or30_er']['trend']).replace('.', ',')}",
+                  f"{pct(v['big30']['consol'][0])} / {pct(v['big30']['trend'][0])}", pv(v["big30"]["p"])]
+                 for name, v in [("V1 eficiencia", pr["v1_er"]), ("V2 posición", pr["v2_pos"]),
+                                 ("V3 estricta", pr["v3_strict"])]],
+                [2.6 * cm, 2.4 * cm, 3.4 * cm, 2.8 * cm, 3.4 * cm, W - 14.6 * cm]),
+          P(f"El \"movimiento grande\" ocurre en el {pct(pr['big30_base_pct'])} de todas las aperturas, haya "
+            "consolidado o no el premarket. Lo que sí anticipa una apertura amplia es un premarket amplio "
+            f"(correlación {str(pr['corr_pm_range_rel_or30_range_rel']).replace('.', ',')} entre ambos rangos "
+            "relativos): la volatilidad se agrupa, sin relación con la forma del premarket. El 24/08/2026 fue "
+            "un buen ejemplo, no una regla.", NOTE),
           P("Setup \"de pan con mantequilla\"", H2),
           P("Entre 09:30 y 12:00: si el precio rompe un extremo del premarket y una vela cierra de nuevo "
             "dentro, se entra al cierre; stop un tick más allá del extremo del barrido; objetivo en el "
@@ -326,8 +356,9 @@ def build():
     s += [P("7. Conclusiones y siguientes pasos", H1),
           *bullets(["<b>Las afirmaciones cuantitativas no se sostienen.</b> El 70 % del hueco, las "
                     "proyecciones \"al tick\", el poder de los niveles iguales, la ventaja horaria del "
-                    "Silver Bullet, la importancia del FVG con desplazamiento o \"reflection\", la lunch macro y "
-                    "el jueves de las semanas alcistas desaparecen al compararlos con un control. Encajan con lo que se "
+                    "Silver Bullet, la importancia del FVG con desplazamiento o \"reflection\", la lunch macro, "
+                    "el jueves de las semanas alcistas y la regla \"premarket en consolidación → gran "
+                    "movimiento a las 09:30\" desaparecen al compararlos con un control. Encajan con lo que se "
                     "esperaría de la volatilidad normal y del sesgo retrospectivo (sección 11 del informe "
                     "de metodología).",
                     "<b>Lo que sí es útil:</b> los tres pilares son una forma ordenada de mirar el mercado "

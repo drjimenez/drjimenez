@@ -134,10 +134,63 @@ def pre830(days):
     return pd.DataFrame(trades)
 
 
+# --------------------------------------------------------------------------- D. premarket -> apertura
+def premarket_rule(days):
+    """'PreMarket Session Rules Revisited' (24/08/2026): si 07:00-09:00 consolida, a las 09:30 llega un
+    movimiento grande en una sola dirección. Se mide el rango de apertura (09:30-09:59 y 09:30-10:29)."""
+    rows = []
+    for d in days:
+        g = d["bars"]
+        pm = g.between_time("07:00", "08:59")
+        o30 = g.between_time("09:30", "09:59")
+        o60 = g.between_time("09:30", "10:29")
+        if len(pm) < 100 or len(o30) < 25 or len(o60) < 55:
+            continue
+        rng = pm["high"].max() - pm["low"].min()
+        if rng <= 0:
+            continue
+        rows.append({"date": d["date"], "pm_er": ip.eff_ratio(pm), "pm_range": rng,
+                     "pm_pos": (pm["close"].iloc[-1] - pm["low"].min()) / rng,
+                     "or30_range": o30["high"].max() - o30["low"].min(), "or30_er": ip.eff_ratio(o30),
+                     "or60_range": o60["high"].max() - o60["low"].min(), "or60_er": ip.eff_ratio(o60)})
+    df = pd.DataFrame(rows)
+    for c in ["pm_range", "or30_range", "or60_range"]:
+        df[c + "_rel"] = df[c] / df[c].rolling(20, min_periods=10).median().shift(1)
+    df = df.dropna().reset_index(drop=True)
+    mid = df.pm_pos.between(0.25, 0.75)
+    df["v1"] = np.where(df.pm_er < 0.5, "consolidación", "tendencia")
+    df["v2"] = np.where(mid, "consolidación", "tendencia")
+    df["v3"] = np.where((df.pm_er < 0.35) & mid, "consolidación",
+                        np.where((df.pm_er >= 0.6) & ~mid, "tendencia", "otro"))
+    df["big30"] = (df.or30_er >= 0.6) & (df.or30_range_rel >= 1.0)
+    return df
+
+
+def compare(df, col):
+    c, t = df[df[col] == "consolidación"], df[df[col] == "tendencia"]
+    out = {"n_consol": int(len(c)), "n_trend": int(len(t))}
+    for k in ["or30_range_rel", "or30_er", "or60_range_rel", "or60_er"]:
+        a, b = c[k].to_numpy(), t[k].to_numpy()
+        diff = RNG.choice(a, (4000, len(a))).mean(1) - RNG.choice(b, (4000, len(b))).mean(1)
+        out[k] = {"consol": round(float(a.mean()), 3), "trend": round(float(b.mean()), 3),
+                  "diff_ci": [round(float(np.percentile(diff, 2.5)), 3), round(float(np.percentile(diff, 97.5)), 3)]}
+    out["big30"] = {"consol": ip.prop_ci(int(c.big30.sum()), len(c)), "trend": ip.prop_ci(int(t.big30.sum()), len(t)),
+                    "p": ip.two_prop_p(int(c.big30.sum()), len(c), int(t.big30.sum()), len(t))}
+    return out
+
+
 def main():
     m = ip.load_minutes(ip.START, ip.END)
     days = ip.build_days(m)
     S = {}
+
+    # D
+    pr = premarket_rule(days)
+    pr.to_csv(OUT / "extra_premarket_rule.csv", index=False)
+    S["premarket_rule"] = {"days": int(len(pr)),
+                           "big30_base_pct": round(100 * float(pr.big30.mean()), 1),
+                           "corr_pm_range_rel_or30_range_rel": round(float(np.corrcoef(pr.pm_range_rel, pr.or30_range_rel)[0, 1]), 3),
+                           "v1_er": compare(pr, "v1"), "v2_pos": compare(pr, "v2"), "v3_strict": compare(pr, "v3")}
 
     # A
     lm = lunch_macro(days)

@@ -1,4 +1,156 @@
 {
+ "premarket_rule": {
+  "days": 742,
+  "big30_base_pct": 26.3,
+  "corr_pm_range_rel_or30_range_rel": 0.305,
+  "v1_er": {
+   "n_consol": 404,
+   "n_trend": 338,
+   "or30_range_rel": {
+    "consol": 1.081,
+    "trend": 1.133,
+    "diff_ci": [
+     -0.123,
+     0.018
+    ]
+   },
+   "or30_er": {
+    "consol": 0.481,
+    "trend": 0.502,
+    "diff_ci": [
+     -0.061,
+     0.018
+    ]
+   },
+   "or60_range_rel": {
+    "consol": 1.098,
+    "trend": 1.163,
+    "diff_ci": [
+     -0.147,
+     0.018
+    ]
+   },
+   "or60_er": {
+    "consol": 0.479,
+    "trend": 0.506,
+    "diff_ci": [
+     -0.064,
+     0.01
+    ]
+   },
+   "big30": {
+    "consol": [
+     27.22772277227723,
+     23.116749614045236,
+     31.76769571963333
+    ],
+    "trend": [
+     25.14792899408284,
+     20.819391769031693,
+     30.0350390550693
+    ],
+    "p": 0.5215205141913795
+   }
+  },
+  "v2_pos": {
+   "n_consol": 340,
+   "n_trend": 402,
+   "or30_range_rel": {
+    "consol": 1.107,
+    "trend": 1.102,
+    "diff_ci": [
+     -0.066,
+     0.078
+    ]
+   },
+   "or30_er": {
+    "consol": 0.481,
+    "trend": 0.499,
+    "diff_ci": [
+     -0.057,
+     0.021
+    ]
+   },
+   "or60_range_rel": {
+    "consol": 1.108,
+    "trend": 1.145,
+    "diff_ci": [
+     -0.117,
+     0.041
+    ]
+   },
+   "or60_er": {
+    "consol": 0.471,
+    "trend": 0.508,
+    "diff_ci": [
+     -0.075,
+     0.0
+    ]
+   },
+   "big30": {
+    "consol": [
+     25.588235294117645,
+     21.24061772718305,
+     30.481337964042215
+    ],
+    "trend": [
+     26.865671641791046,
+     22.766518334814318,
+     31.402793041841008
+    ],
+    "p": 0.6936570418547043
+   }
+  },
+  "v3_strict": {
+   "n_consol": 179,
+   "n_trend": 208,
+   "or30_range_rel": {
+    "consol": 1.087,
+    "trend": 1.107,
+    "diff_ci": [
+     -0.127,
+     0.083
+    ]
+   },
+   "or30_er": {
+    "consol": 0.488,
+    "trend": 0.499,
+    "diff_ci": [
+     -0.064,
+     0.045
+    ]
+   },
+   "or60_range_rel": {
+    "consol": 1.084,
+    "trend": 1.137,
+    "diff_ci": [
+     -0.154,
+     0.046
+    ]
+   },
+   "or60_er": {
+    "consol": 0.46,
+    "trend": 0.522,
+    "diff_ci": [
+     -0.113,
+     -0.01
+    ]
+   },
+   "big30": {
+    "consol": [
+     25.69832402234637,
+     19.85448212905539,
+     32.56334838653843
+    ],
+    "trend": [
+     26.442307692307693,
+     20.915153619897385,
+     32.82386647813813
+    ],
+    "p": 0.8680289652157438
+   }
+  }
+ },
  "lunch_macro": {
   "days": 746,
   "bull_days_ssl_hit": [
@@ -85,24 +237,24 @@
    "viernes": 63.0
   },
   "perm_high_day_pct": {
-   "lunes": 3.3,
-   "martes": 6.5,
-   "miércoles": 11.0,
-   "jueves": 19.4,
-   "viernes": 59.8
+   "lunes": 3.1,
+   "martes": 6.7,
+   "miércoles": 10.9,
+   "jueves": 18.9,
+   "viernes": 60.4
   },
   "thu_or_fri_high": [
    80.82191780821918,
    70.34428294648694,
    88.217745954525
   ],
-  "thu_or_fri_high_perm_pct": 79.2,
+  "thu_or_fri_high_perm_pct": 79.3,
   "fri_breaks_thu_given_thu_high": [
    74.50980392156863,
    61.13145589385128,
    84.4543767587336
   ],
-  "fri_breaks_thu_given_thu_high_perm_pct": 68.7
+  "fri_breaks_thu_given_thu_high_perm_pct": 69.5
  },
  "pre830": {
   "all": {

@@ -1004,7 +1004,26 @@ def build():
           P("Medido en 755 sesiones (informe de medición, sección 6): la lunch macro no busca la liquidez "
             "contraria más que la favorable; el patrón del jueves aparece igual con los días barajados al "
             "azar; y el barrido del premarket en torno a las 08:30 no da ventaja (−0,16 R netos).", NOTE),
-          P("11.8 Valoración de su método de backtesting", H2),
+          P("11.8 Ampliación: <i>Monday Review On NQ &amp; PreMarket Session Rules Revisited</i> (24/08/2026)", H2),
+          *bullets(["<b>La regla del premarket, precisada</b>: \"la idea de que el mercado consolide entre "
+                    "las 7 y las 9: esas son las reglas\". Si consolida, a las 09:30 llega \"un gran "
+                    "movimiento en una sola dirección\"; la dirección la da el análisis de temporalidad "
+                    "alta (ese día, bajista hacia un volume imbalance diario y por estacionalidad).",
+                    "<b>Cómo clasificar</b>: un empujón inicial que solo barre buy side (unos 40 minutos) "
+                    "no es tendencia; si después el precio vuelve dentro y gira alrededor de la mitad del "
+                    "rango, es consolidación. Se miran los <b>cuerpos</b>, no las mechas: \"la mecha es "
+                    "donde se permite hacer el daño\".",
+                    "Afirma que nadie más usa \"el 7 a 9\" para anticipar la mañana y que \"hay un "
+                    "algoritmo\" aunque no pueda enseñar su código.",
+                    "Reconoce que ese día <b>no pudo entrar</b>: la caída de las 09:30 fue demasiado rápida, "
+                    "y su objetivo (el volume imbalance diario) no se alcanzó; con su plan habría saltado "
+                    "el stop.",
+                    "Otros detalles: un order block es válido si está \"anclado\" a un octante de un FVG "
+                    "diario; aviso de no apalancarse en la semana de Jackson Hole."]),
+          P("Medido en 742 sesiones con tres definiciones de consolidación (informe de medición, sección "
+            "2): el movimiento grande de apertura ocurre el 26 % de los días, haya consolidado o no el "
+            "premarket. El 24/08/2026 se cumplió, pero es un caso, no una regla.", NOTE),
+          P("11.9 Valoración de su método de backtesting", H2),
           table([
               ["Aspecto", "Lo útil", "El problema"],
               ["Entradas y stops", "Reglas concretas y conservadoras: CE − 1 tick, stop + 1 tick, "
@@ -1140,6 +1159,7 @@ def build():
               "Lección en directo de ICT, 01/09/2026 (NQ): How New Students Should Start Part 2: youtube.com/watch?v=djabvhihIM8",
               "Lección grabada de ICT, 02/09/2026: How New Students Should Start Part 3: youtube.com/watch?v=MB7clEZvF7s",
               "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 4 \\ Pillars Of Daily Log Entries: youtube.com/watch?v=L81eMQhmXmc",
+              "Revisión de ICT, 24/08/2026: Monday Review On NQ & PreMarket Session Rules Revisited (título probable): youtube.com/watch?v=grcLMbjs-zs",
               "Lección de ICT, 18/09/2025: Trading Premarket and Regular Session Liquidity",
               "Revisión de ICT, 08/09/2026: NQ Futures Review & 1st Presented Reflection FVG: youtube.com/watch?v=9W4YpyAg5RY",
               "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 5 \\ Back Testing Properly: youtube.com/watch?v=xnbtp_j81lI",
