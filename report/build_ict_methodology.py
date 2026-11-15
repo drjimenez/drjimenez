@@ -213,7 +213,9 @@ def build():
             "<b>primero mapear el draw on liquidity sin entradas</b> (calendario económico, niveles "
             "mensuales y diarios, FVG diarios en octavos, huecos de apertura) y después leer cómo "
             "responde el precio en las macros horarias, gestionando cada operación con parciales y "
-            "stop \"financiado\"."),
+            "stop \"financiado\". En la parte 2 (sección 8), con un hueco enorme y una mañana de "
+            "consolidación, busca un objetivo donde coinciden dos niveles y confirma cada paso con "
+            "cierres sobre el 50 % de las mechas."),
           P("Es la misma lógica que mecaniza el modelo TTFM de este repositorio (sweep de C1 por C2 y "
             "CISD en temporalidad baja). Pero ICT añade capas de contexto (sesgo HTF, nivel de "
             "liquidez concreto, premium/descuento, hora, SMT) que el backtest no incluía. Eso explica "
@@ -559,8 +561,109 @@ def build():
             "dice \"non-farm payroll Friday\" cuando por el contexto se refiere al lunes de la semana "
             "de NFP.", NOTE)]
 
-    # 8. Checklist
-    s += [PageBreak(), P("8. Lista de comprobación antes de operar", H1),
+    # 8. Parte 2
+    s += [PageBreak(), P("8. <i>How New Students Should Start, Part 2</i> (01/09/2026): día de hueco "
+                         "grande y consolidación", H1),
+          P("Al día siguiente de la parte 1, Michael narra en directo la sesión de la mañana en NQ. El "
+            "contexto es muy distinto: durante la noche el precio cayó unos <b>500 puntos</b> y la "
+            "apertura de las 09:30 deja un <b>hueco en descuento de más de 400 puntos</b> respecto al "
+            "cierre de la sesión regular anterior (29.511,5). Es martes de semana de NFP, con un dato "
+            "ISM (impacto medio) a las 10:00. Como dice que hará con un alumno nuevo, todas las "
+            "operaciones son <b>hipotéticas</b> (tape reading, sin demo), con contratos mini."),
+          P("8.1 Su lectura antes y durante la apertura", H2),
+          table([
+              ["Idea", "Lo que dice"],
+              ["Perfil de la sesión", "Tras una noche en tendencia fuerte, \"es razonable anticipar "
+               "que la sesión de la mañana sea de <b>consolidación</b>\". Por eso busca un objetivo "
+               "\"fácil de alcanzar\" (<i>low hanging fruit</i>) y no un gran recorrido."],
+              ["Sesgo por el hueco", "Con un hueco tan grande prefiere los <b>largos</b>: es más "
+               "probable que una compra dé \"una victoria sorpresa\" hacia el hueco que un corto "
+               "buscando precios más bajos. \"Siempre hay que darle al menos un intento\" a entrar "
+               "en el hueco; si te para el stop, \"suele anunciar un setup más fácil después\"."],
+              ["Objetivo por confluencia", "<b>29.212</b>: coinciden el cuadrante inferior del FVG "
+               "diario (la caja gris de la parte 1) y un nivel del hueco de apertura dividido con "
+               "Fibonacci. \"Dos niveles alineados… es casi obvio que el precio irá ahí\". Por eso "
+               "lo prefiere al 50 % del hueco en un día así."],
+              ["First presented FVG", "El primer FVG que aparece tras las 09:30 de cada día. Usa el "
+               "de hoy y los del lunes 24, el martes 25 y el miércoles 26 de agosto como zonas de "
+               "entrada y como objetivos. En largos: \"ningún cuerpo en la mitad inferior\"; las "
+               "mechas sí pueden entrar."],
+              ["Confirmación por mecha", "Para seguir largo exige que un cuerpo cierre <b>por encima "
+               "del 50 % de la mecha</b> (\"la línea discontinua\"), y que la mecha quede superada "
+               "\"en esta vela o en la siguiente; si es en esta, es muy fuerte\"."],
+              ["10:30", "\"En cuanto llegamos a las 10:30 ya hay un rango de 1 hora formado\" y "
+               "\"los algoritmos empiezan a dispararse\": espera más velocidad. Si a esa hora el "
+               "hueco sigue abierto, es más probable que siga así un tiempo."],
+              ["Sesión regular vs. nocturna", "Un nivel tocado por la noche (Globex) gana "
+               "importancia cuando la sesión regular (RTH) vuelve a él. \"Lo que vemos en ETH debería "
+               "confirmarse también en RTH; si no, es solo algo que pasó por la noche\"."],
+              ["Solo velas", "No usa order flow ni análisis \"dentro de la vela\": \"la vela te lo "
+               "dice todo… apertura, máximo, mínimo, cierre y el tiempo en que se forma\"."],
+          ], [3.6 * cm, W - 3.6 * cm]),
+          P("8.2 Las operaciones que narró (hipotéticas)", H2),
+          table([
+              ["#", "Operación", "Resultado según él"],
+              ["1", "Largo tras barrer el mínimo inicial, hacia la buy side y el hueco. Stop bajo el "
+               "mínimo, subido enseguida para cubrir costes. Parcial en la buy side.",
+               "Parcial y luego stop en 29.100. Cuenta unos 49 + 32,5 puntos."],
+              ["2", "Nuevo largo en el FPFVG del lunes 24 antes del ISM de las 10:00.",
+               "La mecha rechaza; stop subido. Sale cubriendo costes."],
+              ["3", "Corto con cuatro minis, contra su sesgo largo.",
+               "\"Me equivoco. Cierro.\" Pérdida de unos 20 puntos: \"parece que soy humano\"."],
+              ["4", "Largo en el BISI con volume imbalance de un tick que queda abierto (\"institutional "
+               "order flow entry drill\"), con dos minis más añadidos. Stop bajo el mínimo (~20 puntos).",
+               "Parciales en 29.153,5 (+20), sobre los máximos iguales y en 29.212. El último contrato "
+               "llega al octante del FPFVG del miércoles 26."],
+              ["", "<b>Total declarado</b>", "Unos 125–130 puntos netos con una sola operación "
+               "perdedora (cifras suyas, no verificadas; él mismo pierde la cuenta)."],
+          ], [0.7 * cm, 9.0 * cm, W - 9.7 * cm]),
+          P("8.3 Detalles técnicos nuevos", H2),
+          *bullets(["<b>Order block</b> con su propia definición: una vela cuya apertura coincide con el "
+                    "mínimo (29.116 exacto). \"Es un order block, no una zona de demanda\".",
+                    "<b>Volume imbalance de un tick</b> (cierre 29.133,25 y apertura 29.133,50): si "
+                    "el flujo sigue alcista, ese tramo debería quedar sin rellenar. Es lo que explica "
+                    "la reacción del precio.",
+                    "<b>Stop por retroceso proyectado</b> (lo llama tema avanzado): mide el último "
+                    "retroceso. Si el precio vuelve a recorrer esa distancia hacia arriba, sube el stop "
+                    "bajo el último mínimo, porque después suele venir un retroceso mayor.",
+                    "<b>Entrega diferida</b>: el 50 % del hueco no se alcanzó antes de las 10:00 (la "
+                    "regla del 70 %), y lo trata como algo que puede llegar más tarde o no llegar.",
+                    "<b>Tamaño para aprender</b>: micro NQ = 2 $ por punto (0,50 $ por tick, 4 ticks "
+                    "por punto); mini = 20 $ por punto. Recomienda llevar el registro primero en "
+                    "micros."]),
+          P("8.4 Actitud y aprendizaje", H2),
+          *bullets(["En consolidación \"hay que ser muy ágil y muy indulgente con uno mismo\" si el "
+                    "precio te zarandea. Un alumno nuevo debe vivir esa sensación mirando, para "
+                    "reconocer el peligro de perseguir movimientos.",
+                    "\"Ver no es suficiente\": hay que tener una libreta y anotar cada número que "
+                    "dice (entradas, stops, parciales).",
+                    "Ser parado al <i>break-even</i> después de cobrar un parcial \"no debe molestar\": "
+                    "estar molesto entonces \"es tonto\".",
+                    "Dice que intenta imitar los dos primeros meses de un alumno nuevo, pero que \"no "
+                    "puede olvidar su experiencia\" (33 años)."]),
+          P("8.5 Qué aporta respecto a la parte 1", H2),
+          table([
+              ["Tema", "Parte 1 (31/08)", "Parte 2 (01/09)"],
+              ["Tipo de día", "Mapear niveles y leer una mañana tranquila.", "Hueco enorme tras una "
+               "noche en tendencia; espera consolidación."],
+              ["Objetivo", "Cierre del hueco y sell side.", "Confluencia de niveles (FVG diario + hueco) "
+               "en lugar del 50 % del hueco."],
+              ["Gatillo", "Inversion FVG, immediate rebalance.", "FPFVG de varios días, cierres sobre el "
+               "50 % de la mecha, volume imbalance de un tick."],
+              ["Gestión", "Parcial en el event horizon.", "Stop a costes enseguida, varios parciales, "
+               "añadir posición y stop por retroceso proyectado."],
+              ["Errores", "La primera hipótesis no se cumple.", "Una operación perdedora (el corto contra "
+               "el sesgo) y varias salidas a costes."],
+          ], [2.4 * cm, 5.6 * cm, W - 8.0 * cm]),
+          Spacer(1, 4),
+          P("Observación crítica: en una sola mañana entra cuatro veces, en las dos direcciones, con "
+            "ajustes continuos del stop. Lo hace con 33 años de experiencia y narrando en directo; para "
+            "un alumno nuevo es muy difícil de replicar. El resultado lo calcula él mismo sobre la marcha "
+            "y no es verificable. Lo útil de la lección es el razonamiento (perfil de sesión, confluencia "
+            "de niveles, confirmación por mecha), no la cifra de puntos.", BOX)]
+
+    # 9. Checklist
+    s += [PageBreak(), P("9. Lista de comprobación antes de operar", H1),
           P("Esta lista recoge los puntos que ICT verifica de forma explícita o implícita en sus "
             "revisiones. Si alguno falla, lo habitual es que no opere:"),
           table([
@@ -580,10 +683,12 @@ def build():
                "con R:R ≥ 2?", ""],
               ["10", "¿Revisé el calendario (rojo/naranja)? ¿Es jueves o viernes de semana de NFP? ¿Pasaron 30 min desde la noticia de las 10:00?", ""],
               ["11", "¿Tengo un plan de parciales (event horizon) y de cuándo bajar el stop?", ""],
-              ["12", "¿Ya hice mi trade del día o alcancé mi objetivo semanal?", ""],
+              ["12", "¿Qué perfil espero hoy (tendencia o consolidación) tras la sesión nocturna?", ""],
+              ["13", "¿Mi objetivo coincide con dos niveles a la vez (p. ej., FVG diario + nivel del hueco)?", ""],
+              ["14", "¿Ya hice mi trade del día o alcancé mi objetivo semanal?", ""],
           ], [0.8 * cm, W - 2.8 * cm, 2.0 * cm]),
           Spacer(1, 8),
-          P("9. Gestión del riesgo y psicología", H1),
+          P("10. Gestión del riesgo y psicología", H1),
           *bullets(["Arriesga poco por operación (habla de 1 % o menos y de reducirlo tras pérdidas).",
                     "Pocas operaciones: prefiere un setup de alta probabilidad a muchas entradas.",
                     "Cierres parciales en liquidez interna y protección del stop.",
@@ -593,8 +698,8 @@ def build():
                     "Advierte que su contenido en YouTube es gratuito y que no pide dinero ni gestiona "
                     "fondos de nadie: quien se presente como ICT pidiendo dinero es falso."])]
 
-    # 10. Valoración
-    s += [P("10. Valoración crítica", H1),
+    # 11. Valoración
+    s += [P("11. Valoración crítica", H1),
           P("Puntos fuertes", H2),
           *bullets(["Da un <b>marco coherente</b>: contexto HTF, zona, hora y gatillo, cada uno con un "
                     "papel claro. Obliga a pensar en dónde están los stops de los demás.",
@@ -633,8 +738,8 @@ def build():
           P("No se han podido ver los vídeos directamente. La parte general del informe combina el contenido público del "
             "canal tal como lo recogen notas y resúmenes, y búsquedas web del 15 de noviembre de 2026. "
             "Las páginas de resúmenes de vídeos no se pudieron abrir desde el entorno de trabajo. "
-            "La sección 7 se basa en la transcripción automática de una lección del 31/08/2026 "
-            "aportada por el lector. Fuentes consultadas:", NOTE),
+            "Las secciones 7 y 8 se basan en las transcripciones automáticas de las lecciones del 31/08 y el 01/09/2026 "
+            "aportadas por el lector. Fuentes consultadas:", NOTE),
           *[Paragraph(x, ParagraphStyle("src", parent=NOTE, leftIndent=12, bulletIndent=2),
                       bulletText="–") for x in [
               "Canal de YouTube: youtube.com/@innercircletrader (mentoría 2022, 2025 Lecture Series, "
@@ -651,6 +756,7 @@ def build():
               "january-13-2026-by-the-inner-circle-trader y …-february-23-2026-…",
               "Archivo de Twitter Spaces: audioscrape.com/podcast/the-inner-circle-trader-twitter-spaces-archive",
               "Lección en directo de ICT, 31/08/2026 (NQ): How New Students Should Start Part 1: youtube.com/watch?v=BWEPtHZ1Y2Y",
+              "Lección en directo de ICT, 01/09/2026 (NQ): How New Students Should Start Part 2: youtube.com/watch?v=djabvhihIM8",
               "Backtest TTFM de este repositorio: report/TTFM_Report.pdf y results/summary.json.",
           ]]]
 
