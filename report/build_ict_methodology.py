@@ -416,9 +416,9 @@ def build():
         return [Paragraph(f"«{en}»", QUOTE),
                 Paragraph(f"→ {es}", ParagraphStyle("Qes", parent=NOTE, leftIndent=14, spaceAfter=8))]
 
-    s += [PageBreak(), P("7. En sus propias palabras: lección en directo del 31 de agosto de 2026", H1),
+    s += [PageBreak(), P("7. En sus propias palabras: <i>How New Students Should Start, Part 1</i> (31/08/2026)", H1),
           P("Esta sección analiza la transcripción de una lección en directo sobre futuros del Nasdaq "
-            "(NQ, contrato de septiembre de 2026). Por la fecha y el contenido parece ser "
+            "(NQ, contrato de septiembre de 2026): "
             "<i>How New Students Should Start, Part 1</i>. Michael se la explica a dos alumnos que "
             "empiezan, preparando la semana y luego leyendo el precio en tiempo real hasta pasada la "
             "apertura de las 09:30. Es muy útil porque muestra su proceso <b>antes</b> de que se "
@@ -650,7 +650,7 @@ def build():
               "Lecciones 2026 (títulos): recapio.com/digest/ict-2026-smart-money-concepts-lecture-"
               "january-13-2026-by-the-inner-circle-trader y …-february-23-2026-…",
               "Archivo de Twitter Spaces: audioscrape.com/podcast/the-inner-circle-trader-twitter-spaces-archive",
-              "Lección en directo de ICT, 31/08/2026 (NQ, probablemente How New Students Should Start Part 1): youtube.com/watch?v=BWEPtHZ1Y2Y",
+              "Lección en directo de ICT, 31/08/2026 (NQ): How New Students Should Start Part 1: youtube.com/watch?v=BWEPtHZ1Y2Y",
               "Backtest TTFM de este repositorio: report/TTFM_Report.pdf y results/summary.json.",
           ]]]
 
