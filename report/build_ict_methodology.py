@@ -217,7 +217,8 @@ def build():
             "consolidación, busca un objetivo donde coinciden dos niveles y confirma cada paso con "
             "cierres sobre el 50 % de las mechas. En la parte 3 (sección 9) explica cómo organiza "
             "toda esa información en cinco layouts separados, y en la parte 4 (sección 10) propone "
-            "una rutina diaria de registro de tres fenómenos medibles."),
+            "una rutina diaria de registro de tres fenómenos medibles. La parte 5 (sección 11) "
+            "explica cómo convierte esos registros en operaciones hipotéticas (su forma de backtesting)."),
           P("Es la misma lógica que mecaniza el modelo TTFM de este repositorio (sweep de C1 por C2 y "
             "CISD en temporalidad baja). Pero ICT añade capas de contexto (sesgo HTF, nivel de "
             "liquidez concreto, premium/descuento, hora, SMT) que el backtest no incluía. Eso explica "
@@ -871,8 +872,115 @@ def build():
             "primer FVG después de las 10:00. Requieren datos de 1 minuto del futuro NQ real (sesión "
             "regular), no los proxies 24/7 del backtest TTFM.", BOX)]
 
-    # 11. Checklist
-    s += [PageBreak(), P("11. Lista de comprobación antes de operar", H1),
+    # 11. Parte 5
+    s += [PageBreak(), P("11. <i>How New Students Should Start, Part 5</i>: cómo hace él el backtesting",
+                         H1),
+          P("Última lección de la serie. Retoma los tres pilares de la parte 4 sobre una sesión de NQ de "
+            "septiembre de 2026 y enseña cómo convertir cada uno en una <b>operación hipotética "
+            "registrada</b>: entrada, stop, objetivo, riesgo y drawdown. Para él, eso es backtesting; "
+            "una simple captura a posteriori no lo es."),
+          P("11.1 Herramientas: grabar la pantalla, no Market Replay", H2),
+          *bullets(["<b>Market Replay \"es inútil… literalmente tóxico\"</b>: solo muestra la apertura y "
+                    "el cierre de cada vela, no su \"vida completa\" (cómo forma el máximo y el mínimo "
+                    "mientras está abierta).",
+                    "Alternativa: <b>grabar la pantalla</b> todo el día con el gráfico de 1 minuto "
+                    "(Windows + Alt + R en Windows) y revisarlo después, pausando y narrando con tu propia "
+                    "voz. Con datos en diferido sirve igual: \"estás estudiando precio que ya ocurrió\".",
+                    "Los datos en tiempo real de TradingView cuestan unos 7 $: \"si no tienes 7 $, no "
+                    "tienes dinero para operar\". Banea a quien pide que le paguen cuentas o datos.",
+                    "La misma lógica vale en cualquier temporalidad: \"la velocidad del gráfico de 1 "
+                    "minuto es una ilusión\"."]),
+          P("11.2 Cómo registrar cada operación hipotética", H2),
+          table([
+              ["Elemento", "Regla que da"],
+              ["Precisión", "Anotar los precios exactos (apertura, máximo, mínimo, cierre) con la "
+               "herramienta <i>price note</i>, no \"más o menos 560\". \"Si no eres preciso al "
+               "registrar, tus operaciones nunca serán precisas\"."],
+              ["Entrada realista", "En un FVG bajista, entrar en el <b>CE (50 %) o un tick por debajo</b>, "
+               "no en el máximo exacto. Si el precio sube más, se puede añadir un contrato en la mitad "
+               "superior (pirámide)."],
+              ["Stop", "Un tick por encima del máximo de la <b>última vela que estuvo fuera del FVG</b> "
+               "(su apertura, no solo la mecha), incluyendo el volume imbalance."],
+              ["Objetivo", "Un tick antes del nivel (para asegurar la ejecución). Ampliar objetivos "
+               "solo con experiencia."],
+              ["Riesgo y drawdown", "Anotar el riesgo total y cuánto y durante cuántos minutos fue el "
+               "precio en contra (\"el calor\"). Market Replay no enseña a vivir ese drawdown."],
+              ["Tamaño", "Si el stop correcto es grande, usar micros: \"expectativas realistas, no un "
+               "subidón de azúcar\"."],
+              ["R:R", "No lo calcula: \"mis conceptos ya traen incorporado 3:1, 5:1\"."],
+              ["Anotaciones", "Usar el espacio libre del gráfico; si falta sitio, letras (A, B, C) "
+               "como leyenda con la explicación al lado. Describir vela a vela (p. ej., cada "
+               "immediate rebalance)."],
+          ], [3.0 * cm, W - 3.0 * cm]),
+          P("11.3 El diario como \"cartas de amor a uno mismo\"", H2),
+          P("Es la parte más llamativa de la lección. Pide escribir las observaciones <b>en tono "
+            "positivo y seguro</b> (\"me encantó ver cómo…\", \"me agradó…\"), registrar las operaciones "
+            "hipotéticas <b>como si se hubieran hecho</b>, y no escribir nunca en el diario las pérdidas "
+            "o la frustración. Ni siquiera en un día real con pérdidas: se anota lo que se debería "
+            "haber visto, \"como si lo hubieras hecho así\". Así, dice, se \"engaña al subconsciente\" "
+            "para crear \"pseudoexperiencia\" y quitar el miedo, igual que haría un coach "
+            "motivacional."),
+          *Q("You're only recording the sweet sugary love letter stuff to yourself because your "
+             "subconscious loves that.",
+             "Solo registras lo dulce, cartas de amor a ti mismo, porque a tu subconsciente le encanta."),
+          P("11.4 Los tres pilares aplicados a una sesión", H2),
+          table([
+              ["Pilar", "Lo que muestra en el ejemplo"],
+              ["1. Premarket", "Divide el rango 07:00–09:00 con Fibonacci y corta las líneas a las "
+               "09:00, para ver si coinciden con las del <b>opening range</b> (09:30–10:00). Un FVG "
+               "bajista de las 11:09 retrocede justo al CE y al máximo del premarket y cae <b>94 puntos</b> "
+               "hasta los mínimos iguales del premarket (29.370,50). Antes, otro FVG en premium dio "
+               "más de 100 puntos."],
+              ["2. Hueco RTH", "Hueco en descuento de <b>69 puntos</b>; el CE se alcanza 5 minutos "
+               "después de las 09:30. Nuevo concepto: <b>proyecciones de desviación estándar</b> del "
+               "hueco (Fibonacci del cierre a la apertura, nivel −1,0). Dice que marcaron \"al tick\" "
+               "el máximo de la mañana y el mínimo de las 11:12 (29.386,25). También vuelve a los "
+               "máximos iguales del cierre del día anterior (la macro de <i>market on close</i>)."],
+              ["3. Silver Bullet", "El primer FVG (10:01, bajista) acabó dando <b>más de 175 puntos</b>, "
+               "pero no lo vendió de inmediato por la <b>lunch macro</b>: el mercado tiende a buscar "
+               "el mínimo formado en la hora de las 10:00. Además, un FVG posterior <b>con "
+               "desplazamiento</b> (alcista, que rompe máximos) \"manda más\" que el primero y, al "
+               "invertirse, sirve de entrada en corto: entrada en su mitad inferior, stop sobre la "
+               "última vela fuera del FVG, parcial en los mínimos iguales."],
+          ], [2.6 * cm, W - 2.6 * cm]),
+          P("11.5 Otras afirmaciones de la lección", H2),
+          *bullets(["<b>\"El rango de apertura (dealing range) es de 30 minutos\"</b> (09:30–10:00). "
+                    "\"No me importa cuánta gente diga que son 5 o 15 minutos. Todos se equivocan\".",
+                    "Los tres pilares \"encajan\": el premarket, el hueco y el Silver Bullet cuentan "
+                    "juntos la narrativa del día. \"No estoy eligiendo lo que funciona aquí y no allí\".",
+                    "Quienes \"pasan sus conceptos por la IA y dicen que no funcionan\" no tienen las "
+                    "reglas, por ejemplo la del first presented FVG con desplazamiento.",
+                    "La IA \"nunca podrá\" leer una vela mientras se forma; el ser humano sí. Compara "
+                    "el backtesting con los diagramas que estudia un cirujano antes de operar."]),
+          P("11.6 Valoración de su método de backtesting", H2),
+          table([
+              ["Aspecto", "Lo útil", "El problema"],
+              ["Entradas y stops", "Reglas concretas y conservadoras: CE − 1 tick, stop + 1 tick, "
+               "objetivo − 1 tick, registro del drawdown. Se pueden programar.", "Se eligen mirando el "
+               "gráfico ya completo; sin una regla escrita antes, la elección queda sesgada."],
+              ["Diario positivo", "Puede ayudar a mantener la constancia y reducir la ansiedad.",
+               "Registrar solo lo bueno, y \"como si lo hubieras hecho\", es <b>sesgo de "
+               "supervivencia</b>. Con un diario así no se puede calcular una tasa de acierto real y "
+               "contradice el \"calcula la estadística a fin de año\" de la parte 4."],
+              ["Reglas cambiantes", "Añade matices reales (lunch macro, FVG con desplazamiento).",
+               "Cada nueva regla aparece después de ver el resultado (el primer FVG \"no valía\" "
+               "porque había otro con desplazamiento). Así cualquier fallo se puede explicar a "
+               "posteriori y el método se vuelve difícil de falsar."],
+              ["Precisión \"al tick\"", "Las proyecciones del hueco son fáciles de medir.", "Con "
+               "muchos niveles (−1, −2, octavos…) alguno coincidirá con el máximo o el mínimo; hay "
+               "que comparar con niveles al azar."],
+              ["IA y datos", "—", "La afirmación es falsa en lo técnico: los datos tick a tick "
+               "registran cómo se forma cada vela, y un programa puede leerlos igual que una "
+               "grabación de pantalla."],
+          ], [2.8 * cm, 5.4 * cm, W - 8.2 * cm]),
+          Spacer(1, 4),
+          P("Recomendación práctica: llevar <b>dos registros</b>. Uno, su diario de entrenamiento, para "
+            "aprender a ver los patrones. Otro, <b>estadístico y honesto</b>: reglas escritas antes de "
+            "mirar el día, todas las señales (también las que fallan), resultado en R tras costes y "
+            "drawdown. Solo el segundo dice si hay ventaja.", BOX)]
+
+    # 12. Checklist
+    s += [PageBreak(), P("12. Lista de comprobación antes de operar", H1),
           P("Esta lista recoge los puntos que ICT verifica de forma explícita o implícita en sus "
             "revisiones. Si alguno falla, lo habitual es que no opere:"),
           table([
@@ -899,7 +1007,7 @@ def build():
               ["15", "¿Ya hice mi trade del día o alcancé mi objetivo semanal?", ""],
           ], [0.8 * cm, W - 2.8 * cm, 2.0 * cm]),
           Spacer(1, 8),
-          P("12. Gestión del riesgo y psicología", H1),
+          P("13. Gestión del riesgo y psicología", H1),
           *bullets(["Arriesga poco por operación (habla de 1 % o menos y de reducirlo tras pérdidas).",
                     "Pocas operaciones: prefiere un setup de alta probabilidad a muchas entradas.",
                     "Cierres parciales en liquidez interna y protección del stop.",
@@ -909,8 +1017,8 @@ def build():
                     "Advierte que su contenido en YouTube es gratuito y que no pide dinero ni gestiona "
                     "fondos de nadie: quien se presente como ICT pidiendo dinero es falso."])]
 
-    # 13. Valoración
-    s += [P("13. Valoración crítica", H1),
+    # 14. Valoración
+    s += [P("14. Valoración crítica", H1),
           P("Puntos fuertes", H2),
           *bullets(["Da un <b>marco coherente</b>: contexto HTF, zona, hora y gatillo, cada uno con un "
                     "papel claro. Obliga a pensar en dónde están los stops de los demás.",
@@ -925,6 +1033,9 @@ def build():
                     "31 de agosto es una excepción valiosa: anticipa el cierre del hueco y la caza de "
                     "stops antes de que ocurran, aunque su primera hipótesis (bajar al octante "
                     "inferior) no se cumplió y la gestionó con parcial y stop financiado.",
+                    "<b>Diario solo positivo</b>: en la parte 5 pide registrar las operaciones "
+                    "hipotéticas \"como si se hubieran hecho\" y no anotar pérdidas. Eso impide medir "
+                    "una tasa de acierto real (ver sección 11).",
                     "<b>Densidad de niveles</b>: con decenas de niveles (octavos de varios FVG y "
                     "huecos), casi cualquier giro coincide con alguno. Hay que compararlo con niveles "
                     "al azar antes de atribuirlo a un algoritmo (ver sección 9).",
@@ -953,7 +1064,7 @@ def build():
           P("No se han podido ver los vídeos directamente. La parte general del informe combina el contenido público del "
             "canal tal como lo recogen notas y resúmenes, y búsquedas web del 15 de noviembre de 2026. "
             "Las páginas de resúmenes de vídeos no se pudieron abrir desde el entorno de trabajo. "
-            "Las secciones 7 a 10 se basan en las transcripciones automáticas de las partes 1–4 de How New Students Should Start (31/08 a principios de septiembre de 2026) "
+            "Las secciones 7 a 11 se basan en las transcripciones automáticas de las partes 1–5 de How New Students Should Start (31/08 a septiembre de 2026) "
             "aportadas por el lector. Fuentes consultadas:", NOTE),
           *[Paragraph(x, ParagraphStyle("src", parent=NOTE, leftIndent=12, bulletIndent=2),
                       bulletText="–") for x in [
@@ -974,6 +1085,7 @@ def build():
               "Lección en directo de ICT, 01/09/2026 (NQ): How New Students Should Start Part 2: youtube.com/watch?v=djabvhihIM8",
               "Lección grabada de ICT, 02/09/2026: How New Students Should Start Part 3: youtube.com/watch?v=MB7clEZvF7s",
               "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 4 \\ Pillars Of Daily Log Entries: youtube.com/watch?v=L81eMQhmXmc",
+              "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 5 \\ Back Testing Properly: youtube.com/watch?v=xnbtp_j81lI",
               "Backtest TTFM de este repositorio: report/TTFM_Report.pdf y results/summary.json.",
           ]]]
 
