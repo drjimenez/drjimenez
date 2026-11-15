@@ -216,7 +216,8 @@ def build():
             "stop \"financiado\". En la parte 2 (sección 8), con un hueco enorme y una mañana de "
             "consolidación, busca un objetivo donde coinciden dos niveles y confirma cada paso con "
             "cierres sobre el 50 % de las mechas. En la parte 3 (sección 9) explica cómo organiza "
-            "toda esa información en cinco layouts separados."),
+            "toda esa información en cinco layouts separados, y en la parte 4 (sección 10) propone "
+            "una rutina diaria de registro de tres fenómenos medibles."),
           P("Es la misma lógica que mecaniza el modelo TTFM de este repositorio (sweep de C1 por C2 y "
             "CISD en temporalidad baja). Pero ICT añade capas de contexto (sesgo HTF, nivel de "
             "liquidez concreto, premium/descuento, hora, SMT) que el backtest no incluía. Eso explica "
@@ -772,8 +773,106 @@ def build():
             "los octavos de un FVG diario o de un hueco frente a niveles colocados al azar con la "
             "misma densidad. Es la prueba clave de la idea del \"mercado algorítmico\".", BOX)]
 
-    # 10. Checklist
-    s += [PageBreak(), P("10. Lista de comprobación antes de operar", H1),
+    # 10. Parte 4
+    s += [PageBreak(), P("10. <i>How New Students Should Start, Part 4</i>: los tres pilares del "
+                         "registro diario", H1),
+          P("Lección corta y muy práctica, grabada antes del Labor Day (lunes 7 de septiembre de 2026). "
+            "Aquí no enseña a operar, sino una <b>rutina de unos 20 minutos al día</b> para entrenar el "
+            "ojo: registrar con capturas de pantalla tres fenómenos que, según él, \"se repiten cada "
+            "día, a una hora concreta y de una forma concreta\". Insiste en que <b>no es backtesting</b>; "
+            "eso lo deja para la parte 5."),
+          *Q("You don't have to have everything I teach. In fact, the worst thing I see happen is new "
+             "students… try to learn as much as they can as fast as they can… only to find out they "
+             "haven't learned anything.",
+             "No necesitas todo lo que enseño. Lo peor que veo es a alumnos nuevos que intentan aprender "
+             "todo lo más rápido posible… y descubren que no han aprendido nada."),
+          P("10.1 Plan de seis semanas", H2),
+          table([
+              ["Semanas", "Qué hacer"],
+              ["1–2", "Solo un pilar (el que elijas)."],
+              ["3–4", "Añadir un segundo pilar."],
+              ["5–6", "Añadir el tercero. A partir de ahí, los tres cada día."],
+              ["Además", "Repetir lo mismo con <b>6 semanas de datos pasados</b>, para terminar con "
+               "<b>12 semanas</b> registradas. <b>Un solo mercado: NQ</b>, aunque luego vayas a operar "
+               "otro. Nada de Asia ni Londres al principio."],
+              ["Alumnos con experiencia", "Pueden hacer los tres a la vez desde el principio, pero no "
+               "saltarse la fase de registro."],
+          ], [3.4 * cm, W - 3.4 * cm]),
+          P("10.2 Pilar 1: la sesión premarket (07:00–09:00 NY)", H2),
+          *bullets(["Trazar líneas verticales a las 07:00 y a las 09:00 y marcar el <b>máximo y el "
+                    "mínimo</b> de ese tramo, más los <b>máximos o mínimos relativamente iguales</b> "
+                    "(pools de liquidez).",
+                    "Clasificar el tramo: <b>¿tendencia o consolidación?</b> (en la mentoría de 2016 "
+                    "distingue cuatro fases: expansión, retroceso, reversión y consolidación; aquí lo "
+                    "simplifica a dos).",
+                    "Usarlo como pista del comportamiento tras las 09:30. En su ejemplo, el premarket "
+                    "fue en tendencia y, tras una pequeña expansión a las 09:30, el resto del día "
+                    "consolidó. La explicación es algo ambigua; lo que pide es <b>registrar la "
+                    "relación cada día</b> para descubrirla uno mismo. \"No es una panacea\".",
+                    "Setup \"de pan con mantequilla\": barrido de los mínimos iguales del premarket y "
+                    "objetivo en el extremo opuesto de ese rango. Al llegar, \"has terminado por hoy\".",
+                    "Qué anotar: máximo, mínimo, pools de liquidez (con precios), estado (tendencia o "
+                    "consolidación) y <b>cuántos minutos después de las 09:30</b> reaccionó el precio "
+                    "en esos niveles."]),
+          P("10.3 Pilar 2: el 50 % del hueco de apertura (RTH)", H2),
+          *bullets(["Gráfico de <b>1 minuto en horario regular (RTH)</b>. El hueco va del último precio "
+                    "de las 16:14 del día anterior a la apertura de las 09:30.",
+                    "Dibujar un rectángulo con la línea media activada: esa línea es el "
+                    "<b>consequent encroachment (CE)</b>.",
+                    "Registrar <b>si el precio llega al CE y cuándo</b>. Repite la cifra del 70 % antes "
+                    "de las 10:00, pero ahora añade: <b>\"no me toméis la palabra… llevad el registro y "
+                    "calculad la estadística a final de año\"</b>.",
+                    "Uso práctico: el CE como objetivo para cualquier FVG u order block a favor, sin "
+                    "necesidad de esperar al cierre completo del hueco."]),
+          P("10.4 Pilar 3: Silver Bullet, primer FVG después de las 10:00", H2),
+          *bullets(["En el gráfico de 1 minuto, buscar el <b>primer FVG que se forma desde la vela de "
+                    "las 10:00</b> (esa vela puede contar). Incluir los volume imbalances (cuerpos que "
+                    "no se tocan) en el FVG.",
+                    "Extenderlo a la derecha hasta que el precio vuelva a él. Desde ahí, el movimiento "
+                    "esperado es hacia el mínimo (o máximo) de corto plazo más cercano: la sell side o "
+                    "la buy side.",
+                    "Qué anotar: <b>hora de formación</b> (p. ej., 10:01), <b>minutos hasta el "
+                    "retorno</b> al FVG y <b>recorrido en puntos</b> desde el retorno hasta el "
+                    "extremo alcanzado.",
+                    "Al principio se registra a posteriori, sin intentar adivinar la dirección. La "
+                    "anticipación llega con la repetición."]),
+          P("10.5 Plantilla de registro diario", H2),
+          P("Tabla basada en lo que pide anotar en la lección, para copiar en una hoja de cálculo o un "
+            "diario electrónico (sugiere etiquetas que permitan buscar por fecha y tema):", NOTE),
+          table([
+              ["Pilar", "Campos", "Etiqueta sugerida"],
+              ["1. Premarket", "Fecha · máximo 07–09 · mínimo 07–09 · máximos/mínimos iguales (precio) · "
+               "estado (tendencia/consolidación) · ¿qué pool se tomó tras las 09:30? · hora de la "
+               "reacción · comportamiento del resto del día", "premarket-estado, premarket-liquidez"],
+              ["2. Hueco RTH", "Cierre 16:14 · apertura 09:30 · tamaño del hueco · dirección (premium o "
+               "descuento) · CE · ¿llegó al CE? · hora · ¿antes de las 10:00? · ¿cerró el hueco "
+               "completo?", "rth-gap-ce"],
+              ["3. Silver Bullet", "Hora del primer FVG ≥ 10:00 · alcista/bajista · límites del FVG · "
+               "minutos hasta el retorno · objetivo (buy/sell side) · ¿lo alcanzó? · recorrido en "
+               "puntos", "silver-bullet-10am"],
+              ["Notas", "Observaciones, captura centrada con espacio para anotar y revisión del fin de "
+               "semana", "revisión-semanal"],
+          ], [2.6 * cm, W - 6.4 * cm, 3.8 * cm]),
+          P("10.6 Método y actitud", H2),
+          *bullets(["<b>Tres capturas al día</b>, centradas del máximo al mínimo y con espacio libre "
+                    "para escribir observaciones. \"Si no puedes hacer esto, te prometo que no podrás "
+                    "seguir las reglas de un modelo\".",
+                    "Revisar las capturas el sábado o el domingo, con el mercado parado: aparecen "
+                    "detalles que se pasaron por alto.",
+                    "Orden y limpieza \"como si yo fuera tu profesor y pusiera nota\": es \"una señal de "
+                    "carácter\". El diario será \"una máquina del tiempo\" años después.",
+                    "Él lo hace cada día a mano en libretas de cuero; recomienda el formato electrónico "
+                    "porque permite buscar. \"No es Netflix and chill viendo vídeos de ICT\"."]),
+          Spacer(1, 4),
+          P("Valoración: es la lección más fácil de aplicar y la más útil para comprobar el método. Los "
+            "tres pilares están definidos por <b>hora y precio</b>, sin interpretación, así que se pueden "
+            "medir de forma objetiva: frecuencia con la que el precio llega al CE del hueco antes de las "
+            "10:00, relación entre el estado del premarket y el resto del día, y tasa de acierto del "
+            "primer FVG después de las 10:00. Requieren datos de 1 minuto del futuro NQ real (sesión "
+            "regular), no los proxies 24/7 del backtest TTFM.", BOX)]
+
+    # 11. Checklist
+    s += [PageBreak(), P("11. Lista de comprobación antes de operar", H1),
           P("Esta lista recoge los puntos que ICT verifica de forma explícita o implícita en sus "
             "revisiones. Si alguno falla, lo habitual es que no opere:"),
           table([
@@ -800,7 +899,7 @@ def build():
               ["15", "¿Ya hice mi trade del día o alcancé mi objetivo semanal?", ""],
           ], [0.8 * cm, W - 2.8 * cm, 2.0 * cm]),
           Spacer(1, 8),
-          P("11. Gestión del riesgo y psicología", H1),
+          P("12. Gestión del riesgo y psicología", H1),
           *bullets(["Arriesga poco por operación (habla de 1 % o menos y de reducirlo tras pérdidas).",
                     "Pocas operaciones: prefiere un setup de alta probabilidad a muchas entradas.",
                     "Cierres parciales en liquidez interna y protección del stop.",
@@ -810,8 +909,8 @@ def build():
                     "Advierte que su contenido en YouTube es gratuito y que no pide dinero ni gestiona "
                     "fondos de nadie: quien se presente como ICT pidiendo dinero es falso."])]
 
-    # 12. Valoración
-    s += [P("12. Valoración crítica", H1),
+    # 13. Valoración
+    s += [P("13. Valoración crítica", H1),
           P("Puntos fuertes", H2),
           *bullets(["Da un <b>marco coherente</b>: contexto HTF, zona, hora y gatillo, cada uno con un "
                     "papel claro. Obliga a pensar en dónde están los stops de los demás.",
@@ -846,14 +945,15 @@ def build():
             "y extremos de Asia y Londres; ventana = killzone en hora de Nueva York; entrada = FVG "
             "tras un MSS. Después, medir cada filtro por separado con datos reales del subyacente y "
             "un análisis <i>walk-forward</i>. Así se separa lo que aporta ventaja de lo que solo es "
-            "narrativa.", BOX)]
+            "narrativa. El punto de partida natural son los tres pilares de la parte 4 (premarket, "
+            "CE del hueco RTH y Silver Bullet de las 10:00), porque ya están definidos por hora y precio.", BOX)]
 
     # Fuentes
     s += [P("Fuentes y método", H1),
           P("No se han podido ver los vídeos directamente. La parte general del informe combina el contenido público del "
             "canal tal como lo recogen notas y resúmenes, y búsquedas web del 15 de noviembre de 2026. "
             "Las páginas de resúmenes de vídeos no se pudieron abrir desde el entorno de trabajo. "
-            "Las secciones 7, 8 y 9 se basan en las transcripciones automáticas de las lecciones del 31/08, el 01/09 y el 02/09/2026 "
+            "Las secciones 7 a 10 se basan en las transcripciones automáticas de las partes 1–4 de How New Students Should Start (31/08 a principios de septiembre de 2026) "
             "aportadas por el lector. Fuentes consultadas:", NOTE),
           *[Paragraph(x, ParagraphStyle("src", parent=NOTE, leftIndent=12, bulletIndent=2),
                       bulletText="–") for x in [
@@ -873,6 +973,7 @@ def build():
               "Lección en directo de ICT, 31/08/2026 (NQ): How New Students Should Start Part 1: youtube.com/watch?v=BWEPtHZ1Y2Y",
               "Lección en directo de ICT, 01/09/2026 (NQ): How New Students Should Start Part 2: youtube.com/watch?v=djabvhihIM8",
               "Lección grabada de ICT, 02/09/2026: How New Students Should Start Part 3: youtube.com/watch?v=MB7clEZvF7s",
+              "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 4 \\ Pillars Of Daily Log Entries: youtube.com/watch?v=L81eMQhmXmc",
               "Backtest TTFM de este repositorio: report/TTFM_Report.pdf y results/summary.json.",
           ]]]
 
