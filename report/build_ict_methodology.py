@@ -319,7 +319,7 @@ def build():
               ["First presented FVG (y variantes)", "Primer FVG después de las 09:30. <b>Con "
                "desplazamiento</b>: el primero cuyo tramo rompe un máximo o mínimo. <b>Reflection</b>: el "
                "primer FVG de sentido contrario al primero.", "Zonas de referencia para ese día y los "
-               "siguientes (ver 11.7)."],
+               "siguientes (ver 11.6)."],
               ["Turtle Soup", "Barrido falso de un máximo o mínimo antiguo que se revierte.",
                "Entrada contra la ruptura."],
           ], [3.3 * cm, 7.5 * cm, W - 10.8 * cm]),
@@ -956,7 +956,7 @@ def build():
                     "reglas, por ejemplo la del first presented FVG con desplazamiento.",
                     "La IA \"nunca podrá\" leer una vela mientras se forma; el ser humano sí. Compara "
                     "el backtesting con los diagramas que estudia un cirujano antes de operar."]),
-          P("11.7 Ampliación: <i>NQ Futures Review &amp; 1st Presented Reflection FVG</i> (08/09/2026)", H2),
+          P("11.6 Ampliación: <i>NQ Futures Review &amp; 1st Presented Reflection FVG</i> (08/09/2026)", H2),
           P("Al día siguiente de la parte 5 (martes tras el Labor Day) aclara las reglas que, según él, "
             "faltan a quienes prueban sus conceptos. Distingue <b>tres PD arrays</b>:"),
           table([
@@ -983,7 +983,28 @@ def build():
                     "Dice tener \"81\" PD arrays y que no hace falta conocerlos todos."]),
           P("Medido con estas definiciones en 755 sesiones (informe de medición, sección 5), ni el FPD "
             "ni el FPR se distinguen de cualquier otro FVG de 1 minuto.", NOTE),
-          P("11.6 Valoración de su método de backtesting", H2),
+          P("11.7 Ampliación: <i>Trading Premarket and Regular Session Liquidity</i> (18/09/2025)", H2),
+          P("Revisión de una sesión de NQ (y del DXY y el EUR/USD) en una semana alcista cerca de máximos "
+            "históricos. Reglas que aporta:"),
+          *bullets(["<b>Cerca de máximos históricos</b>: dividir en cuartos (25, 50 y 75 %) todas las "
+                    "mechas premium y discount de las velas diarias recientes de la subida. \"No intentes "
+                    "adivinar el techo\".",
+                    "<b>Jueves</b>: en una semana alcista, el jueves forma el máximo de la semana o un "
+                    "\"máximo falso\" que se rompe después.",
+                    "<b>Premarket y 08:30</b>: a las 07:00 empieza un tramo hacia la liquidez; justo antes de "
+                    "la noticia de las 08:30 barre la buy side y vende hacia la sell side del premarket. "
+                    "Como opera <i>contra</i> el sesgo diario, sale en el objetivo más fácil.",
+                    "<b>Lunch macro</b>: en días alcistas, hacia las 11:30 el precio busca la primera sell "
+                    "side destacada formada después de las 10:00 (lo simétrico en días bajistas).",
+                    "<b>Reclaimed FVG</b>: un FVG que el precio supera y luego recupera su sentido original "
+                    "(no es un inversion FVG). Dentro de él, el precio \"distorsiona el tiempo\" y consolida.",
+                    "Otros: el <i>Market Maker Sell Model</i> visto como fractal en 1 minuto, el patrón "
+                    "<i>Venom</i>, el <i>institutional order flow entry drill</i> (un FVG que el precio solo "
+                    "roza con una vela) y una operación con su algoritmo \"Enigma\"."]),
+          P("Medido en 755 sesiones (informe de medición, sección 6): la lunch macro no busca la liquidez "
+            "contraria más que la favorable; el patrón del jueves aparece igual con los días barajados al "
+            "azar; y el barrido del premarket en torno a las 08:30 no da ventaja (−0,16 R netos).", NOTE),
+          P("11.8 Valoración de su método de backtesting", H2),
           table([
               ["Aspecto", "Lo útil", "El problema"],
               ["Entradas y stops", "Reglas concretas y conservadoras: CE − 1 tick, stop + 1 tick, "
@@ -1119,6 +1140,7 @@ def build():
               "Lección en directo de ICT, 01/09/2026 (NQ): How New Students Should Start Part 2: youtube.com/watch?v=djabvhihIM8",
               "Lección grabada de ICT, 02/09/2026: How New Students Should Start Part 3: youtube.com/watch?v=MB7clEZvF7s",
               "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 4 \\ Pillars Of Daily Log Entries: youtube.com/watch?v=L81eMQhmXmc",
+              "Lección de ICT, 18/09/2025: Trading Premarket and Regular Session Liquidity",
               "Revisión de ICT, 08/09/2026: NQ Futures Review & 1st Presented Reflection FVG: youtube.com/watch?v=9W4YpyAg5RY",
               "Lección grabada de ICT, septiembre de 2026: How New Students Should Start Part 5 \\ Back Testing Properly: youtube.com/watch?v=xnbtp_j81lI",
               "Backtest TTFM de este repositorio: report/TTFM_Report.pdf y results/summary.json.",

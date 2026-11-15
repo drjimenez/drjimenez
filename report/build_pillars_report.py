@@ -40,6 +40,8 @@ def build():
     S = json.loads((RES / "summary.json").read_text())
     d, p1, p2, p3 = S["data"], S["pillar1"], S["pillar2"], S["pillar3"]
     fc = S["fvg_classes"]
+    X = json.loads((RES / "extra_summary.json").read_text())
+    lm, th, pre = X["lunch_macro"], X["thursday"], X["pre830"]
     W = A4[0] - 4 * cm
     t1 = pd.read_csv(RES / "pillar1_trades.csv")
     t1["y"] = t1["date"].str[:4]
@@ -62,7 +64,7 @@ def build():
     sb = p3["10:00 (Silver Bullet)"]["stats"]
     st = p1["setup_sweep_opposite"]
     s += [P("Resumen", H1),
-          P("Se midieron las afirmaciones concretas de las partes 1–5 con reglas fijadas de antemano y, "
+          P("Se midieron las afirmaciones concretas de las partes 1–5 de la serie y de dos vídeos más de ICT con reglas fijadas de antemano y, "
             "siempre que fue posible, frente a un <b>control</b>: el mismo cálculo en un nivel u hora "
             "donde ICT no espera nada especial. Si la idea de ICT es correcta, su nivel u hora debería "
             "salir claramente mejor que el control."),
@@ -95,6 +97,16 @@ def build():
                f"{num(fc['groups']['First presented reflection (FPR)']['R_net'])} R, resto de FVG "
                f"{num(fc['groups']['Resto de FVG (control)']['R_net'])} R (netos).",
                "No se confirma"],
+              ["Lunch macro: en días alcistas busca la sell side formada después de las 10:00",
+               "Entre 11:30 y 13:00 se alcanza igual o menos que la liquidez a favor del sesgo, a igual distancia.",
+               "No se confirma"],
+              ["En semanas alcistas, el máximo se forma el jueves o el viernes lo rompe",
+               f"{pct(th['thu_or_fri_high'][0])} de las semanas alcistas, frente a "
+               f"{pct(th['thu_or_fri_high_perm_pct'])} con los días barajados al azar.",
+               "Cierto, pero es aritmética, no un patrón"],
+              ["Barrido del rango 07:00–08:29 tras la noticia de las 08:30 → extremo opuesto",
+               f"{pre['all']['n']} operaciones, {num(pre['all']['R_net'])} R netos "
+               f"(IC {ci(pre['all']['R_net_ci'])}).", "Sin ventaja"],
           ], [5.0 * cm, 8.0 * cm, W - 13.0 * cm]),
           Spacer(1, 6),
           P("<b>Conclusión.</b> Ninguno de los fenómenos concretos que ICT presenta como "
@@ -266,11 +278,56 @@ def build():
             "información útil para operar el FVG. Encaja con lo visto en el Silver Bullet: el FVG de 1 "
             "minuto es un patrón muy frecuente y, por sí solo, no da ventaja.", BOX)]
 
+    # Otras reglas
+    s += [PageBreak(), P("6. Otras reglas: <i>Trading Premarket and Regular Session Liquidity</i> (18/09/2025)", H1),
+          P("Tres reglas concretas de este vídeo, medidas en las mismas sesiones."),
+          P("Lunch macro", H2),
+          P("<b>Regla de ICT:</b> \"cuando el mercado es alcista, la lunch macro buscará la sell side… la "
+            "primera liquidez destacada formada después de las 10:00\", a partir de las 11:30. "
+            "<b>Medición:</b> día alcista = precio a las 11:29 por encima de la apertura de las 09:30. "
+            "Liquidez = primer mínimo (máximo) fractal de 5 velas formado entre las 10:00 y las 11:29 y "
+            "aún no tomado. ¿Se alcanza entre las 11:30 y las 13:00? <b>Control:</b> la liquidez del lado "
+            "a favor del sesgo, a igual distancia (en días bajistas, lo simétrico)."),
+          table([["Distancia al precio", "Contra el sesgo (n)", "Alcanzada", "A favor (n)", "Alcanzada", "p"]] +
+                [[r["dist_pct"].replace("(", "").replace("]", "").replace(", ", "–").replace(".", ",") + " %",
+                  r["n_counter"], pct(r["hit_counter"][0]), r["n_with"], pct(r["hit_with"][0]), pv(r["p"])]
+                 for r in lm["counter_vs_with_by_distance"]],
+                [3.6 * cm, 3.0 * cm, 2.2 * cm, 2.4 * cm, 2.2 * cm, W - 13.4 * cm]),
+          P(f"En días alcistas, esa sell side se alcanza el {pct(lm['bull_days_ssl_hit'][0])} de las veces "
+            f"(distancia mediana {pct(lm['bull_days_ssl_dist_median'], 2)}). Contra el sesgo se alcanza "
+            "<i>menos</i> que a favor, no más.", NOTE),
+          P("El jueves de las semanas alcistas", H2),
+          P("<b>Regla:</b> en una semana alcista \"el máximo de la semana se forma el jueves, o es un máximo "
+            "falso y el viernes lo rompe\". <b>Control:</b> las mismas semanas con el orden de sus cinco "
+            f"días barajado 200 veces (mismos movimientos, otro orden). {th['up_weeks']} semanas alcistas "
+            f"completas de {th['weeks']}."),
+          table([["Día del máximo semanal", "Lun", "Mar", "Mié", "Jue", "Vie"],
+                 ["Real"] + [pct(v, 0) for v in th["up_week_high_day_pct"].values()],
+                 ["Días barajados"] + [pct(v, 0) for v in th["perm_high_day_pct"].values()]],
+                [4.4 * cm] + [2.0 * cm] * 5),
+          P(f"Si el jueves marca el máximo hasta ese momento, el viernes lo rompe el "
+            f"{pct(th['fri_breaks_thu_given_thu_high'][0])} de las veces frente al "
+            f"{pct(th['fri_breaks_thu_given_thu_high_perm_pct'])} con los días barajados. En una semana que "
+            "termina al alza, el máximo cae casi siempre al final por pura aritmética.", NOTE),
+          P("Barrido del premarket alrededor de las 08:30", H2),
+          P("<b>Regla</b> (su operación de ese día): el precio rompe un extremo del rango 07:00–08:29 entre "
+            "las 08:30 y las 09:29 y vuelve dentro; se entra al cierre de la vela, stop más allá del barrido, "
+            "objetivo en el extremo opuesto, salida a las 12:00."),
+          table([["Grupo", "n", "Acierto", "R bruto", "R neto", "IC 95 % (neto)", "R:R mediano"]] +
+                [[k, v["n"], pct(v["win_pct"]), num(v["R_gross"]), num(v["R_net"]), ci(v["R_net_ci"]),
+                  str(v["planned_rr_median"]).replace(".", ",")]
+                 for k, v in [("Todas", pre["all"]), ("Largos", pre["long"]), ("Cortos", pre["short"])]],
+                [3.0 * cm, 1.4 * cm, 1.9 * cm, 1.9 * cm, 1.9 * cm, 3.0 * cm, W - 13.1 * cm]),
+          P("Rango pequeño, stop corto y objetivo lejano (R:R mediano de 6): casi siempre salta el stop. A "
+            "diferencia del barrido del rango 07:00–09:00 tras la apertura (sección 2), aquí no hay "
+            "resultado positivo.", NOTE)]
+
     # Conclusiones
-    s += [P("6. Conclusiones y siguientes pasos", H1),
+    s += [P("7. Conclusiones y siguientes pasos", H1),
           *bullets(["<b>Las afirmaciones cuantitativas no se sostienen.</b> El 70 % del hueco, las "
                     "proyecciones \"al tick\", el poder de los niveles iguales, la ventaja horaria del "
-                    "Silver Bullet y la importancia del FVG con desplazamiento o \"reflection\" desaparecen al compararlos con un control. Encajan con lo que se "
+                    "Silver Bullet, la importancia del FVG con desplazamiento o \"reflection\", la lunch macro y "
+                    "el jueves de las semanas alcistas desaparecen al compararlos con un control. Encajan con lo que se "
                     "esperaría de la volatilidad normal y del sesgo retrospectivo (sección 11 del informe "
                     "de metodología).",
                     "<b>Lo que sí es útil:</b> los tres pilares son una forma ordenada de mirar el mercado "
