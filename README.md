@@ -126,6 +126,24 @@ retornos mensuales, sensibilidad, análisis bruto frente a neto, limitaciones y 
 - **Alineación HTF:** las velas HTF se alinean a 00:00 UTC. En instrumentos con sesión, TradingView
   las alinea según la sesión del símbolo.
 
+## Estudio de la metodología ICT
+
+- `report/ICT_Metodologia_Michael_Huddleston.pdf`: cómo analiza Michael J. Huddleston (ICT) un gráfico,
+  con el análisis de las cinco partes de *How New Students Should Start* (generado por
+  `report/build_ict_methodology.py`).
+- `report/ICT_Tres_Pilares_Medicion.pdf`: medición estadística de los "tres pilares" (premarket,
+  50 % del hueco de apertura y Silver Bullet) en 755 sesiones del Nasdaq 100 de 1 minuto
+  (oct 2023 – nov 2026), siempre frente a un control.
+
+```bash
+python3 backtest/ict_pillars.py           # descarga NSXUSD de histdata.com a data/ y escribe results/ict_pillars/
+python3 report/build_pillars_report.py    # genera el PDF
+```
+
+Datos: NSXUSD de histdata.com (idéntico a USATECHIDXUSD de Dukascopy; `backtest/dukascopy_loader.py`
+queda como alternativa, pero Dukascopy limita las descargas). Ojo: las horas de histdata son UTC−5 con el
+horario de verano europeo; `backtest/histdata_loader.py` las convierte a hora de Nueva York.
+
 ## Posibles mejoras (hipótesis a validar)
 
 - Filtrar las entradas por sesiones (*killzones* de Londres y Nueva York).

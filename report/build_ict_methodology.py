@@ -1039,8 +1039,11 @@ def build():
                     "<b>Densidad de niveles</b>: con decenas de niveles (octavos de varios FVG y "
                     "huecos), casi cualquier giro coincide con alguno. Hay que compararlo con niveles "
                     "al azar antes de atribuirlo a un algoritmo (ver sección 9).",
-                    "<b>Estadísticas sin fuente</b>: el \"70 % de medio hueco antes de las 10:00\" "
-                    "es comprobable y convendría medirlo con datos propios.",
+                    "<b>Estadísticas que no se confirman</b>: medido en 755 sesiones del Nasdaq 100 "
+                    "(informe aparte <i>ICT_Tres_Pilares_Medicion.pdf</i>), el 50 % del hueco se alcanza "
+                    "antes de las 10:00 el 53 % de los días, no el 70 %, y un nivel a la misma distancia "
+                    "en el lado contrario se alcanza igual de a menudo. Tampoco destacan las proyecciones "
+                    "−1 del hueco, los niveles iguales ni la hora del Silver Bullet.",
                     "<b>Narrativa difícil de falsar</b>: la idea de un algoritmo interbancario no se "
                     "puede comprobar, y casi cualquier movimiento admite una explicación a "
                     "posteriori.",
