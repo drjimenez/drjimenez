@@ -209,6 +209,11 @@ def build():
             "fair value gap → retroceso al FVG → expansión hacia la liquidez opuesta</b>. Es la "
             "secuencia de su <i>2022 Mentorship Model</i> y la versión intradía de su "
             "<i>Power of Three</i> (acumulación, manipulación, distribución)."),
+          P("En su lección en directo del 31 de agosto de 2026 (sección 7) deja clara su prioridad: "
+            "<b>primero mapear el draw on liquidity sin entradas</b> (calendario económico, niveles "
+            "mensuales y diarios, FVG diarios en octavos, huecos de apertura) y después leer cómo "
+            "responde el precio en las macros horarias, gestionando cada operación con parciales y "
+            "stop \"financiado\"."),
           P("Es la misma lógica que mecaniza el modelo TTFM de este repositorio (sweep de C1 por C2 y "
             "CISD en temporalidad baja). Pero ICT añade capas de contexto (sesgo HTF, nivel de "
             "liquidez concreto, premium/descuento, hora, SMT) que el backtest no incluía. Eso explica "
@@ -329,8 +334,9 @@ def build():
               ["New York PM", "13:30 – 16:00", "Segunda oportunidad en índices."],
               ["Silver Bullet", "03–04, 10–11 y 14–15", "Primer FVG que aparece en la ventana, "
                "a favor del draw on liquidity."],
-              ["Macros", "p. ej., 09:50–10:10, 10:50–11:10", "Tramos de unos 20 minutos en los que, "
-               "según él, el algoritmo busca liquidez o rebalancea."],
+              ["Macros", "Cada hora, de xx:50 a xx:10 (08:50–09:10, 09:50–10:10…)", "Los últimos 10 "
+               "minutos de una hora y los 10 primeros de la siguiente. No indican dirección: marcan "
+               "cuándo el precio debería \"arrancar\" hacia lo que ya esperabas (ver sección 7)."],
           ], [3.6 * cm, 4.2 * cm, W - 7.8 * cm]),
           Spacer(1, 6),
           P("Power of Three (AMD)", H2),
@@ -401,8 +407,160 @@ def build():
           ], [4.4 * cm, W - 4.4 * cm])]),
           ]
 
-    # 7. Checklist
-    s += [PageBreak(), P("7. Lista de comprobación antes de operar", H1),
+    # 7. Transcripción
+    QUOTE = ParagraphStyle("Q", parent=BODY, fontName="DV-I", fontSize=8.8, leading=12.4,
+                           leftIndent=14, rightIndent=10, textColor=colors.HexColor("#333333"),
+                           borderColor=ACCENT, borderWidth=0, spaceBefore=2, spaceAfter=6)
+
+    def Q(en, es):
+        return [Paragraph(f"«{en}»", QUOTE),
+                Paragraph(f"→ {es}", ParagraphStyle("Qes", parent=NOTE, leftIndent=14, spaceAfter=8))]
+
+    s += [PageBreak(), P("7. En sus propias palabras: lección en directo del 31 de agosto de 2026", H1),
+          P("Esta sección analiza la transcripción de una lección en directo sobre futuros del Nasdaq "
+            "(NQ, contrato de septiembre de 2026). Por la fecha y el contenido parece ser "
+            "<i>How New Students Should Start, Part 1</i>. Michael se la explica a dos alumnos que "
+            "empiezan, preparando la semana y luego leyendo el precio en tiempo real hasta pasada la "
+            "apertura de las 09:30. Es muy útil porque muestra su proceso <b>antes</b> de que se "
+            "conozca el resultado, no en una revisión a posteriori."),
+          P("7.1 Preparación de la semana (sábado o domingo)", H2),
+          *bullets(["<b>Calendario económico</b> (Forex Factory, filtrado por USD). Solo le importan "
+                    "las noticias de impacto alto (rojo) y medio (naranja), y anota <b>a qué hora y qué "
+                    "día</b> caen: son \"las grandes olas que interfieren con el reparto normal del "
+                    "precio\".",
+                    "<b>Semana de nóminas no agrícolas (NFP)</b>: el lunes es el día en que hay que "
+                    "estar sentado buscando setup; el miércoles es seguro hasta las 11:00; un alumno "
+                    "nuevo <b>no opera jueves ni viernes</b>, solo estudia. Desmiente que diga \"nunca "
+                    "operes los lunes\": los demás lunes son \"a suerte\" según la experiencia.",
+                    "<b>Noticia a las 10:00</b>: espera los primeros 30 minutos, deja salir el dato y "
+                    "opera lo que queda \"en la estela\".",
+                    "<b>Estacionalidad</b>: de septiembre a fin de año el precio se reparte \"mucho "
+                    "más limpio\" por los motores económicos de las fiestas."]),
+          *Q("Monday is pure price action… Every Monday of non-farm payroll is a day that you should be "
+             "drilled in and trying to find a setup.",
+             "El lunes es acción del precio pura. Cada lunes de la semana de NFP tienes que estar "
+             "concentrado buscando un setup."),
+          P("7.2 Cómo prepara el gráfico, paso a paso", H2),
+          table([
+              ["Paso", "Qué hace en la lección"],
+              ["1. Mensual", "Marca máximo, mínimo y cierre del mes anterior (julio y agosto), con "
+               "etiqueta en negro y negrita, a la derecha, <b>visibles en todas las temporalidades</b>. "
+               "La apertura mensual no le importa: \"queda absorbida\" en el hueco de apertura semanal "
+               "(NWOG)."],
+              ["2. Diario: dónde estamos", "\"Primer asunto: dónde estamos respecto al rango más "
+               "reciente\". Mide el equilibrio (50 %): en la mitad superior del rango de julio y "
+               "ligeramente en descuento en el de agosto."],
+              ["3. Liquidez", "El máximo mensual ya es buy-side liquidity, sin más etiquetas. Marca un "
+               "mínimo aislado como \"sell-side liquidity\" en rojo."],
+              ["4. Ineficiencias diarias", "Sombrea en gris un BISI diario (FVG alcista) y lo divide en "
+               "<b>octavos</b> (0,125 = 29.451; 50 % = 29.211,25). Un SIBI con volume imbalance arriba y "
+               "abajo lo llama <b>suspension block</b>: lo sombrea en rojo (premium) con líneas más "
+               "gruesas por ser diario."],
+              ["5. 1H → 15m → 5m → 1m", "Comprueba que todo se ve en cada temporalidad. Marca "
+               "máximos iguales relativos barridos (viernes, 10:00), el <i>first presented FVG</i> del "
+               "21 de agosto y liquidez menor con líneas cortas: azul = buy side, rojo = sell side, "
+               "siempre los mismos colores."],
+              ["6. Hueco de apertura (RTH)", "Línea morada en el cierre del viernes (\"settlement\"). "
+               "A las 09:30 la renombra como máximo o mínimo del <b>opening range gap</b> según abra "
+               "por debajo (hueco en descuento) o por encima (hueco en premium)."],
+              ["7. Orden", "Usa varios <i>layouts</i>: uno de trabajo, otro solo con huecos NWOG/NDOG, "
+               "otro con opening range gaps y otro con first presented FVGs, para no saturar el gráfico."],
+          ], [3.4 * cm, W - 3.4 * cm]),
+          Spacer(1, 6),
+          *Q("What I'm fleshing out is how to arrive at draw on liquidity. Step by step… No entries "
+             "required. This is the first part of what you're supposed to learn.",
+             "Lo que estoy desarrollando es cómo llegar al draw on liquidity, paso a paso. No hacen "
+             "falta entradas. Esto es lo primero que tienes que aprender."),
+          P("7.3 Herramientas de lectura que usa en tiempo real", H2),
+          table([
+              ["Herramienta", "Cómo la usa"],
+              ["Mechas al 50 % (consequent encroachment)", "\"Las mechas son marcadores de "
+               "continuidad\". Divide cada mecha grande en dos: si va corto, quiere que los "
+               "<b>cuerpos</b> cierren por debajo de la mitad. Un cierre por encima es motivo de "
+               "preocupación (no de salida automática)."],
+              ["Octantes y cuadrantes", "Los niveles en octavos de un FVG diario funcionan como "
+               "objetivos y soportes intradía (el precio \"usa el octante superior\")."],
+              ["Inversion FVG", "Un FVG bajista que el precio supera y luego respeta como soporte "
+               "indica un posible mínimo de medio plazo. Si sigue actuando como resistencia, la "
+               "tesis bajista sigue viva."],
+              ["PD arrays anidados", "Un FVG encima del 50 % de una mecha: \"dos PD arrays juntos te "
+               "dan información inmediata\"."],
+              ["Immediate rebalance", "Vela que rellena el hueco en la siguiente sin dejar FVG. Lo "
+               "llama <b>\"uno de mis PD arrays más fuertes… no hay nada mejor\"</b>."],
+              ["Macros (xx:50–xx:10)", "No dan dirección; marcan cuándo debe \"animarse\" el precio. "
+               "Si consolida dentro de la macro, espera el movimiento justo al terminar (algo que dice "
+               "observar en los últimos años)."],
+              ["Hueco de apertura", "<b>\"La mitad del hueco se rellena antes de las 10:00 el 70 % de "
+               "las veces\"</b>. El cierre del hueco es \"valor justo en su sentido más puro\" y actúa "
+               "de imán cerca de las 09:30."],
+              ["Estructura", "Distingue máximos y mínimos de corto, medio y largo plazo. Los "
+               "movimientos importantes nacen en mínimos o máximos de medio plazo dentro de una macro."],
+          ], [4.0 * cm, W - 4.0 * cm]),
+          P("7.4 La sesión, tal como la narró", H2),
+          table([
+              ["Hora (NY)", "Lo que dijo y lo que pasó"],
+              ["Antes de las 08:30", "El precio rechaza el máximo del BISI diario y barre buy side "
+               "menor. Hipótesis: corto desde un volume imbalance hacia el octante inferior del FVG "
+               "diario (29.371) y luego hacia la sell side menor."],
+              ["08:30–08:50", "Caída de 55–60 puntos. Toma un parcial en el <b>event horizon</b> "
+               "(la mitad entre el nuevo mínimo y el nivel objetivo) y baja el stop justo encima del "
+               "último máximo (29.412), asegurando unos 30 puntos."],
+              ["08:50–09:10 (macro)", "El precio consolida en vez de bajar: \"eso es problemático\". "
+               "Tras las 09:10 se anima al alza y salta el stop hipotético, con beneficio."],
+              ["09:10–09:30", "Apertura en descuento: el cierre del viernes queda unos 47 puntos "
+               "más arriba. Predice que la apertura buscará el cierre del hueco."],
+              ["09:30", "\"Mirad cuánta energía… Boom. Hecho.\" El precio cierra el hueco en "
+               "segundos y lo supera."],
+              ["09:30–10:00", "Anticipa que bajarán a por los stops de los largos bajo el mínimo "
+               "reciente; ocurre. Señala un corto en un inversion FVG con immediate rebalance, con "
+               "stop un tick por encima del 50 % (mean threshold) de la vela alcista y objetivo en la "
+               "sell side."],
+          ], [3.0 * cm, W - 3.0 * cm]),
+          P("7.5 Gestión de la operación según la lección", H2),
+          *bullets(["<b>Parciales siempre</b>: con tres micros, saca uno en el event horizon; en "
+                    "otros casos, el 50–65 % bajo el primer mínimo. \"Hay gente que dice que tomar "
+                    "parciales es estúpido. Mira eso. ¿Es estúpido ahora?\"",
+                    "<b>Financiar la operación</b>: tras el parcial, el stop baja sobre el último "
+                    "máximo de corto plazo. Si salta, \"¿a quién le importa?\": ya cobraste. Así "
+                    "\"no dependes de tener razón\".",
+                    "<b>Tamaño</b>: si el stop correcto es demasiado grande, usa micros. Querer solo "
+                    "contratos grandes es \"mentalidad de jugador\".",
+                    "<b>Defensa</b>: si el precio hace lo que \"no debería\", no sale de golpe; "
+                    "reduce o ajusta. Cuanto más se aleja el precio de la entrada, más se \"construye "
+                    "la narrativa a favor\"."]),
+          P("7.6 Cómo dice que hay que aprender", H2),
+          *bullets(["Primero <b>tape reading</b> sin operar: mapear liquidez y draws, sin entradas.",
+                    "Solo demo o papel; dice que no está autorizado para enseñar a operar con dinero "
+                    "real. Las pruebas de cuentas fondeadas para principiantes son \"apostar\".",
+                    "Grabar la pantalla con el gráfico de 1 minuto todo el día y revisar de 09:30 a "
+                    "10:30 parando el vídeo: \"creo que va a hacer esto\", y comprobarlo.",
+                    "En cada punto de inflexión de la lección, hacer captura, anotar qué se esperaba "
+                    "y llevarlo al diario.",
+                    "Paciencia y disciplina desde el principio: \"lo que empiezas haciendo al "
+                    "principio tiende a quedarse contigo\"."]),
+          P("7.7 Qué añade o corrige respecto a las secciones anteriores", H2),
+          table([
+              ["Tema", "Antes (fuentes secundarias)", "Según la lección"],
+              ["Prioridad", "Modelo de entrada.", "Primero mapear el draw on liquidity; las entradas "
+               "vienen después."],
+              ["Stop", "Más allá del barrido.", "En la entrada por immediate rebalance: un tick por "
+               "encima del 50 % de la vela; luego se baja tras el parcial."],
+              ["Objetivos", "Liquidez interna y externa.", "Además: octantes del FVG diario, event "
+               "horizon y cierre del hueco de apertura (70 % de medio hueco antes de las 10:00)."],
+              ["Calendario", "Evitar noticias de alto impacto.", "Reglas por día de la semana de NFP; "
+               "esperar 30 minutos tras la noticia de las 10:00."],
+              ["Macros", "Ejemplos sueltos.", "Cada hora, xx:50–xx:10. Marcan el momento, no la "
+               "dirección."],
+              ["R:R", "Al menos 2:1.", "No lo menciona; prioriza parciales y stop financiado."],
+          ], [2.6 * cm, 5.0 * cm, W - 7.6 * cm]),
+          Spacer(1, 4),
+          P("Nota: las citas son traducciones de la transcripción automática de YouTube, que contiene "
+            "errores (por ejemplo, \"cibby\" = SIBI o BISI, \"germanine\" = germane). En un momento "
+            "dice \"non-farm payroll Friday\" cuando por el contexto se refiere al lunes de la semana "
+            "de NFP.", NOTE)]
+
+    # 8. Checklist
+    s += [PageBreak(), P("8. Lista de comprobación antes de operar", H1),
           P("Esta lista recoge los puntos que ICT verifica de forma explícita o implícita en sus "
             "revisiones. Si alguno falla, lo habitual es que no opere:"),
           table([
@@ -420,11 +578,12 @@ def build():
               ["8", "¿La entrada está en un PD array claro (FVG / OB / breaker / OTE)?", ""],
               ["9", "¿El stop está protegido detrás del barrido y el objetivo en liquidez visible, "
                "con R:R ≥ 2?", ""],
-              ["10", "¿Hay noticias de alto impacto en los próximos minutos?", ""],
-              ["11", "¿Ya hice mi trade del día o alcancé mi objetivo semanal?", ""],
+              ["10", "¿Revisé el calendario (rojo/naranja)? ¿Es jueves o viernes de semana de NFP? ¿Pasaron 30 min desde la noticia de las 10:00?", ""],
+              ["11", "¿Tengo un plan de parciales (event horizon) y de cuándo bajar el stop?", ""],
+              ["12", "¿Ya hice mi trade del día o alcancé mi objetivo semanal?", ""],
           ], [0.8 * cm, W - 2.8 * cm, 2.0 * cm]),
           Spacer(1, 8),
-          P("8. Gestión del riesgo y psicología", H1),
+          P("9. Gestión del riesgo y psicología", H1),
           *bullets(["Arriesga poco por operación (habla de 1 % o menos y de reducirlo tras pérdidas).",
                     "Pocas operaciones: prefiere un setup de alta probabilidad a muchas entradas.",
                     "Cierres parciales en liquidez interna y protección del stop.",
@@ -434,8 +593,8 @@ def build():
                     "Advierte que su contenido en YouTube es gratuito y que no pide dinero ni gestiona "
                     "fondos de nadie: quien se presente como ICT pidiendo dinero es falso."])]
 
-    # 9. Valoración
-    s += [P("9. Valoración crítica", H1),
+    # 10. Valoración
+    s += [P("10. Valoración crítica", H1),
           P("Puntos fuertes", H2),
           *bullets(["Da un <b>marco coherente</b>: contexto HTF, zona, hora y gatillo, cada uno con un "
                     "papel claro. Obliga a pensar en dónde están los stops de los demás.",
@@ -446,7 +605,12 @@ def build():
           *bullets(["<b>Mucha discreción</b>: qué swing cuenta, qué FVG es \"el bueno\", qué es "
                     "desplazamiento. Dos analistas pueden leer el mismo gráfico al revés.",
                     "<b>Revisiones a posteriori</b>: buena parte de los ejemplos se explica con el "
-                    "gráfico ya completado, lo que favorece el sesgo retrospectivo.",
+                    "gráfico ya completado, lo que favorece el sesgo retrospectivo. La lección del "
+                    "31 de agosto es una excepción valiosa: anticipa el cierre del hueco y la caza de "
+                    "stops antes de que ocurran, aunque su primera hipótesis (bajar al octante "
+                    "inferior) no se cumplió y la gestionó con parcial y stop financiado.",
+                    "<b>Estadísticas sin fuente</b>: el \"70 % de medio hueco antes de las 10:00\" "
+                    "es comprobable y convendría medirlo con datos propios.",
                     "<b>Narrativa difícil de falsar</b>: la idea de un algoritmo interbancario no se "
                     "puede comprobar, y casi cualquier movimiento admite una explicación a "
                     "posteriori.",
@@ -466,10 +630,11 @@ def build():
 
     # Fuentes
     s += [P("Fuentes y método", H1),
-          P("No se han podido ver los vídeos directamente. El informe combina el contenido público del "
+          P("No se han podido ver los vídeos directamente. La parte general del informe combina el contenido público del "
             "canal tal como lo recogen notas y resúmenes, y búsquedas web del 15 de noviembre de 2026. "
             "Las páginas de resúmenes de vídeos no se pudieron abrir desde el entorno de trabajo. "
-            "Fuentes consultadas:", NOTE),
+            "La sección 7 se basa en la transcripción automática de una lección del 31/08/2026 "
+            "aportada por el lector. Fuentes consultadas:", NOTE),
           *[Paragraph(x, ParagraphStyle("src", parent=NOTE, leftIndent=12, bulletIndent=2),
                       bulletText="–") for x in [
               "Canal de YouTube: youtube.com/@innercircletrader (mentoría 2022, 2025 Lecture Series, "
@@ -485,6 +650,7 @@ def build():
               "Lecciones 2026 (títulos): recapio.com/digest/ict-2026-smart-money-concepts-lecture-"
               "january-13-2026-by-the-inner-circle-trader y …-february-23-2026-…",
               "Archivo de Twitter Spaces: audioscrape.com/podcast/the-inner-circle-trader-twitter-spaces-archive",
+              "Lección en directo de ICT, 31/08/2026 (NQ, probablemente How New Students Should Start Part 1): youtube.com/watch?v=BWEPtHZ1Y2Y",
               "Backtest TTFM de este repositorio: report/TTFM_Report.pdf y results/summary.json.",
           ]]]
 
