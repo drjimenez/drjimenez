@@ -21,7 +21,7 @@
 //   - Proyecta high/low de C1 (rango barrido) y de C2 (vela del barrido) en el LTF.
 //   - Detecta el barrido (sweep) de C2 sobre C1 y fija el sesgo para C3.
 //   - Busca CISD en LTF durante C3 (con invalidación, ventana maxEntryBars y minRR).
-//   - Tabla de estado.
+//   - Dashboard (tabla de estado) que se puede activar o desactivar desde los ajustes.
 //   - Esta versión NO crea alertas ni proyecta niveles de Entrada / SL / TP:
 //     es solo la lectura del modelo fractal (velas HTF, sweep, sesgo y CISD).
 //
@@ -63,7 +63,14 @@ i_maxEntryBars  = input.int(12, "Máx. velas LTF en C3 para entrar (0 = sin lím
 i_cancelTarget  = input.bool(true, "Cancelar si el precio alcanza el objetivo antes del CISD", group = G_RULE)
 i_onlyConfirmed = input.bool(true, "Confirmar CISD solo con vela LTF cerrada (no repinta)", group = G_RULE)
 
-const string G_SMT = "PSP / SMT"
+const string G_SMT  = "PSP / SMT"
+const string G_DASH = "Dashboard"
+
+i_showTable     = input.bool(true, "Activar Dashboard", group = G_DASH,
+     tooltip = "Muestra u oculta el panel con la temporalidad HTF, el sesgo, el estado del setup, las velas transcurridas de C3 y el tiempo que falta para el cierre de la vela HTF.")
+i_tablePos      = input.string("Arriba derecha", "Posición", options = ["Arriba derecha", "Arriba izquierda", "Abajo derecha", "Abajo izquierda"], group = G_DASH)
+i_tableSize     = input.string("Pequeño", "Tamaño del texto", options = ["Diminuto", "Pequeño", "Normal", "Grande"], group = G_DASH)
+i_tableTimer    = input.bool(true, "Mostrar cuenta regresiva de la vela HTF", group = G_DASH)
 
 i_nCandles      = input.int(4, "Nº de velas HTF a dibujar", minval = 2, maxval = 10, group = G_VIS)
 i_rightOffset   = input.int(8, "Desplazamiento a la derecha (barras)", minval = 2, maxval = 100, group = G_VIS)
@@ -85,8 +92,6 @@ i_showC2Lines   = input.bool(true, "Mostrar high/low de C2 en el gráfico", grou
 i_showSweep     = input.bool(false, "Etiquetas de sweep en el gráfico", group = G_VIS)
 i_showBg        = input.bool(false, "Sombrear fondo con el sesgo durante C3", group = G_VIS)
 i_showCISD      = input.bool(true, "Mostrar CISD (línea + punto)", group = G_VIS)
-i_showTable     = input.bool(true, "Mostrar tabla de estado", group = G_VIS)
-i_tablePos      = input.string("Arriba derecha", "Posición tabla", options = ["Arriba derecha", "Arriba izquierda", "Abajo derecha", "Abajo izquierda"], group = G_VIS)
 
 i_useSmt        = input.bool(true, "Detectar PSP (divergencia SMT)", group = G_SMT)
 i_smtSym        = input.symbol("", "Activo correlacionado", group = G_SMT,
@@ -721,7 +726,7 @@ if barstate.islast
                  style = label.style_label_left, color = color.new(color.black, 100), textcolor = i_colCISD, size = size.tiny))
 
 // =====================================================================================
-// TABLA DE ESTADO
+// DASHBOARD (se puede activar / desactivar en Ajustes → Dashboard → "Activar Dashboard")
 // =====================================================================================
 f_tablePos(string s) =>
     switch s
@@ -730,24 +735,37 @@ f_tablePos(string s) =>
         "Abajo izquierda"  => position.bottom_left
         => position.top_right
 
-var table tbl = table.new(f_tablePos(i_tablePos), 2, 5, bgcolor = color.new(#131722, 15),
-     frame_color = color.new(#787b86, 50), frame_width = 1, border_color = color.new(#787b86, 80), border_width = 1)
+f_tableSize(string s) =>
+    switch s
+        "Diminuto" => size.tiny
+        "Normal"   => size.normal
+        "Grande"   => size.large
+        => size.small
 
-if barstate.islast and i_showTable
+// La tabla solo se crea si el Dashboard está activado; desactivado, no se dibuja nada.
+var table tbl = i_showTable ? table.new(f_tablePos(i_tablePos), 2, 6, bgcolor = color.new(#131722, 15),
+     frame_color = color.new(#787b86, 50), frame_width = 1, border_color = color.new(#787b86, 80), border_width = 1) : na
+
+if barstate.islast and i_showTable and not na(tbl)
+    string tsz     = f_tableSize(i_tableSize)
     string biasTxt = bias == 1 ? "Alcista ▲" : bias == -1 ? "Bajista ▼" : "Neutral"
     color  biasCol = bias == 1 ? i_colBullBias : bias == -1 ? i_colBearBias : color.gray
     string barsTxt = str.tostring(barsInC3) + (i_maxEntryBars > 0 ? " / " + str.tostring(i_maxEntryBars) : "")
-    string tfTxt   = htfTF + (i_htfSel == "Auto" ? " (Auto)" : "") + (htfInvalid ? "  ⚠ HTF ≤ gráfico" : "")
-    table.cell(tbl, 0, 0, "TTFM", text_color = color.white, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 1, 0, "Fractal Model", text_color = color.white, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 0, 1, "HTF", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 1, 1, tfTxt, text_color = htfInvalid ? color.orange : color.white, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 0, 2, "Sesgo", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 1, 2, biasTxt, text_color = biasCol, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 0, 3, "Estado", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 1, 3, f_stateText(setupState), text_color = color.white, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 0, 4, "Velas C3", text_color = i_colText, text_size = size.small, text_halign = text.align_left)
-    table.cell(tbl, 1, 4, barsTxt, text_color = color.white, text_size = size.small, text_halign = text.align_left)
+    string tfTxt   = f_tfName(htfTF) + (i_htfSel == "Auto" ? " (Auto)" : "") + (htfInvalid ? "  ⚠ HTF ≤ gráfico" : "")
+    string tmrTxt  = na(htfCloseT) ? "-" : f_fmtTimer(htfCloseT - timenow)
+    table.cell(tbl, 0, 0, "TTFM", text_color = color.white, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 1, 0, "Fractal Model", text_color = color.white, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 0, 1, "HTF", text_color = i_colText, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 1, 1, tfTxt, text_color = htfInvalid ? color.orange : color.white, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 0, 2, "Sesgo", text_color = i_colText, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 1, 2, biasTxt, text_color = biasCol, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 0, 3, "Estado", text_color = i_colText, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 1, 3, f_stateText(setupState), text_color = color.white, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 0, 4, "Velas C3", text_color = i_colText, text_size = tsz, text_halign = text.align_left)
+    table.cell(tbl, 1, 4, barsTxt, text_color = color.white, text_size = tsz, text_halign = text.align_left)
+    if i_tableTimer
+        table.cell(tbl, 0, 5, "Cierre HTF", text_color = i_colText, text_size = tsz, text_halign = text.align_left)
+        table.cell(tbl, 1, 5, tmrTxt, text_color = color.white, text_size = tsz, text_halign = text.align_left)
 
 // Valores en la ventana de datos (útil para depurar / comparar con Python)
 plot(bias,       "TTFM sesgo",      display = display.data_window)
