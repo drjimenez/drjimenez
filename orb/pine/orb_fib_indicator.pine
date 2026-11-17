@@ -13,6 +13,7 @@
 // probabilidad media pronosticada frente a frecuencia real.
 // Probabilidades medidas en el estudio en Python (orb/), NAS100 + US500, 1 min, 2022-2026.
 // El dashboard (tablas) se muestra u oculta con "Mostrar el dashboard" en los ajustes.
+// Bias del día: vela diaria anterior (alcista / bajista / neutral) o la ventana previa a la apertura.
 // Úsalo en gráficos de 1 a 5 minutos.
 //@version=6
 indicator("ORB Londres/NY + Fibonacci", overlay = true, max_lines_count = 500, max_labels_count = 500)
@@ -41,6 +42,11 @@ showProj  = input.bool(true, "Proyección 1.618 con probabilidad", group = grpF)
 colProj   = input.color(#1baf7a, "Color de la proyección", group = grpF)
 showProj2 = input.bool(true, "Proyección 2.0 al tocar 1.618", group = grpF)
 colProj2  = input.color(#6250d6, "Color de la proyección 2.0", group = grpF)
+
+grpB = "Bias"
+biasSrc  = input.string("Vela diaria anterior", "Bias del día", options = ["Vela diaria anterior", "Ventana previa a la apertura"], group = grpB, tooltip = "Vela diaria anterior: alcista si cerró por encima de su apertura, bajista si cerró por debajo, neutral si el cuerpo es pequeño. Ventana previa: tendencia de 00:00-08:00 (Londres) o 04:00-09:30 (NY).")
+dojiPct  = input.float(10, "Cuerpo mínimo para no ser neutral (% del rango diario)", minval = 0, maxval = 50, step = 1, group = grpB)
+useDailyBias = biasSrc == "Vela diaria anterior"
 
 grpD = "Dashboard (tablas en el gráfico)"
 showDash  = input.bool(true, "Mostrar el dashboard", group = grpD, tooltip = "Interruptor general: desmárcalo para ocultar todas las tablas y dejar solo los niveles en el gráfico.")
@@ -94,9 +100,28 @@ var PEV = array.from(
 // Probabilidad (%) de que la primera ruptura sea alcista según el contexto previo. Índice = sesión * 4 + contexto
 //   contexto: 0 alza · 1 baja · 2 rango · 3 sin dato
 var PUP = array.from(50.5, 53.9, 52.1, 52.1,  51.0, 51.7, 52.2, 51.7)
+// Igual, según la vela diaria anterior (día de 17:00 a 17:00 de NY). Índice = combo * 4 + bias
+//   bias: 0 alcista · 1 bajista · 2 neutral (cuerpo < 10 % del rango) · 3 sin dato
+var PUPD = array.from(
+     51.6, 51.5, 56.4, 52.0,
+     53.9, 52.3, 57.2, 53.4,
+     51.7, 52.7, 47.9, 51.6,
+     52.2, 52.1, 47.5, 51.6)
+var BIAS_TXT = array.from("alcista", "bajista", "neutral", "sin dato")
 var PRE_TXT = array.from("al alza", "a la baja", "en rango", "sin dato")
 var TER_TXT = array.from("pequeño", "medio", "grande", "sin dato")
-var EV_TXT = array.from("Rompe al alza", "Vuelve al nivel roto", "Toca el 50 %", "Toca el extremo opuesto", "Llega a 1.618", "Vuelve y continúa", "Gira y continúa")
+var EV_TXT = array.from("Rompe a favor del bias", "Vuelve al nivel roto", "Toca el 50 %", "Toca el extremo opuesto", "Llega a 1.618", "Vuelve y continúa", "Gira y continúa")
+
+// Probabilidad de que la primera ruptura vaya a favor del bias (alcista -> al alza, bajista -> a la baja;
+// neutral o sin dato -> al alza)
+pUp(int c, int b) =>
+    useDailyBias ? array.get(PUPD, c * 4 + b) : array.get(PUP, (c >= 2 ? 1 : 0) * 4 + b)
+
+pFavor(int c, int b) =>
+    b == 1 ? 100 - pUp(c, b) : pUp(c, b)
+
+biasTxt(int b) =>
+    useDailyBias ? array.get(BIAS_TXT, b) : array.get(PRE_TXT, b)
 
 pev(int c, int ter, int ev) =>
     array.get(PEV, (c * 4 + ter) * 6 + ev)
@@ -124,11 +149,16 @@ if nyCash[1] and not nyCash and not na(dH)
         array.shift(rngs)
 adr = array.size(rngs) >= 20 ? array.avg(rngs) : na
 
+// --- Vela diaria anterior (sin repintar: valores de la vela ya cerrada) --------------------------
+[pdO, pdC, pdH, pdL] = request.security(syminfo.tickerid, "D", [open[1], close[1], high[1], low[1]], lookahead = barmerge.lookahead_on)
+pdBody = pdC - pdO
+biasD = na(pdBody) or na(pdH) ? 3 : math.abs(pdBody) < dojiPct / 100 * (pdH - pdL) ? 2 : pdBody > 0 ? 0 : 1
+
 newLine(int x1, float y, color col, string sty, int w) =>
     line.new(x1, y, bar_index, y, color = col, style = sty, width = w)
 
 // Una llamada por sesión: las variables 'var' de cada llamada son independientes.
-orb(string sessOR, string sessHor, string sessPre, string tz, color col, string name, bool enabled, int combo, float adrNow) =>
+orb(string sessOR, string sessHor, string sessPre, string tz, color col, string name, bool enabled, int combo, float adrNow, int biasNow) =>
     inOR  = enabled and not na(time(timeframe.period, sessOR, tz))
     inHor = enabled and not na(time(timeframe.period, sessHor, tz))
     inPre = enabled and not na(time(timeframe.period, sessPre, tz))
@@ -208,7 +238,7 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
         projLine := na
         projLbl := na
         eff = na(preO) or na(preH) or preH - preL <= 0 ? na : (preC - preO) / (preH - preL)
-        preT := na(eff) ? 3 : eff >= 0.4 ? 0 : eff <= -0.4 ? 1 : 2
+        preT := useDailyBias ? biasNow : na(eff) ? 3 : eff >= 0.4 ? 0 : eff <= -0.4 ? 1 : 2
         preO := na
         preH := na
         preL := na
@@ -367,9 +397,9 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
         if dir != 0
             done := true
             scenTxt := not fV ? "Continúa sin volver" : fCont ? "Vuelve y continúa" : oppFirst ? (fGiro ? "Gira y continúa" : "Rechazado en el otro extremo") : "Se queda en rango"
-            flags = array.from(dir == 1, fV, f50, fOpp, fExt, fCont, fGiro)
+            flags = array.from(preT == 1 ? dir == -1 : dir == 1, fV, f50, fOpp, fExt, fCont, fGiro)
             for i = 0 to 6
-                pI = i == 0 ? array.get(PUP, (combo >= 2 ? 1 : 0) * 4 + preT) : pev(combo, ter, i - 1)
+                pI = i == 0 ? pFavor(combo, preT) : pev(combo, ter, i - 1)
                 array.set(sumP, i, array.get(sumP, i) + pI)
                 array.set(hits, i, array.get(hits, i) + (array.get(flags, i) ? 1.0 : 0.0))
             nDays += 1
@@ -377,12 +407,12 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
                 sum2 += p2at
                 hits2 += hit2 ? 1.0 : 0.0
                 n2 += 1
-    [dir, preT, ter, brkTxt, array.from(dir == 1, fV, f50, fOpp, fExt, fCont, fGiro), done, scenTxt, sumP, hits, nDays, st2, hit2, sum2, hits2, n2]
+    [dir, preT, ter, brkTxt, array.from(preT == 1 ? dir == -1 : dir == 1, fV, f50, fOpp, fExt, fCont, fGiro), done, scenTxt, sumP, hits, nDays, st2, hit2, sum2, hits2, n2]
 
 cLon = orMin == 15 ? 0 : 1
 cNy  = orMin == 15 ? 2 : 3
-[dL0, preL0, terL0, brkL0, flgL0, doneL0, scL0, spL0, htL0, nL0, st2L, hit2L, s2L, h2L, n2L] = orb(lonOR, lonHor, "0000-0800", "Europe/London", colLon, "Londres", showLon, cLon, adr)
-[dN0, preN0, terN0, brkN0, flgN0, doneN0, scN0, spN0, htN0, nN0, st2N, hit2N, s2N, h2N, n2N] = orb(nyOR, nyHor, "0400-0930", "America/New_York", colNy, "NY", showNy, cNy, adr)
+[dL0, preL0, terL0, brkL0, flgL0, doneL0, scL0, spL0, htL0, nL0, st2L, hit2L, s2L, h2L, n2L] = orb(lonOR, lonHor, "0000-0800", "Europe/London", colLon, "Londres", showLon, cLon, adr, biasD)
+[dN0, preN0, terN0, brkN0, flgN0, doneN0, scN0, spN0, htN0, nN0, st2N, hit2N, s2N, h2N, n2N] = orb(nyOR, nyHor, "0400-0930", "America/New_York", colNy, "NY", showNy, cNy, adr, biasD)
 
 // --- Tabla de registro (backtesting) -----------------------------------------------------------
 // Texto de "hoy": probabilidad + ✓ si se cumplió, ✗ si la sesión terminó sin cumplirse, … si está en curso
@@ -408,14 +438,14 @@ if showDash and showReg and barstate.islast
     table.cell(reg, 3, 0, "Londres en el gráfico (n=" + str.tostring(nL0) + ")", text_size = ts, text_color = colLon)
     table.cell(reg, 4, 0, "NY en el gráfico (n=" + str.tostring(nN0) + ")", text_size = ts, text_color = colNy)
     // 1 · Apertura
-    table.cell(reg, 0, 1, "1 · Antes de la apertura", text_size = ts)
-    table.cell(reg, 1, 1, array.get(PRE_TXT, preL0), text_size = ts)
-    table.cell(reg, 2, 1, array.get(PRE_TXT, preN0), text_size = ts)
+    table.cell(reg, 0, 1, useDailyBias ? "1 · Bias: vela diaria anterior" : "1 · Antes de la apertura", text_size = ts)
+    table.cell(reg, 1, 1, biasTxt(preL0), text_size = ts, text_color = preL0 == 0 ? color.teal : preL0 == 1 ? color.red : color.gray)
+    table.cell(reg, 2, 1, biasTxt(preN0), text_size = ts, text_color = preN0 == 0 ? color.teal : preN0 == 1 ? color.red : color.gray)
     table.cell(reg, 3, 1, "", text_size = ts)
     table.cell(reg, 4, 1, "", text_size = ts)
     table.cell(reg, 0, 2, "   " + array.get(EV_TXT, 0), text_size = ts)
-    table.cell(reg, 1, 2, cellHoy(array.get(PUP, preL0), dL0 == 1, dL0 != 0, dL0 == -1), text_size = ts)
-    table.cell(reg, 2, 2, cellHoy(array.get(PUP, 4 + preN0), dN0 == 1, dN0 != 0, dN0 == -1), text_size = ts)
+    table.cell(reg, 1, 2, cellHoy(pFavor(cLon, preL0), array.get(flgL0, 0) and dL0 != 0, dL0 != 0, dL0 != 0 and not array.get(flgL0, 0)), text_size = ts)
+    table.cell(reg, 2, 2, cellHoy(pFavor(cNy, preN0), array.get(flgN0, 0) and dN0 != 0, dN0 != 0, dN0 != 0 and not array.get(flgN0, 0)), text_size = ts)
     table.cell(reg, 3, 2, cellGraf(spL0, htL0, nL0, 0), text_size = ts)
     table.cell(reg, 4, 2, cellGraf(spN0, htN0, nN0, 0), text_size = ts)
     // 2 · Rango
