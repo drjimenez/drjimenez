@@ -31,6 +31,10 @@ colNy  = input.color(#eb6834, "Color", group = grpN)
 
 grpF = "Fibonacci"
 showRet   = input.bool(true, "Retrocesos dentro del rango (23.6 / 38.2 / 50 / 61.8 / 78.6)", group = grpF)
+showRetLb = input.bool(true, "Etiquetas de los niveles dentro del rango", group = grpF, tooltip = "Antes de la ruptura se miden desde el mínimo del rango. Tras la ruptura se miden desde el nivel roto (0 = nivel roto, 1 = extremo opuesto), igual que en el estudio: con ruptura alcista los niveles se recolocan desde el máximo.")
+col05     = input.color(#e91e63, "Color del 0,5 (mitad del rango)", group = grpF)
+width05   = input.int(2, "Grosor del 0,5", minval = 1, maxval = 4, group = grpF)
+colRet    = input.color(color.new(color.gray, 20), "Color de los demás retrocesos", group = grpF)
 showExt   = input.bool(true, "Extensiones fuera del rango (1.272 / 1.618 / 2.0 / 2.618)", group = grpF)
 showMarks = input.bool(true, "Marcar ruptura y retest", group = grpF)
 showProj  = input.bool(true, "Proyección 1.618 con probabilidad", group = grpF)
@@ -149,6 +153,8 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
     var int dir = 0
     var bool retested = false
     var array<line> lines = array.new<line>()
+    var array<label> fibLbls = array.new<label>()
+    var array<line> retLines = array.new<line>()
     // proyección 1.618
     var int ter = 3
     var int brkBar = na
@@ -192,6 +198,8 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
         dir := 0
         retested := false
         array.clear(lines)
+        array.clear(fibLbls)
+        array.clear(retLines)
         ter := 3
         brkBar := na
         tgt := na
@@ -234,7 +242,12 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
         array.push(lines, newLine(startBar, lo, col, line.style_solid, 2))
         if showRet
             for k in RET
-                array.push(lines, newLine(startBar, lo + r * k, k == 0.5 ? col : lightCol, line.style_dotted, 1))
+                is05 = k == 0.5
+                ln = newLine(startBar, lo + r * k, is05 ? col05 : colRet, is05 ? line.style_solid : line.style_dotted, is05 ? width05 : 1)
+                array.push(lines, ln)
+                array.push(retLines, ln)
+                if showRetLb
+                    array.push(fibLbls, label.new(bar_index, lo + r * k, (is05 ? "0.5  (50 %)" : str.tostring(k)), style = label.style_label_left, color = color.new(color.white, 100), textcolor = is05 ? col05 : colRet, size = is05 ? size.normal : size.small))
         if showExt
             for e in EXT
                 array.push(lines, newLine(startBar, hi + r * e, lightCol, line.style_dashed, 1))
@@ -249,11 +262,21 @@ orb(string sessOR, string sessHor, string sessPre, string tz, color col, string 
         mid = lo + 0.5 * r
         for l in lines
             l.set_x2(bar_index)
+        // etiquetas Fibonacci internas: siguen al final de la línea
+        for lb in fibLbls
+            lb.set_x(bar_index)
         // Ruptura: primer CIERRE fuera del rango
         if dir == 0 and close > hi
             dir := 1
             brkBar := bar_index
             tgt := hi + 0.618 * r
+            // ruptura alcista: los retrocesos se miden desde el máximo (nivel roto) hacia abajo
+            for [i, ln] in retLines
+                y = hi - array.get(RET, i) * r
+                ln.set_y1(y)
+                ln.set_y2(y)
+                if i < array.size(fibLbls)
+                    array.get(fibLbls, i).set_y(y)
             brkTxt := "▲ " + str.format_time(time, "HH:mm", tz)
             if showMarks
                 label.new(bar_index, high, "▲ ruptura " + name, style = label.style_label_down, color = col, textcolor = color.white, size = size.small)
